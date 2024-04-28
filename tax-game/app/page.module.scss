@@ -13,6 +13,25 @@
     margin: 0 5px;
 }
 
+@keyframes moveUpDown {
+    0% {
+        transform: translateX(-100px) translateY(0px);
+    }
+    100% {
+        transform: translateX(100px) translateY(0px);
+    }
+}
+
+.mountain {
+    position: relative;
+}
+
+.mountain img:nth-child(1) {
+    position: absolute;
+    animation: moveUpDown 9s infinite alternate cubic-bezier(0.42, 0, 0.58, 1);
+    width: 20%;
+}
+
 .container {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -191,7 +210,7 @@
     }
 
 
-    .backToTop button{
+    .backToTop button {
         margin-bottom: 40px;
     }
 }

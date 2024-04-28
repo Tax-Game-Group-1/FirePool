@@ -18,7 +18,8 @@ export default function Home() {
                 play with friends, and make profits!</p>
             </div>
             <div>
-              <div>
+              <div className={s.mountain}>
+                <img src="/images/sun.svg" />
                 <img src="/images/mountains.svg"/>
               </div>
               <a href={"#bottom"}>
