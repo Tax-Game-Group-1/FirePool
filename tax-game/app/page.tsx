@@ -19,13 +19,15 @@ export default function Home() {
             </div>
             <div>
               <img className={s.image} src="mountains.svg"/>
-              <div className={s.buttonContainer}>
-                <button className={[s.HomeButton, s.button].join(' ')}>Let's begin<img src="arrow.svg"/></button>
-              </div>
+              <a href={"#bottom"}>
+                <div className={s.buttonContainer}>
+                  <button className={[s.HomeButton, s.button].join(' ')}>Let's begin<img src="arrow.svg"/></button>
+                </div>
+              </a>
             </div>
           </div>
         </section>
-        <section>
+        <section id={"bottom"}>
           <h2 className={s.prompt}>What would you like to do?</h2>
           <div className={s.cards}>
             <div/>
