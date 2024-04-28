@@ -1,3 +1,5 @@
+@import "variables.scss";
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -6,6 +8,7 @@
   --foreground-rgb: 0, 0, 0;
   --background-start-rgb: 214, 219, 220;
   --background-end-rgb: 255, 255, 255;
+  scroll-behavior: smooth;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -16,15 +19,6 @@
   }
 }
 
-body {
-  color: rgb(var(--foreground-rgb));
-  background: linear-gradient(
-      to bottom,
-      transparent,
-      rgb(var(--background-end-rgb))
-    )
-    rgb(var(--background-start-rgb));
-}
 
 @layer utilities {
   .text-balance {
@@ -60,9 +54,24 @@ button {
   font-size: 2.4rem;
   padding-left: 20px;
   padding-right: 70px;
-  border-radius: 7px;
+  border-radius: $border-radius;
   display: flex;
   position: relative;
+}
+
+button:hover {
+  color: white;
+  background-color: black;
+  outline: 2px solid white;
+}
+
+nav li {
+  cursor: pointer;
+}
+
+nav li:hover {
+  color: black;
+  background-color: white;
 }
 
 

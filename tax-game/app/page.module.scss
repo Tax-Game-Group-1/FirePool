@@ -1,3 +1,5 @@
+@import "variables";
+
 .nav ul{
   display: flex;
   list-style: none;
@@ -5,7 +7,7 @@
 }
 
 .nav li {
-  border: 1px solid white;
+  border: $border-width solid white;
   padding: 5px 20px;
   border-radius: 5px;
   margin: 0 5px;
@@ -51,11 +53,78 @@
 
 .buttonContainer {
   display: flex;
-  justify-content: right;
   padding: 20px;
   padding-top: 50px;
+  justify-content: right;
 }
 
+.button:hover img {
+  filter: invert(100%);
+}
+
+.backToTop {
+  justify-content: center;
+  margin-top: 30px;
+}
+
+.prompt {
+  font-size: 2rem;
+  text-align: center;
+  padding: 40px;
+}
+
+.splash section {
+  height: 100vh;
+}
+
+.cards {
+  display: grid;
+  grid-template-columns: 3fr 2fr 1fr 2fr 3fr;
+}
+
+.card {
+  background-color: black;
+  border-radius: $border-radius;
+  color: white;
+  padding-bottom: 10%;
+}
+
+.card:hover {
+  filter: invert(100%);
+  outline: 2px solid white;
+}
+
+.card p {
+  text-align: center;
+  font-size: 2.5rem;
+}
+
+.card img {
+  width: 80%;
+  height: auto;
+  margin: 10%;
+}
+
+.splash section:nth-child(1) {
+  background-color: black;
+  color: white;
+}
+
+.splash section:nth-child(2) {
+  background-color: white;
+}
+
+.splash section:nth-child(2) button {
+  background-color: black;
+  color: white;
+}
+
+
+.splash section:nth-child(2) button:hover {
+  background-color: white;
+  color: black;
+  outline: $border-width solid black;
+}
 
 @media only screen and (max-width: 600px) {
 

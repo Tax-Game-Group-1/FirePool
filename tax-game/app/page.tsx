@@ -2,27 +2,54 @@ import s from './page.module.scss'
 
 export default function Home() {
   return (
-      <main>
-        <nav className={s.nav}>
-          <ul>
-            <li>About Us</li>
-            <li>Case Study</li>
-          </ul>
-        </nav>
+      <main className={s.splash} id={"top"}>
+        <section>
+          <nav className={s.nav}>
+            <ul>
+              <li>About Us</li>
+              <li>Case Study</li>
+            </ul>
+          </nav>
           <div className={s.container}>
-              <div>
-                <h1 className={s.heading}>Welcome to the Tax Game</h1>
-                <p>Tax Game is an app that helps you understand taxes. You'll play through scenarios, learn about
-                      deductions and government spending, and see how taxes affect the economy. Customize your game,
-                    play with friends, and make profits!</p>
+            <div>
+              <h1 className={s.heading}>Welcome to the Tax Game</h1>
+              <p>Tax Game is an app that helps you understand taxes. You'll play through scenarios, learn about
+                deductions and government spending, and see how taxes affect the economy. Customize your game,
+                play with friends, and make profits!</p>
+            </div>
+            <div>
+              <img className={s.image} src="mountains.svg"/>
+              <div className={s.buttonContainer}>
+                <button className={[s.HomeButton, s.button].join(' ')}>Let's begin<img src="arrow.svg"/></button>
               </div>
-              <div>
-                <img className={s.image} src="mountains.svg" />
-                  <div className={s.buttonContainer}>
-                      <button className={s.HomeButton}>Start Demo <img src="arrow.svg" /> </button>
-                  </div>
-              </div>
+            </div>
           </div>
+        </section>
+        <section>
+          <h2 className={s.prompt}>What would you like to do?</h2>
+          <div className={s.cards}>
+            <div/>
+            <div className={s.card}>
+              <img src="create.png"/>
+              <p>Create Game</p>
+            </div>
+            <div/>
+            <div className={s.card}>
+              <img src="join.png"/>
+              <p>Join Game</p>
+            </div>
+            <div/>
+          </div>
+
+          <a href={"#top"}>
+            <div className={[s.buttonContainer, s.backToTop].join(' ')}>
+              <button className={s.button}>Back to top<img src="arrow-white.svg"/></button>
+            </div>
+          </a>
+        </section>
       </main>
   );
 }
+
+//card columns:
+//grid-template-columns: 2fr 2fr 1fr 2fr 2fr;
