@@ -16,5 +16,10 @@ const config: Config = {
     },
   },
   plugins: [],
+  extend: {
+    fontFamily: {
+      myriad: ['MyriadPro']
+    }
+  }
 };
 export default config;

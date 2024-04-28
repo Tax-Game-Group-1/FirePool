@@ -31,3 +31,52 @@ body {
     text-wrap: balance;
   }
 }
+
+@font-face {
+  font-family: 'MyriadPro';
+  src: url('./fonts/myriad/MyriadProBold.otf') format('opentype');
+  font-weight: 698;
+  font-style: bold;
+}
+
+@font-face {
+  font-family: 'MyriadPro';
+  src: url('./fonts/myriad/MyriadProLight.otf') format('opentype');
+  font-weight: 398;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'MyriadPro';
+  src: url('./fonts/myriad/MyriadProRegular.otf') format('opentype');
+  font-weight: 498;
+  font-style: normal;
+}
+
+button {
+  background-color: white;
+  color: black;
+  font-family: 'MyriadPro';
+  font-size: 2.4rem;
+  padding-left: 20px;
+  padding-right: 70px;
+  border-radius: 7px;
+  display: flex;
+  position: relative;
+}
+
+
+@media only screen and (max-width: 600px) {
+
+  button {
+    font-size: 1.5rem;
+  }
+
+}
+
+button img {
+  position: absolute;
+  height: 50%;
+  top: 25%;
+  right: 10px
+}
