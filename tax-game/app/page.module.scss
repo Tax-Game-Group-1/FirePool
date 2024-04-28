@@ -7,7 +7,7 @@
 }
 
 .nav li {
-    border: $border-width solid white;
+    border: $border-width solid $off-white;
     padding: 5px 20px;
     border-radius: 5px;
     margin: 0 5px;
@@ -76,13 +76,13 @@
 .card {
     background-color: black;
     border-radius: $border-radius;
-    color: white;
+    color: $off-white;
     padding-bottom: 10%;
 }
 
 .card:hover {
     filter: invert(100%);
-    outline: 2px solid white;
+    outline: 2px solid $off-white;
 }
 
 .card p {
@@ -97,22 +97,21 @@
 }
 
 .splash section:nth-child(1) {
-    background-color: black;
-    color: white;
+    color: $off-white
 }
 
 .splash section:nth-child(2) {
-    background-color: white;
+    background-color: $off-white;
 }
 
 .splash section:nth-child(2) button {
     background-color: black;
-    color: white;
+    color: $off-white;
 }
 
 
 .splash section:nth-child(2) button:hover {
-    background-color: white;
+    background-color: $off-white;
     color: black;
     outline: $border-width solid black;
 }
