@@ -19,7 +19,7 @@ export default function Home() {
             </div>
             <div>
               <div>
-                <img src="mountains.svg"/>
+                <img src="/images/mountains.svg"/>
               </div>
               <a href={"#bottom"}>
                 <div className={s.buttonContainer}>
@@ -34,12 +34,12 @@ export default function Home() {
           <div className={s.cards}>
             <div/>
             <div className={s.card}>
-              <img src="create.png"/>
+              <img src="/images/create.png"/>
               <p>Create Game</p>
             </div>
             <div/>
             <div className={s.card}>
-              <img src="join.png"/>
+              <img src="/images/join.png"/>
               <p>Join Game</p>
             </div>
             <div/>
@@ -47,7 +47,7 @@ export default function Home() {
 
           <a href={"#top"}>
             <div className={[s.buttonContainer, s.backToTop].join(' ')}>
-              <button className={s.button}>Back to top<img src="arrow-white.svg"/></button>
+              <button className={s.button}>Back to top<img src="/images/icons/arrow-white.svg"/></button>
             </div>
           </a>
         </section>
