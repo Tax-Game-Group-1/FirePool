@@ -18,7 +18,9 @@ export default function Home() {
                 play with friends, and make profits!</p>
             </div>
             <div>
-              <img className={s.image} src="mountains.svg"/>
+              <div>
+                <img src="mountains.svg"/>
+              </div>
               <a href={"#bottom"}>
                 <div className={s.buttonContainer}>
                   <button className={[s.HomeButton, s.button].join(' ')}>Let's begin<img src="arrow.svg"/></button>
