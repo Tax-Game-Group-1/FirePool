@@ -23,7 +23,7 @@ export default function Home() {
               </div>
               <a href={"#bottom"}>
                 <div className={s.buttonContainer}>
-                  <button className={[s.HomeButton, s.button].join(' ')}>Let's begin<img src="arrow.svg"/></button>
+                  <button className={[s.HomeButton, s.button].join(' ')}>Let's begin<img src="/images/icons/arrow.svg"/></button>
                 </div>
               </a>
             </div>
