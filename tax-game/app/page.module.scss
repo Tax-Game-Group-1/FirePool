@@ -1,158 +1,158 @@
 @import "variables";
 
-.nav ul{
-  display: flex;
-  list-style: none;
-  padding: 50px 50px 0;
+.nav ul {
+    display: flex;
+    list-style: none;
+    padding: 50px 50px 0;
 }
 
 .nav li {
-  border: $border-width solid white;
-  padding: 5px 20px;
-  border-radius: 5px;
-  margin: 0 5px;
+    border: $border-width solid white;
+    padding: 5px 20px;
+    border-radius: 5px;
+    margin: 0 5px;
 }
 
 .container {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  padding: 50px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    padding: 50px;
 }
 
 .container div:nth-child(1) {
-  padding: 50px;
+    padding: 50px;
 }
 
 .container div:nth-child(1) p {
-  font-size: 1.5rem;
+    font-size: 1.5rem;
 }
 
 .heading {
-  font-family: 'MyriadPro';
-  font-weight: lighter;
-  font-size: 5rem;
-  padding-bottom: 50px;
+    font-family: 'MyriadPro';
+    font-weight: lighter;
+    font-size: 5rem;
+    padding-bottom: 50px;
 }
 
 @media only screen and (max-width: 400px) {
-  .nav ul {
-    flex-direction: column;
-    padding: 3px;
-  }
+    .nav ul {
+        flex-direction: column;
+        padding: 3px;
+    }
 
-  .nav li {
-    border: none;
-    border-bottom: 1px solid white;
-    padding: 10px
-  }
+    .nav li {
+        border: none;
+        border-bottom: 1px solid white;
+        padding: 10px
+    }
 
-  .heading {
-    font-size: 3rem;
-  }
+    .heading {
+        font-size: 3rem;
+    }
 }
 
 .buttonContainer {
-  display: flex;
-  padding: 20px;
-  padding-top: 50px;
-  justify-content: right;
+    display: flex;
+    padding: 20px;
+    padding-top: 50px;
+    justify-content: right;
 }
 
 .button:hover img {
-  filter: invert(100%);
+    filter: invert(100%);
 }
 
 .backToTop {
-  justify-content: center;
-  margin-top: 30px;
+    justify-content: center;
+    margin-top: 30px;
 }
 
 .prompt {
-  font-size: 2rem;
-  text-align: center;
-  padding: 40px;
+    font-size: 2rem;
+    text-align: center;
+    padding: 40px;
 }
 
 .splash section {
-  min-height: 100vh;
+    min-height: 100vh;
 }
 
 .cards {
-  display: grid;
-  grid-template-columns: 3fr 2fr 1fr 2fr 3fr;
+    display: grid;
+    grid-template-columns: 3fr 2fr 1fr 2fr 3fr;
 }
 
 .card {
-  background-color: black;
-  border-radius: $border-radius;
-  color: white;
-  padding-bottom: 10%;
+    background-color: black;
+    border-radius: $border-radius;
+    color: white;
+    padding-bottom: 10%;
 }
 
 .card:hover {
-  filter: invert(100%);
-  outline: 2px solid white;
+    filter: invert(100%);
+    outline: 2px solid white;
 }
 
 .card p {
-  text-align: center;
-  font-size: 2.5rem;
+    text-align: center;
+    font-size: 2.5rem;
 }
 
 .card img {
-  width: 80%;
-  height: auto;
-  margin: 10%;
+    width: 80%;
+    height: auto;
+    margin: 10%;
 }
 
 .splash section:nth-child(1) {
-  background-color: black;
-  color: white;
+    background-color: black;
+    color: white;
 }
 
 .splash section:nth-child(2) {
-  background-color: white;
+    background-color: white;
 }
 
 .splash section:nth-child(2) button {
-  background-color: black;
-  color: white;
+    background-color: black;
+    color: white;
 }
 
 
 .splash section:nth-child(2) button:hover {
-  background-color: white;
-  color: black;
-  outline: $border-width solid black;
+    background-color: white;
+    color: black;
+    outline: $border-width solid black;
 }
 
 @media only screen and (max-width: 600px) {
 
-  .heading {
-    font-size: 4rem;
-  }
+    .heading {
+        font-size: 4rem;
+    }
 
-  .image {
-     width: 70%;
-     margin-left: 15%;
-   }
-  .buttonContainer {
-    //display: flex;
-    justify-content: center;
-  }
+    .image {
+        width: 70%;
+        margin-left: 15%;
+    }
+    .buttonContainer {
+        //display: flex;
+        justify-content: center;
+    }
 }
 
 @media only screen and (max-width: 1100px) {
 
-  .container {
-    grid-template-columns: 1fr;
-  }
+    .container {
+        grid-template-columns: 1fr;
+    }
 
-  .image {
-    margin-top: 40px;
-    width: 50%;
-    margin-left: 25%;
-  }
+    .image {
+        margin-top: 40px;
+        width: 50%;
+        margin-left: 25%;
+    }
 }
 
 

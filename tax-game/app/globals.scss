@@ -1,4 +1,4 @@
-@import "variables.scss";
+@import "variables";
 
 @tailwind base;
 @tailwind components;
@@ -76,11 +76,9 @@ nav li:hover {
 
 
 @media only screen and (max-width: 600px) {
-
   button {
     font-size: 1.5rem;
   }
-
 }
 
 button img {
