@@ -1,0 +1,79 @@
+@import "variables";
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  scroll-behavior: smooth;
+  background-color: black;
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+
+@font-face {
+  font-family: 'MyriadPro';
+  src: url('./fonts/myriad/MyriadProBold.otf') format('opentype');
+  font-weight: 698;
+  font-style: bold;
+}
+
+@font-face {
+  font-family: 'MyriadPro';
+  src: url('./fonts/myriad/MyriadProLight.otf') format('opentype');
+  font-weight: 398;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'MyriadPro';
+  src: url('./fonts/myriad/MyriadProRegular.otf') format('opentype');
+  font-weight: 498;
+  font-style: normal;
+}
+
+button {
+  background-color: white;
+  color: black;
+  font-family: 'MyriadPro';
+  font-size: 2.4rem;
+  padding-left: 20px;
+  padding-right: 70px;
+  border-radius: $border-radius;
+  display: flex;
+  position: relative;
+}
+
+button:hover {
+  color: $off-white;
+  background-color: black;
+  outline: 2px solid white;
+}
+
+nav li {
+  cursor: pointer;
+}
+
+nav li:hover {
+  color: black;
+  background-color: $off-white;
+}
+
+button img {
+  position: absolute;
+  height: 50%;
+  top: 25%;
+  right: 10px
+}
+
+// ------------------------- RESPONSIVENESS ----------------------------//
+
+@media only screen and (max-width: 400px) {
+  button {
+    font-size: 1.5rem;
+  }
+}
