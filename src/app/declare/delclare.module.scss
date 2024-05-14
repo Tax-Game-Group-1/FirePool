@@ -1,3 +1,145 @@
+@import "../variables";
+
+$margin: 30px;
+
+.buttons {
+  display: flex;
+  color: black;
+}
+
 .container {
-  grid-template-rows: 1fr 100px;
+  height: calc(100vh - $toolbar-height);
+}
+
+.buttons > * {
+  margin: 5px;
+  text-align: center;
+}
+
+.inputOuter {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 40px;
+}
+
+.inputOuter > div:nth-child(2) {
+  font-size: 1.8rem;
+  padding-left: 8px;
+}
+
+.inputContainer {
+ position: relative;
+}
+
+.inputContainer div:nth-child(1) {
+  position: relative;
+  display: flex;
+  background-color: white;
+  border-radius: 7px;
+  margin-bottom: 20px;
+}
+
+.inputContainer img {
+  position: absolute;
+  width: 15px;
+}
+
+.inputContainer img:nth-child(1) {
+  transform: rotate(90deg);
+  top: 20px;
+  right: 15px;
+}
+
+.inputContainer img:nth-child(2) {
+  transform: rotate(270deg);
+  top: -2px;
+  right: 15px;
+}
+
+.input {
+  color: black;
+  height: 45px;
+  border-radius: 7px;
+  padding-left: 7px;
+  font-size: 1.5rem;
+  padding-right: 16px;
+}
+
+.declare {
+  color: white;
+  padding: 25px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-around;
+  margin: $margin;
+  border-radius: $border-radius;
+}
+
+.declare p {
+  margin-bottom: 35px;
+  margin-top: 35px;
+  font-size: 1.4rem;
+}
+
+@media (min-width: 828px) {
+
+  .declare {
+    padding-top: 130px;
+    padding-bottom: 130px;
+  }
+
+  .declare p {
+    margin-top: 70px;
+    font-size: 2rem;
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+
+  .inputOuter {
+    padding-bottom: 50px;
+  }
+
+  .statBox {
+    margin: $margin;
+  }
+
+  .container > div:nth-child(1) {
+    display: grid;
+    grid-template-columns: 3fr 2fr;
+    grid-template-rows: 1fr 2fr;
+    height: calc(100vh - $toolbar-height);
+  }
+  .statBox {
+    grid-column: 2/3;
+  }
+  .declare {
+    grid-column: 1/2;
+    grid-row: 1/4;
+  }
+  .inputOuter {
+    margin-top: 40px;
+  }
+  .buttons {
+    margin-bottom: 70px;
+  }
+}
+
+
+@media (max-width: 570px) {
+  .buttons > * {
+    font-size: 1.5rem;
+    width: 100%;
+    padding: 10px;
+  }
+  .buttons {
+    flex-direction: column;
+    width: 100%;
+  }
+  .input {
+    font-size: 1rem;
+  }
+  .declare {
+    margin: 15px;
+  }
 }

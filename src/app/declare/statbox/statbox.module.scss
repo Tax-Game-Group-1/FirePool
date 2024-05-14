@@ -4,7 +4,14 @@
   color: white;
   display: grid;
   grid-template-rows: 20px 1fr;
-  padding: 4px;
+  padding: 9px;
+  border-radius: $border-radius;
+}
+
+@media (max-width: 797px) {
+  .stats {
+    border-radius: 0px;
+  }
 }
 
 .statBoxes {

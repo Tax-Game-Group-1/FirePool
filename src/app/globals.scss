@@ -46,6 +46,29 @@
   font-family: "Montserrat", Calibri, sans-serif;
 }
 
+//input {
+//  border: none;
+//  outline: none;
+//  display: inline-block;
+//  height: 34px;
+//  vertical-align: middle;
+//  bottom: 14px;
+//  right: 9px;
+//  border-radius: 22px;
+//  width: 220px;
+//  color: black;
+//}
+
+
+
+
+
+
+
+input:focus {
+  outline: 3px solid grey;
+}
+
 button {
   background-color: white;
   color: black;

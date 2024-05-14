@@ -1,0 +1,35 @@
+@import "variables";
+
+.solidWindow {
+ background-color: #084c61;
+}
+
+.accent {
+  background-color: #052c39;
+}
+
+.solidElement {
+  background-color: #084c61;
+}
+
+.gradient {
+  background: #042731;
+  background: linear-gradient(0deg, #05222b 0%, #052c38 100%);
+}
+
+.textBoxBackground {
+ background-color: white;
+}
+
+.textBoxFontColor {
+  color: #052c39;
+}
+
+.toolBar {
+  height: $toolbar-height;
+  background-color: #052c39;
+}
+
+.background {
+  background-color: #05222b;
+}

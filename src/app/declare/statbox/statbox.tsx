@@ -1,6 +1,6 @@
 import { ReactElement, JSXElementConstructor, ReactNode, ReactPortal, AwaitedReactNode } from 'react';
 import s from './statbox.module.scss';
-import b from '../../bluetheme.module.scss'
+import b from '../../darktheme.module.scss'
 
 export default function Statbox(props: { name: string, taxRate: number , year: number, universeFunds: number}) {
     let {name, year, taxRate, universeFunds} = props;
