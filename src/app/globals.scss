@@ -36,6 +36,16 @@
   font-style: normal;
 }
 
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
+
+@font-face {
+  font-family: "Montserrat";
+}
+
+:root {
+  font-family: "Montserrat", Calibri, sans-serif;
+}
+
 button {
   background-color: white;
   color: black;
