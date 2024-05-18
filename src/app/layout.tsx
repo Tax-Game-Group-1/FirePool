@@ -1,11 +1,6 @@
-import type { Metadata } from "next";
+'use client'
 import "./globals.scss";
-
-export const metadata: Metadata = {
-  title: "Tax Game",
-  description: "Learn how to spend your taxes",
-  icons: "icon.ico"
-};
+import {ThemeProvider} from "@/app/themecontext";
 
 export default function RootLayout({
   children,
@@ -17,7 +12,9 @@ export default function RootLayout({
       <head>
         <link rel="icon" href="/images/icons/icon.ico" sizes="any"/>
       </head>
-      <body>{children}</body>
+      <ThemeProvider>
+        <body>{children}</body>
+      </ThemeProvider>
     </html>
   );
 }
