@@ -2,7 +2,7 @@
 import Statbox from "@/app/declare/statbox/statbox";
 import s from './delclare.module.scss'
 import t from '../themes.module.scss'
-import { useState} from "react";
+import {useEffect, useState} from "react";
 import {ThemeProvider, useTheme} from "@/app/themecontext";
 
 const MAX_TAX_RATE = 70;
@@ -13,31 +13,43 @@ export default function Declare(props: { name: string, taxRate: number, year: nu
 
   const { toggleTheme, getThemeClass } = useTheme();
 
-  const [num, setNum] = useState<number>(props.taxRate);
-  const handleChange = (event: React.FocusEvent<HTMLInputElement>) => {
-    const value = +event.target.value; // Convert to number
-    if (!isNaN(value)) {
-      setNum(value);
-    } else {
-      setNum(MIN_TAX_RATE)
-    }
-  }
+  const [num, setNum] = useState(props.taxRate || MIN_TAX_RATE);
+  const [disableIncrement, setDisableIncrement] = useState(false);
+  const [disableDecrement, setDisableDecrement] = useState(false);
 
   const handleBlur = () => {
-    if (num == undefined || isNaN(num as number) || num < MIN_TAX_RATE)
-      setNum(MIN_TAX_RATE)
-    else if (num > MAX_TAX_RATE)
-      setNum(MAX_TAX_RATE)
-  }
+    if (num === undefined || isNaN(num) || num < MIN_TAX_RATE) {
+      setNum(MIN_TAX_RATE);
+    } else if (num > MAX_TAX_RATE) {
+      setNum(MAX_TAX_RATE);
+    }
+  };
 
   const increment = () => {
-    num <= MAX_TAX_RATE - 5 && setNum(num + 5);
-    handleBlur();
-  }
+    if (num <= MAX_TAX_RATE - 5) {
+      setNum((prevNum) => prevNum + 5);
+    }
+  };
+
   const decrement = () => {
-    num >= MIN_TAX_RATE + 5 && setNum(num - 5);
-    handleBlur();
-  }
+    if (num >= MIN_TAX_RATE + 5) {
+      setNum((prevNum) => prevNum - 5);
+    }
+  };
+
+  useEffect(() => {
+    if (num === MAX_TAX_RATE) {
+      setDisableIncrement(true);
+    } else {
+      setDisableIncrement(false);
+    }
+
+    if (num === MIN_TAX_RATE) {
+      setDisableDecrement(true);
+    } else {
+      setDisableDecrement(false);
+    }
+  }, [num]);
 
   return (
       <main className={[getThemeClass(), t.background].join(' ')}>
@@ -54,15 +66,21 @@ export default function Declare(props: { name: string, taxRate: number, year: nu
                   <div className={s.inputContainer}>
                     <input
                         className={s.input}
-                        onChange={handleChange}
+                        onChange={(e) => setNum(Number(e.target.value))}
                         onBlur={handleBlur}
                         value={num || ''}/>
                     <div>
                       <img
+                          className={
+                            disableDecrement ? s.disabled : ''
+                          }
                           src={"images/icons/arrow.svg"}
                           onClick={decrement}/>
                       <img
                           src={"images/icons/arrow.svg"}
+                          className={
+                            disableIncrement ? s.disabled : ''
+                          }
                           onClick={increment}/>
                     </div>
                   </div>

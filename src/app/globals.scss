@@ -73,7 +73,8 @@ button {
   background-color: white;
   color: black;
   font-family: 'MyriadPro';
-  font-size: 3rem;
+  font-size: clamp(1rem, 0rem + 5.3333vw, 3rem);
+  font-size: clamp(1.75rem, 1.6441rem + 0.565vw, 3rem);
   padding-left: 20px;
   padding-right: 70px;
   border-radius: $border-radius;
@@ -103,10 +104,3 @@ button img {
   right: 10px
 }
 
-// ------------------------- RESPONSIVENESS ----------------------------//
-
-@media only screen and (max-width: 400px) {
-  button {
-    font-size: 1.5rem;
-  }
-}

@@ -21,7 +21,6 @@ export default function Statbox(props: { name: string, taxRate: number , year: n
                         Tax Rate
                         <div className={[s.displayBox, b.accent].join(" ")}>{taxRate}</div>
                     </div>
-                    <div></div>
                     <div>
                         Year
                         <div className={[s.displayBox, b.accent].join(" ")}>{year}</div>

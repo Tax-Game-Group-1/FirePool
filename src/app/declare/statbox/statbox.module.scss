@@ -9,11 +9,7 @@
   height: 100%;
 }
 
-@media (max-width: 797px) {
-  .stats {
-    border-radius: 0px;
-  }
-}
+
 
 .statBoxes {
   display: grid;
@@ -36,4 +32,22 @@
 
 .container input {
   color: black;
+}
+
+@media (max-width: 797px) {
+  .stats {
+    border-radius: 0px;
+  }
+  .statBoxes {
+    grid-template-columns: 1fr;
+    grid-template-rows: repeat(3, 1fr);
+    grid-column-gap: 5px;
+    height: 100%;
+  }
+}
+
+@media (max-width: 500px) {
+  .stats {
+    height: auto;
+  }
 }
