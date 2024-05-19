@@ -10,8 +10,8 @@ const MIN_TAX_RATE = 20;
 
 enum GameState {
   DECLARE,
-  NEWYEAR,
-  RECIEVED
+  NEW_YEAR,
+  RECEIVED
 }
 
 export default function Declare(props: { name: string, taxRate: number, year: number, universeFunds: number }) {
@@ -48,7 +48,7 @@ export default function Declare(props: { name: string, taxRate: number, year: nu
 
   const cycleGameState = () => {
     if (gameState == GameState.DECLARE)
-      setGameState(GameState.NEWYEAR)
+      setGameState(GameState.NEW_YEAR)
     else
       setGameState(GameState.DECLARE)
   }
@@ -112,7 +112,7 @@ export default function Declare(props: { name: string, taxRate: number, year: nu
                         </div>
                     </div>
                     <div className={[s.buttons, t.textBoxFontColor].join(' ')}>
-                        <button className={t.buttonBackground} onClick={() => setGameState(GameState.NEWYEAR)}>Confirm<img src={"images/icons/tick.svg"}/></button>
+                        <button className={t.buttonBackground} onClick={() => setGameState(GameState.NEW_YEAR)}>Confirm<img src={"images/icons/tick.svg"}/></button>
                         <button className={t.buttonBackground}>Cancel<img src={"images/icons/cross.svg"}/></button>
                     </div>
                 </div>
@@ -120,7 +120,7 @@ export default function Declare(props: { name: string, taxRate: number, year: nu
 
 
             {
-              gameState == GameState.NEWYEAR &&
+              gameState == GameState.NEW_YEAR &&
                 <div className={[s.declare, t.solidElement].join(' ')}>
                   <p>New year has begun</p>
                     <img className={s.roundBorder} src={'images/currency.png'}/>
@@ -131,13 +131,13 @@ export default function Declare(props: { name: string, taxRate: number, year: nu
                         onMouseOver={() => setDiceHover(true)}
                         onMouseOut={() => setDiceHover(false)}
                         src={diceHover ? 'images/dice-hover.png' : 'images/dice-normal.png'}
-                        onClick={() => setGameState(GameState.RECIEVED)}
+                        onClick={() => setGameState(GameState.RECEIVED)}
                     />
                 </div>
             }
 
             {
-              gameState == GameState.RECIEVED &&
+              gameState == GameState.RECEIVED &&
                 <div className={[s.declare, t.solidElement].join(' ')}>
                   <p>You received:</p>
                     <div className={[s.roundBorder, s.receivedAmount].join(' ')}>
