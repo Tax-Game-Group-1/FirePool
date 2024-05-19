@@ -2,7 +2,7 @@
 import Statbox from "@/app/declare/statbox/statbox";
 import s from './delclare.module.scss'
 import t from '../themes.module.scss'
-import {useEffect, useState} from "react";
+import React, {ChangeEventHandler, useEffect, useState} from "react";
 import {ThemeProvider, useTheme} from "@/app/themecontext";
 
 const MAX_TAX_RATE = 70;
@@ -44,7 +44,7 @@ function RecievedComponent() {
 }
 
 function DeclareComponent(props: {
-  onChange: (e) => void,
+  onChange: ChangeEventHandler<HTMLElement>;
   onBlur: () => void,
   num: number,
   disableDecrement: boolean,
@@ -55,7 +55,7 @@ function DeclareComponent(props: {
 }) {
   return <div className={[s.declare, t.solidElement].join(" ")}>
     <div>
-      <p>What is this year's tax rate going to be?</p>
+      <p>What is this year&apos;s tax rate going to be?</p>
       <div className={s.inputOuter}>
         <div className={s.inputContainer}>
           <input
@@ -156,7 +156,7 @@ export default function Declare(props: { name: string, taxRate: number, year: nu
 
               {
                   gameState == GameState.DECLARE && //declare
-                  <DeclareComponent onChange={(e) => setNum(Number(e.target.value))} onBlur={handleBlur} num={num}
+                  <DeclareComponent onChange={(e) => setNum(Number((e.target as any).value))} onBlur={handleBlur} num={num}
                                     disableDecrement={disableDecrement} onDecrementClick={decrement}
                                     disableIncrement={disableIncrement} onIncrementClick={increment}
                                     onConfirmClick={() => setGameState(GameState.NEW_YEAR)}/>
