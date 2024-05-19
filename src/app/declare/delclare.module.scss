@@ -20,6 +20,9 @@
     margin-bottom: 40px;
 }
 
+.container {
+    height: 100vh;
+}
 
 .toolbar {
     margin: 0 $margin $margin;
@@ -55,6 +58,11 @@
     padding: 5px;
 }
 
+
+.invertHover:hover img {
+    filter: invert(100);
+}
+
 .inputContainer img:nth-child(1) {
     transform: rotate(90deg);
     top: 33px;
@@ -73,7 +81,8 @@
 .content {
     display: grid;
     padding: $margin;
-    margin: $margin;
+    margin: $margin $margin calc($toolbar-height + $margin);
+    overflow: scroll;
     border-radius: $border-radius;
 }
 
@@ -92,11 +101,32 @@
     opacity: 50%;
 }
 
+.roundBorder {
+    border: 2px solid white;
+    border-radius: $border-radius;
+    padding: 15px;
+    margin: 0 $margin $margin;
+}
+
+.small {
+    font-size: 0.8rem;
+}
+
+.receivedAmount {
+    display: flex;
+}
+
+.receivedAmount div {
+    display: flex;
+    align-items: center;
+    font-size: 2rem;
+    padding-left: 15px;
+}
+
 .declare {
     color: white;
     padding: 25px;
     display: flex;
-    font-size: clamp(1rem, 0rem + 5.3333vw, 3rem);
     flex-direction: column;
     align-items: center;
     justify-content: center;
@@ -105,6 +135,7 @@
 
 .declare p {
     margin: 15px;
+    font-size: clamp(1rem, 0rem + 5.3333vw, 3rem);
 }
 
 .percentage {
@@ -122,6 +153,12 @@
     }
     .container {
         padding-top: $margin;
+    }
+    .toolbar {
+        position: absolute;
+        bottom: $margin;
+        margin-top: $toolbar-height;
+        width: calc(100% - (2 * $margin));
     }
 
 }
@@ -159,6 +196,7 @@
     .buttons {
         margin-bottom: 70px;
     }
+
 }
 
 @media (max-width: 797px) {
@@ -166,14 +204,12 @@
     .toolbar {
         margin: 0;
         width: 100%;
-        position: absolute;
+        position: fixed;
         bottom: 0;
         border-radius: 0;
     }
     .content {
         margin-top: 0;
-        margin-bottom: $margin;
-        border-radius: 0;
     }
 }
 

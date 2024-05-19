@@ -8,6 +8,12 @@ import {ThemeProvider, useTheme} from "@/app/themecontext";
 const MAX_TAX_RATE = 70;
 const MIN_TAX_RATE = 20;
 
+enum GameState {
+  DECLARE,
+  NEWYEAR,
+  RECIEVED
+}
+
 export default function Declare(props: { name: string, taxRate: number, year: number, universeFunds: number }) {
 
 
@@ -17,6 +23,9 @@ export default function Declare(props: { name: string, taxRate: number, year: nu
   const [disableIncrement, setDisableIncrement] = useState(false);
   const [disableDecrement, setDisableDecrement] = useState(false);
 
+  const [gameState, setGameState ] = useState(GameState.DECLARE)
+
+  const [diceHover, setDiceHover] = useState(false);
   const handleBlur = () => {
     if (num === undefined || isNaN(num) || num < MIN_TAX_RATE) {
       setNum(MIN_TAX_RATE);
@@ -37,6 +46,13 @@ export default function Declare(props: { name: string, taxRate: number, year: nu
     }
   };
 
+  const cycleGameState = () => {
+    if (gameState == GameState.DECLARE)
+      setGameState(GameState.NEWYEAR)
+    else
+      setGameState(GameState.DECLARE)
+  }
+
   useEffect(() => {
     if (num === MAX_TAX_RATE) {
       setDisableIncrement(true);
@@ -56,51 +72,89 @@ export default function Declare(props: { name: string, taxRate: number, year: nu
         <div className={t.background}>
         <div className={s.container} style={{height: '100vh'}}>
           <div className={[s.content, t.gradient].join(' ')}>
+
             <div className={[s.statBox, t.solidElement].join(' ')}>
               <Statbox name={props.name} taxRate={props.taxRate} universeFunds={props.universeFunds}
                        year={props.year}/>
             </div>
-            <div className={[s.declare, t.solidElement].join(' ')}>
-              <div>
-                <p>What is this year's tax rate going to be?</p>
-                <div className={s.inputOuter}>
-                  <div className={s.inputContainer}>
-                    <input
-                        className={s.input}
-                        onChange={(e) => setNum(Number(e.target.value))}
-                        onBlur={handleBlur}
-                        value={num || ''}/>
+
+
+            {
+              gameState == GameState.DECLARE && //declare
+                <div className={[s.declare, t.solidElement].join(' ')}>
                     <div>
-                      <img
-                          className={
-                            disableDecrement ? s.disabled : ''
-                          }
-                          src={"images/icons/arrow.svg"}
-                          onClick={decrement}/>
-                      <img
-                          src={"images/icons/arrow.svg"}
-                          className={
-                            disableIncrement ? s.disabled : ''
-                          }
-                          onClick={increment}/>
+                        <p>What is this year's tax rate going to be?</p>
+                        <div className={s.inputOuter}>
+                            <div className={s.inputContainer}>
+                                <input
+                                    className={s.input}
+                                    onChange={(e) => setNum(Number(e.target.value))}
+                                    onBlur={handleBlur}
+                                    value={num || ''}/>
+                                <div>
+                                    <img
+                                        className={
+                                          disableDecrement ? s.disabled : ''
+                                        }
+                                        src={"images/icons/arrow.svg"}
+                                        onClick={decrement}/>
+                                    <img
+                                        src={"images/icons/arrow.svg"}
+                                        className={
+                                          disableIncrement ? s.disabled : ''
+                                        }
+                                        onClick={increment}/>
+                                </div>
+                            </div>
+                            <div className={s.percentage}>
+                                %
+                            </div>
+                        </div>
                     </div>
-                  </div>
-                  <div className={s.percentage}>
-                    %
-                  </div>
+                    <div className={[s.buttons, t.textBoxFontColor].join(' ')}>
+                        <button className={t.buttonBackground} onClick={() => setGameState(GameState.NEWYEAR)}>Confirm<img src={"images/icons/tick.svg"}/></button>
+                        <button className={t.buttonBackground}>Cancel<img src={"images/icons/cross.svg"}/></button>
+                    </div>
                 </div>
-              </div>
-              <div className={[s.buttons, t.textBoxFontColor].join(' ')}>
-                <button className={t.buttonBackground}>Confirm<img src={"images/icons/tick.svg"}/></button>
-                <button className={t.buttonBackground}>Cancel<img src={"images/icons/cross.svg"}/></button>
-              </div>
-            </div>
+            }
+
+
+            {
+              gameState == GameState.NEWYEAR &&
+                <div className={[s.declare, t.solidElement].join(' ')}>
+                  <p>New year has begun</p>
+                    <img className={s.roundBorder} src={'images/currency.png'}/>
+                  <div>It is time to receive your income</div>
+                    <p>Press to receive:</p>
+                    <img
+                        style={{ marginTop : '10px'}}
+                        onMouseOver={() => setDiceHover(true)}
+                        onMouseOut={() => setDiceHover(false)}
+                        src={diceHover ? 'images/dice-hover.png' : 'images/dice-normal.png'}
+                        onClick={() => setGameState(GameState.RECIEVED)}
+                    />
+                </div>
+            }
+
+            {
+              gameState == GameState.RECIEVED &&
+                <div className={[s.declare, t.solidElement].join(' ')}>
+                  <p>You received:</p>
+                    <div className={[s.roundBorder, s.receivedAmount].join(' ')}>
+                        <img src={'images/currency.png'}/>
+                        <div>1000.00</div>
+                    </div>
+                    <div className={s.small}>This is randomly generated</div>
+                    <p>Nice! What a good pay!</p>
+                    <button className={s.invertHover}>Proceed to taxes<img src={'images/tick.png'}/> </button>
+                </div>
+            }
+
+
+
 
           </div>
           <div className={[t.toolBar, s.toolbar].join(' ')}>
-            <div></div>
-            <div></div>
-            <div></div>
             <div></div>
             <button onClick={() => toggleTheme()} className={t.solidElement}></button>
           </div>
