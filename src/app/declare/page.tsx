@@ -52,9 +52,10 @@ export default function Declare(props: { name: string, taxRate: number, year: nu
   }, [num]);
 
   return (
-      <main className={[getThemeClass(), t.background].join(' ')}>
-        <div className={[s.container].join(' ')}>
-          <div className={[s.content, t.solidWindow].join(' ')}>
+      <main className={getThemeClass()}>
+        <div className={t.background}>
+        <div className={s.container} style={{height: '100vh'}}>
+          <div className={[s.content, t.gradient].join(' ')}>
             <div className={[s.statBox, t.solidElement].join(' ')}>
               <Statbox name={props.name} taxRate={props.taxRate} universeFunds={props.universeFunds}
                        year={props.year}/>
@@ -90,8 +91,8 @@ export default function Declare(props: { name: string, taxRate: number, year: nu
                 </div>
               </div>
               <div className={[s.buttons, t.textBoxFontColor].join(' ')}>
-                <button>Confirm<img src={"images/icons/tick.svg"}/></button>
-                <button>Cancel<img src={"images/icons/cross.svg"}/></button>
+                <button className={t.buttonBackground}>Confirm<img src={"images/icons/tick.svg"}/></button>
+                <button className={t.buttonBackground}>Cancel<img src={"images/icons/cross.svg"}/></button>
               </div>
             </div>
 
@@ -103,6 +104,7 @@ export default function Declare(props: { name: string, taxRate: number, year: nu
             <div></div>
             <button onClick={() => toggleTheme()} className={t.solidElement}></button>
           </div>
+        </div>
         </div>
       </main>
   )

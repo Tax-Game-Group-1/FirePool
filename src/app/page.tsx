@@ -1,6 +1,7 @@
 'use client'
 import s from './page.module.scss'
 import {useTheme} from "@/app/themecontext";
+import t from './themes.module.scss'
 
 export default function Home() {
 
@@ -32,7 +33,7 @@ export default function Home() {
                 </div>
                 <a href={"#bottom"}>
                   <div className={s.buttonContainer}>
-                    <button className={[s.HomeButton, s.button].join(' ')}>Let's begin<img
+                    <button className={[s.HomeButton, s.button, t.buttonBackground].join(' ')}>Let's begin<img
                         src="/images/icons/arrow.svg"/></button>
                   </div>
                 </a>

@@ -8,7 +8,7 @@ export enum AvailableThemes {
 interface ThemeContextProps {
   theme: AvailableThemes;
   toggleTheme: () => void;
-  getThemeClass: () => AvailableThemes;
+  getThemeClass: () => string;
 }
 
 const ThemeContext = createContext<ThemeContextProps | undefined>(undefined);
@@ -20,7 +20,7 @@ export const ThemeProvider = ({ children }: { children: ReactNode }) => {
     setTheme((prevTheme) => (prevTheme === AvailableThemes.PALEBLUE ? AvailableThemes.DARKBLUE : AvailableThemes.PALEBLUE));
   };
 
-  const getThemeClass = () : AvailableThemes => {
+  const getThemeClass = () : string => {
     const t = require('./themes.module.scss')
     switch (theme) {
       case AvailableThemes.DARKBLUE:

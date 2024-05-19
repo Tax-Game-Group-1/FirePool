@@ -15,7 +15,7 @@
 
     .gradient {
         background: #8bcef1;
-        background: linear-gradient(0deg, #beeafe 0%, #53afe4 100%);
+        background: linear-gradient(180deg, #beeafe 0%, #53afe4 100%);
     }
 
     .textBoxBackground {
@@ -32,6 +32,18 @@
 
     .background {
         background-color: #529dc2;
+    }
+
+    .buttonBackground {
+        background: rgb(255, 255, 255);
+        background: linear-gradient(180deg, rgba(255, 255, 255, 1) 46%, rgba(202, 224, 227, 1) 51%);
+        border: 5px solid white;
+        color: #548ba8;
+    }
+
+    .buttonBackground:hover {
+        color: white;
+        background: linear-gradient(180deg, rgb(91, 91, 91) 46%, rgb(30, 30, 30) 51%);
     }
 }
 
@@ -67,5 +79,16 @@
 
     .background {
         background-color: #05222b;
+    }
+
+    .buttonBackground {
+        background: rgb(255, 255, 255);
+        background: linear-gradient(180deg, rgba(255, 255, 255, 1) 46%, rgba(202, 224, 227, 1) 51%);
+        border: 5px solid white;
+    }
+
+    .buttonBackground:hover {
+        color: white;
+        background: linear-gradient(180deg, rgb(91, 91, 91) 46%, rgb(30, 30, 30) 51%);
     }
 }

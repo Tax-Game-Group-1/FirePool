@@ -20,6 +20,7 @@
   margin-bottom: 40px;
 }
 
+
 .toolbar {
   margin: 0 $margin $margin;
   border-radius: $border-radius;
@@ -115,16 +116,13 @@
   margin-bottom: $margin;
 }
 
-@media (max-width: 500px) {
+@media (max-width: 562px) {
   .buttons {
     flex-direction: column;
     width: 100%;
   }
   .content {
-    padding: 0;
-    padding-bottom: $margin;
   display: block;
-  margin: 0;
     height: calc(100vh - $toolbar-height + $margin + $margin);
     border-radius: 0;
   }
@@ -141,6 +139,11 @@
 
 }
 
+@media (max-width: 797px) {
+  .content {
+    margin: 0
+  }
+}
 @media (min-width: 1068px) {
 
   .declare p {
@@ -159,7 +162,6 @@
   }
   .container {
     display: grid;
-    height: 100vh;
     grid-template-rows: 1fr calc($toolbar-height - $margin);
   }
   .statBox {
