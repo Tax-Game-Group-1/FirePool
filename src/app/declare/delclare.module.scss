@@ -1,0 +1,179 @@
+@import "../variables";
+
+.buttons {
+  display: flex;
+  color: black;
+}
+
+.buttons > * {
+  margin: 5px;
+  text-align: center;
+}
+
+.statBox {
+  border-radius: $border-radius;
+}
+
+.inputOuter {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 40px;
+}
+
+.toolbar {
+  margin: 0 $margin $margin;
+  border-radius: $border-radius;
+  display: flex;
+  justify-content: space-between;
+}
+
+.toolbar button {
+  outline: 3px solid rgba(252, 252, 252, 0.73);
+  width: calc(($toolbar-height - (3 * $margin)) * 0.8);
+  height: calc(($toolbar-height - (3 * $margin)) * 0.8);
+  border-radius: 100%;
+  margin: $margin;
+  padding: 0;
+}
+
+.inputContainer {
+ position: relative;
+}
+
+.inputContainer div:nth-child(1) {
+  position: relative;
+  display: flex;
+  background-color: white;
+  border-radius: 7px;
+  margin-bottom: 20px;
+}
+
+.inputContainer img {
+  position: absolute;
+  width: 30px;
+  padding: 5px;
+}
+
+.inputContainer img:nth-child(1) {
+  transform: rotate(90deg);
+  top: 33px;
+  right: 15px;
+}
+
+.inputContainer img:nth-child(2) {
+  transform: rotate(270deg);
+  top: -2px;
+  right: 15px;
+}
+
+//grid-template-columns: 2fr 1fr;
+//grid-template-rows: 200px 1fr 200px;
+
+.content {
+  display: grid;
+  padding: $margin;
+  margin: $margin;
+  border-radius: $border-radius;
+}
+
+.input {
+  color: black;
+  height: 80px;
+  border-radius: 7px;
+  padding-left: 7px;
+  font-size: 4rem;
+  padding-right: 100px;
+  text-align: right;
+  width: 200px;
+}
+
+.disabled {
+  opacity: 50%;
+}
+
+.declare {
+  color: white;
+  padding: 25px;
+  display: flex;
+  font-size: clamp(1rem, 0rem + 5.3333vw, 3rem);
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-radius: $border-radius;
+}
+
+.declare p {
+  margin: 15px;
+}
+
+.percentage {
+ font-size: 3.5rem;
+  padding-left: 15px;
+}
+
+.statBox {
+  margin-bottom: $margin;
+}
+
+@media (max-width: 500px) {
+  .buttons {
+    flex-direction: column;
+    width: 100%;
+  }
+  .content {
+    padding: 0;
+    padding-bottom: $margin;
+  display: block;
+  margin: 0;
+    height: calc(100vh - $toolbar-height + $margin + $margin);
+    border-radius: 0;
+  }
+  .declare {
+    border-radius: 0;
+  }
+  .toolbar {
+    margin: 0;
+    width: 100%;
+    position: absolute;
+    bottom: 0;
+    border-radius: 0;
+  }
+
+}
+
+@media (min-width: 1068px) {
+
+  .declare p {
+    margin-top: 70px;
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+
+  .inputOuter {
+    padding-bottom: 50px;
+  }
+
+  .statBox {
+    margin-left: $margin;
+    margin-bottom: 0;
+  }
+  .container {
+    display: grid;
+    height: 100vh;
+    grid-template-rows: 1fr calc($toolbar-height - $margin);
+  }
+  .statBox {
+    grid-column: 2/3;
+  }
+  .declare {
+    grid-column: 1/2;
+    grid-row: 1/4;
+  }
+  .inputOuter {
+    margin-top: 40px;
+  }
+  .buttons {
+    margin-bottom: 70px;
+  }
+}
+
