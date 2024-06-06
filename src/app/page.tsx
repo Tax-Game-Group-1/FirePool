@@ -2,14 +2,16 @@
 import s from './page.module.scss'
 import {useTheme} from "@/app/themecontext";
 import t from './themes.module.scss'
+import {transform} from "sucrase";
+import {rotate} from "next/dist/server/lib/squoosh/impl";
 
 export default function Home() {
 
   const { toggleTheme, getThemeClass  } = useTheme();
 
   return (
-        <main className={[s.splash, getThemeClass() ].join(' ')} id={"top"}>
-          <section>
+        <main className={[s.splash, getThemeClass()].join(' ')} id={"top"}>
+          <section className={t.solidElement}>
             <nav className={s.nav}>
               <ul>
                 <li>About Us</li>
@@ -33,23 +35,23 @@ export default function Home() {
                 </div>
                 <a href={"#bottom"}>
                   <div className={s.buttonContainer}>
-                    <button className={[s.HomeButton, s.button, t.buttonBackground].join(' ')}>Let's begin<img
+                    <button className={[s.button, t.buttonBackground].join(' ')}>Let's begin<img
                         src="/images/icons/arrow.svg"/></button>
                   </div>
                 </a>
               </div>
             </div>
           </section>
-          <section id={"bottom"}>
+          <section id={"bottom"} className={t.gradient}>
             <h2 className={s.prompt}>What would you like to do?</h2>
             <div className={s.cards}>
               <div/>
-              <div className={s.card}>
+              <div className={[s.card, t.solidElement].join(' ')}>
                 <img src="/images/create.png"/>
                 <p>Create Game</p>
               </div>
               <div/>
-              <div className={s.card}>
+              <div className={[s.card, t.solidElement].join(' ')}>
                 <img src="/images/join.png"/>
                 <p>Join Game</p>
               </div>
@@ -58,7 +60,7 @@ export default function Home() {
 
             <a href={"#top"}>
               <div className={[s.buttonContainer, s.backToTop].join(' ')}>
-                <button className={s.button}>Back to top<img src="/images/icons/arrow-white.svg"/></button>
+                <button className={[s.button, t.buttonBackground].join(' ')}>Back to top<img style={{transform: 'rotate(-90deg) translateX(10px)', paddingRight: '20px'}} src="/images/icons/arrow.svg"/></button>
               </div>
             </a>
           </section>

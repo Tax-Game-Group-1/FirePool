@@ -1,6 +1,8 @@
 @import "variables";
 
 .paleBlue {
+    color: black;
+
     .solidWindow {
         background-color: #ffffff;
     }
@@ -48,6 +50,8 @@
 }
 
 .darkBlue {
+    color: #ffffff;
+
     .solidWindow {
         background-color: #0b2631;
     }
@@ -69,12 +73,12 @@
         background-color: white;
     }
 
-    .textBoxFontColor {
-        color: #052c39;
-    }
-
     .toolBar {
         background-color: #0d2c39;
+    }
+
+    input {
+        color: black;
     }
 
     .background {

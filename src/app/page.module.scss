@@ -18,6 +18,10 @@
     margin: 0 5px;
 }
 
+.button {
+    padding-left: 19px;
+    padding-right: 69px;
+}
 @keyframes moveUpDown {
     0% {
         transform: translateX(-100px) translateY(0px);
@@ -100,12 +104,11 @@
 .card {
     background-color: black;
     border-radius: $border-radius;
-    color: $off-white;
     padding-bottom: 10%;
 }
 
 .card:hover {
-    filter: invert(100%);
+    filter: drop-shadow(5px 5px 10px #000000);
     outline: 2px solid $off-white;
 }
 
@@ -118,26 +121,6 @@
     width: 80%;
     height: auto;
     margin: 10%;
-}
-
-.splash section:nth-child(1) {
-    color: $off-white
-}
-
-.splash section:nth-child(2) {
-    background-color: $off-white;
-}
-
-.splash section:nth-child(2) button {
-    background-color: black;
-    color: $off-white;
-}
-
-
-.splash section:nth-child(2) button:hover {
-    background-color: $off-white;
-    color: black;
-    outline: $border-width solid black;
 }
 
 // ------------------------- RESPONSIVENESS ----------------------------//
