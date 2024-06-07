@@ -1,6 +1,6 @@
 'use client'
-import s from './join.module.scss'
 import t from '../themes.module.scss'
+import s from './join.module.scss'
 import {useTheme} from "@/app/themecontext";
 import {transform} from "sucrase";
 import {rotate} from "next/dist/server/lib/squoosh/impl";
@@ -12,7 +12,8 @@ export default function JoinGame() {
         <div className={getThemeClass()}>
             <div className={[s.container, t.gradient].join(' ')}>
                 <div>
-                    <p>Enter the game code to join it</p>
+                    <p className={s.message}>Enter the game code to join</p>
+                    <hr className={s.rule}/>
                 </div>
 
                 <div className={[s.center, t.solidElement].join(' ')}>
