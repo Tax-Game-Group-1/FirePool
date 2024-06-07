@@ -2,11 +2,20 @@
 import t from '../themes.module.scss'
 import s from './join.module.scss'
 import {useTheme} from "@/app/themecontext";
-import {transform} from "sucrase";
-import {rotate} from "next/dist/server/lib/squoosh/impl";
+import {useRouter} from "next/navigation";
 
 export default function JoinGame() {
     const {getThemeClass} = useTheme();
+    const router = useRouter();
+
+    const checkRoomCode = () => {
+        //see that room code is correct and connect to server
+
+        router.push('/inGame')
+        return true;
+
+
+    }
 
     return (
         <div className={getThemeClass()}>
@@ -23,7 +32,9 @@ export default function JoinGame() {
                         <p>Room code:</p>
                         <input type={'text'} className={s.input}/>
                     </div>
-                    <button className={s.button}>Enter Room</button>
+                    <button className={s.button}
+                            onClick={() => checkRoomCode()}
+                    >Enter Room</button>
                 </div>
                 <div className={[s.return, t.solidElement].join(' ')}>
                     <button><img style={{'transform': 'rotate(180deg)'}}
