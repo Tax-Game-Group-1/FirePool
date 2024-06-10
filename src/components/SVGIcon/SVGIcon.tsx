@@ -40,15 +40,19 @@ const SVGIcon = forwardRef(function SVGIcon({children, className="", resizeBased
 			let svg = child as SVGElement;
 			window.addEventListener('resize', ()=>{
 				resetSVG(svg);
-				let cont = svg.parentElement;
-				if(!cont) return;
-				scaleSVG(svg, cont);
+				requestAnimationFrame(()=>{
+					let cont = svg.parentElement;
+					if(!cont) return;
+					scaleSVG(svg, cont);
+				})
 			});
 			
 			resetSVG(svg);
-			let cont = svg.parentElement;
-			if(!cont) return;
-			scaleSVG(svg, cont);
+			requestAnimationFrame(()=>{
+				let cont = svg.parentElement;
+				if(!cont) return;
+				scaleSVG(svg, cont);
+			})
 		}
 	})
 
