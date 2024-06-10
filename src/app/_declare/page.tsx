@@ -1,5 +1,5 @@
 "use client";
-import Statbox from "@/app/declare/statbox/statbox";
+import Statbox from "@/app/_declare/statbox/statbox";
 import s from './delclare.module.scss'
 import t from '../themes.module.scss'
 import React, {ChangeEventHandler, useEffect, useState} from "react";
