@@ -1,7 +1,7 @@
 import React from 'react'
 import Image from "next/image"
 
-import { BackSquare } from '@/assets/svg/icons'
+import { BackSquare, ExitDoor } from '@/assets/svg/icons'
 import SVGIcon from '@/components/SVGIcon/SVGIcon'
 
 export default function Game() {
@@ -10,7 +10,7 @@ export default function Game() {
 		<main className="row-span-11 bg-black rounded">
 			Game
 		</main>
-		<footer className="row-span-1 grid grid-cols-12 bg-black rounded p-0 md:p-2 gap-2 text-sm">
+		<footer className="row-span-1 grid grid-cols-12 bg-black rounded p-0 md:p-1 gap-2 text-sm">
 			<div className="border border-white rounded col-span-3 px-2 flex items-center justify-center">
 				<div className="">Game Code:</div>
 				<div className="bg-white text-black px-2 mx-2 rounded">ABCD1234</div>
@@ -30,13 +30,14 @@ export default function Game() {
 			<span className="">Host:</span><span className="host-name px-1">Dr F. Tax</span>
 			</div>
 			<div className="flex relative justify-center items-center border border-white rounded col-start-11">
-				<SVGIcon className=" w-0 h-0">
-					<BackSquare/>
+				<SVGIcon className="">
+					<BackSquare fill='white'/>
 				</SVGIcon>
-				{/* <Image className="w-full" src={BackSquare} alt="back button" /> */}
 			</div>
 			<div className="flex justify-center items-center border border-white rounded col-start-12">
-				{/* <span className="">Game:</span><span className="p-1">Game 1</span> */}
+				<SVGIcon className="">
+					<ExitDoor fill='white'/>
+				</SVGIcon>
 			</div>
 		</footer>
 	</div>

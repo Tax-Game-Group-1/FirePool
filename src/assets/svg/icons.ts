@@ -1,2 +1,2 @@
 
-export { BackSquare } from './svg';
+export { BackSquare, ExitDoor } from './svg';
