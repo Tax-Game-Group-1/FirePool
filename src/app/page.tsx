@@ -4,6 +4,7 @@ import {useTheme} from "@/app/themecontext";
 import t from './themes.module.scss'
 import {transform} from "sucrase";
 import {rotate} from "next/dist/server/lib/squoosh/impl";
+import Link from 'next/link';
 
 export default function Home() {
 
@@ -51,10 +52,12 @@ export default function Home() {
                 <p>Create Game</p>
               </div>
               <div/>
+              <Link href="/join">
               <div className={[s.card, t.solidElement].join(' ')}>
                 <img src="/images/join.png"/>
                 <p>Join Game</p>
               </div>
+              </Link>
               <div/>
             </div>
 
