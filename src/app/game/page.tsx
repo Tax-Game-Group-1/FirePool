@@ -12,8 +12,28 @@ export default function Game() {
 				<div className="player-hud border border-green-500 p-2">
 					World HUD
 				</div>
-				<div className="player-hud border border-green-500 p-2">
-					Player HUD
+				<div className="player-hud border border-green-500 p-2 inline-flex justify-between align-baseline flex-row gap-2">
+					<div className="min-h-24 aspect-square border border-red-500 flex items-center justify-center">
+						Icon
+					</div>
+					<div className="flex flex-auto flex-col justify-between min-w-64 gap-2">
+						<div className="flex justify-between gap-2">
+							<div className="flex flex-col gap-2">
+								<div className="border border-red-900 p-1">
+									My Name Here
+								</div>
+								<div className="border border-red-900 p-1">
+									Role Here
+								</div>
+							</div>
+							<div className="w-10 border border-green-500 flex justify-center gap-1 p-1">
+								Icons
+							</div>
+						</div>
+						<div className="flex self-end border border-cyan-500 p-1">
+							Currency
+						</div>
+					</div>
 				</div>
 			</div>
 			<div className="border border-red-500 player-hud h-full w-full absolute top-0 right-0 p-2 bg-transparent flex flex-col justify-center items-center">
