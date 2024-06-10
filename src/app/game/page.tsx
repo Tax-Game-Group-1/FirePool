@@ -1,8 +1,10 @@
-import React from 'react'
+import React, { lazy, Suspense } from 'react'
 import Image from "next/image"
 
-import { BackSquare, CurrencyIcon, ExitDoor, StatsIcon } from '@/assets/svg/icons'
 import SVGIcon from '@/components/SVGIcon/SVGIcon'
+
+import { BackSquare, CurrencyIcon, ExitDoor, StatsIcon } from "@/assets/svg/icons";
+
 
 export default function Game() {
   return (
@@ -12,25 +14,25 @@ export default function Game() {
 				<div className="player-hud border border-green-500 p-2">
 					World HUD
 				</div>
-				<div className="player-hud border-2 border-white rounded-md p-2 inline-flex justify-center items-center flex-row gap-2">
-					<div className="min-h-24 aspect-square border border-red-500 flex self-center items-center justify-center">
+				<div className="player-hud border-2 border-white rounded-md p-2 inline-flex justify-center items-center flex-row gap-3">
+					<div className="min-h-24 aspect-square border flex self-center items-center justify-center">
 						Icon
 					</div>
-					<div className="flex flex-col items-stretch min-w-64 gap-2 border border-green-800">
+					<div className="flex flex-col items-stretch min-w-64 gap-2">
 						<div className="flex justify-between gap-2">
-							<div className="flex flex-col justify-center items-start gap-2">
-								<div className="border border-red-900 p-1 text-lg">
+							<div className="flex flex-col justify-center items-start">
+								<div className="p-1 text-lg">
 									My Name Here
 								</div>
 								<div className="border border-white rounded-3xl p-1 px-4 flex justify-center text-sm">
 									Role Here
 								</div>
 							</div>
-							<div className="w-10 border border-green-500 flex flex-col justify-start items-center gap-1 p-1">
-								<div className="bg-red-400 aspect-square w-5"></div>
-								<div className="aspect-square w-5 border border-white">
-									<SVGIcon>
-										<StatsIcon fill='white'/>
+							<div className="w-10 flex flex-col justify-start items-center gap-1 p-1">
+								<div className="aspect-square w-8"></div>
+								<div className="aspect-square w-8 p-0">
+									<SVGIcon className="p-1 m-0 border border-white rounded-md">
+										<StatsIcon className="rounded-md border" fill='white'/>
 									</SVGIcon>
 								</div>
 							</div>
@@ -41,7 +43,7 @@ export default function Game() {
 									<CurrencyIcon fill='white'/>
 								</SVGIcon>
 							</div>
-							<div className="">100000.00</div>
+							<div className="">99999999.99</div>
 						</div>
 					</div>
 				</div>
