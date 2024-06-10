@@ -3,7 +3,7 @@ import Statbox from "@/app/declare/statbox/statbox";
 import s from './delclare.module.scss'
 import t from '../themes.module.scss'
 import React, {ChangeEventHandler, useEffect, useState} from "react";
-import {ThemeProvider, useTheme} from "@/app/themecontext";
+import {ThemeProvider, useTheme} from "@/components/ThemeContext/themecontext";
 
 const MAX_TAX_RATE = 70;
 const MIN_TAX_RATE = 20;
