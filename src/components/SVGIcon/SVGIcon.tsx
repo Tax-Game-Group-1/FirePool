@@ -56,7 +56,8 @@ const SVGIcon = forwardRef(function SVGIcon({children, className="", resizeBased
 		cloneElement(child, {
 		  className: `${child?.props?.className || ""} ${className}`,
 		  style: Object.assign(child?.props?.style || {}, {
-			width: 0, height: 0,
+			width: resizeBasedOnContainer ? 0 : "initial", 
+			height: resizeBasedOnContainer ? 0 : "initial", 
 		  }),
 		  ref: (r:any)=>(childRefs.current[i] = r),
 		})
