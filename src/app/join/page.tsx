@@ -1,7 +1,7 @@
 'use client'
 import t from '../themes.module.scss'
 import s from './join.module.scss'
-import {useTheme} from "@/app/themecontext";
+import {useTheme} from "@/components/ThemeContext/themecontext";
 import {useRouter} from "next/navigation";
 
 export default function JoinGame() {

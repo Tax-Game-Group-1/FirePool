@@ -1,4 +1,4 @@
-@import "variables";
+@import "@/variables";
 
 .nav {
     display: flex;
@@ -65,7 +65,7 @@
 }
 
 .heading {
-    font-family: 'MyriadPro';
+    font-family: "MyriadPro", "Montserrat";
     font-weight: lighter;
     font-size: 5rem;
     padding-bottom: 50px;

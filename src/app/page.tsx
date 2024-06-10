@@ -1,7 +1,7 @@
 'use client'
 import s from './page.module.scss'
-import {useTheme} from "@/app/themecontext";
-import t from './themes.module.scss'
+import {useTheme} from "@/components/ThemeContext/themecontext";
+import t from '@/components/ThemeContext/themes.module.scss'
 import {transform} from "sucrase";
 import {rotate} from "next/dist/server/lib/squoosh/impl";
 
