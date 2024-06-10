@@ -3,16 +3,7 @@ import Image from "next/image"
 
 import GameHUD, {WorldHUD, PlayerHUD} from '@/components/GameHUD/GameHUD'
 import GameFooter from '@/components/GameFooter/GameFooter'
-
-export function GameContent({children}:{
-	children?: React.ReactNode,
-}){
-	return (
-		<div className="game-content h-full w-full absolute top-0 right-0 p-2 bg-transparent flex flex-col justify-center items-center">
-			{children}
-		</div>
-	)
-}
+import GameContentContainer, { GameContent } from '@/components/GameContentContainer/GameContentContainer'
 
 export default function Game() {
   return (
@@ -25,14 +16,17 @@ export default function Game() {
 					<PlayerHUD/>
 				</GameHUD>
 
-				<GameContent>
-				<div className="border absolute border-blue-500 p-2 inline-flex justify-center items-center self-start">
-					Left Content
-				</div>
-				<div className="border absolute border-blue-500 p-2 inline-flex justify-center items-center self-center">
-					Center Content
-				</div>
-				</GameContent>
+				<GameContentContainer>
+					<GameContent className="absolute self-end m-2">
+						<div className="min-w-24 aspect-square bg-green-200"></div>
+					</GameContent>
+					<GameContent className="absolute self-center m-2">
+						<div className="min-w-24 aspect-square bg-red-200"></div>
+					</GameContent>
+					<GameContent className="absolute self-start m-2">
+						<div className="min-w-24 aspect-square bg-blue-200"></div>
+					</GameContent>
+				</GameContentContainer>
 
 			</div>
 		</main>
