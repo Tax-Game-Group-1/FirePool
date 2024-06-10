@@ -1,7 +1,7 @@
 import React from 'react'
 import Image from "next/image"
 
-import { BackSquare, ExitDoor } from '@/assets/svg/icons'
+import { BackSquare, CurrencyIcon, ExitDoor, StatsIcon } from '@/assets/svg/icons'
 import SVGIcon from '@/components/SVGIcon/SVGIcon'
 
 export default function Game() {
@@ -12,26 +12,36 @@ export default function Game() {
 				<div className="player-hud border border-green-500 p-2">
 					World HUD
 				</div>
-				<div className="player-hud border border-green-500 p-2 inline-flex justify-between align-baseline flex-row gap-2">
-					<div className="min-h-24 aspect-square border border-red-500 flex items-center justify-center">
+				<div className="player-hud border-2 border-white rounded-md p-2 inline-flex justify-center items-center flex-row gap-2">
+					<div className="min-h-24 aspect-square border border-red-500 flex self-center items-center justify-center">
 						Icon
 					</div>
-					<div className="flex flex-auto flex-col justify-between min-w-64 gap-2">
+					<div className="flex flex-col items-stretch min-w-64 gap-2 border border-green-800">
 						<div className="flex justify-between gap-2">
-							<div className="flex flex-col gap-2">
-								<div className="border border-red-900 p-1">
+							<div className="flex flex-col justify-center items-start gap-2">
+								<div className="border border-red-900 p-1 text-lg">
 									My Name Here
 								</div>
-								<div className="border border-red-900 p-1">
+								<div className="border border-white rounded-3xl p-1 px-4 flex justify-center text-sm">
 									Role Here
 								</div>
 							</div>
-							<div className="w-10 border border-green-500 flex justify-center gap-1 p-1">
-								Icons
+							<div className="w-10 border border-green-500 flex flex-col justify-start items-center gap-1 p-1">
+								<div className="bg-red-400 aspect-square w-5"></div>
+								<div className="aspect-square w-5 border border-white">
+									<SVGIcon>
+										<StatsIcon fill='white'/>
+									</SVGIcon>
+								</div>
 							</div>
 						</div>
-						<div className="flex self-end border border-cyan-500 p-1">
-							Currency
+						<div className="flex justify-between self-end border border-white rounded-md p-1 w-3/5">
+							<div className="w-6 flex justify-start">
+								<SVGIcon>
+									<CurrencyIcon fill='white'/>
+								</SVGIcon>
+							</div>
+							<div className="">100000.00</div>
 						</div>
 					</div>
 				</div>
