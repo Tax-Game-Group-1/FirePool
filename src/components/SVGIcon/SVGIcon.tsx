@@ -5,14 +5,17 @@ import { forwardRef, Children, cloneElement, ReactNode, DetailedReactHTMLElement
 
 
 ///By Catsums
-const SVGIcon = forwardRef(function SVGIcon({children, className=""}:{
+const SVGIcon = forwardRef(function SVGIcon({children, className="", resizeBasedOnContainer=true}:{
 	children: ReactNode,
 	className?: string,
+	resizeBasedOnContainer?: boolean,
 }, ref){
 
 	const childRefs = useRef<any[]>([]);
 
 	useEffect(()=>{
+		if(!resizeBasedOnContainer) return;
+
 		let childs = childRefs.current;
 		function resetSVG(svg:SVGElement){
 			svg.setAttribute('height', `0`);
@@ -21,7 +24,10 @@ const SVGIcon = forwardRef(function SVGIcon({children, className=""}:{
 			svg.style.width = `0`;
 		}
 		function scaleSVG(svg:SVGElement, parent:Element) {
-			const { width, height } = parent.getBoundingClientRect();
+			//client sizes ignore border and padding and margin, only focus on the true element size
+			let width = parent.clientWidth;
+			let height = parent.clientHeight;
+
 			svg.setAttribute('height', `${height}`);
 			svg.setAttribute('width', `${width}`);
 
@@ -49,6 +55,9 @@ const SVGIcon = forwardRef(function SVGIcon({children, className=""}:{
 	let childs = Children.map(children as any, (child:any,i) =>
 		cloneElement(child, {
 		  className: `${child?.props?.className || ""} ${className}`,
+		  style: Object.assign(child?.props?.style || {}, {
+			width: 0, height: 0,
+		  }),
 		  ref: (r:any)=>(childRefs.current[i] = r),
 		})
 	  );
