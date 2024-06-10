@@ -9,10 +9,17 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "next": "14.2.3",
+    "@catsums/my": "latest",
+    "@gsap/react": "^2.1.1",
+    "animejs": "^3.2.2",
+    "framer-motion": "^11.2.10",
+    "gsap": "^3.12.5",
+    "lodash": "^4.17.21",
+    "next": "^14.2.3",
     "react": "^18",
     "react-dom": "^18",
-    "sass": "^1.77.1"
+    "react-transition-group": "^4.4.5",
+    "sass": "^1.77.4"
   },
   "devDependencies": {
     "@types/node": "^20",
