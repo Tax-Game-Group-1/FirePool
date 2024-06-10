@@ -14,8 +14,8 @@ export default function Game() {
 				<div className="game-hud h-full w-full absolute top-0 right-0 p-2 bg-transparent flex flex-col items-end justify-between">
 					<div className="world-hud bg-white text-black rounded-md p-2 flex flex-col gap-1">
 						<div className="flex gap-2 justify-between">
-							<div className="world-year-label mx-1 ml-8 text-sm">
-								<span>Universe</span>
+							<div className="world-year-label mx-1 text-sm">
+								<span>World name</span>
 							</div>
 							<div className="flex font-bold">
 								<span>Mike Hunt</span>
@@ -23,10 +23,10 @@ export default function Game() {
 						</div>
 						<div className="flex gap-2">
 							<div className="flex flex-col justify-between border border-white">
-								<div className="world-taxrate-label mx-1 ml-8 text-sm">
+								<div className="world-taxrate-label mx-1 text-sm">
 									<span>Tax Rate</span>
 								</div>
-								<div className="world-taxrate mx-1 ml-8 text-white bg-black rounded-md p-1 flex justify-end min-w-24">
+								<div className="world-taxrate mx-1 text-white bg-black rounded-md p-1 flex justify-end min-w-24">
 									<span className="world-taxrate-value">40</span>
 									<span className="percent-icon px-0 w-5">
 										<SVGIcon>
