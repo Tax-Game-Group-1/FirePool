@@ -6,19 +6,34 @@ import SVGIcon from '@/components/SVGIcon/SVGIcon'
 
 export default function Game() {
   return (
-	<div className="max-h-svh max-w-svw h-screen w-screen overflow-hidden bg-white text-white grid grid-rows-12 gap-4 p-4">
-		<main className="row-span-11 bg-black rounded">
-			Game
-		</main>
-		<footer className="row-span-1 grid grid-cols-12 bg-black rounded p-0 md:p-1 gap-2 text-sm">
-			<div className="border border-white rounded col-span-3 px-2 flex items-center justify-center">
-				<div className="">Game Code:</div>
-				<div className="bg-white text-black px-2 mx-2 rounded">ABCD1234</div>
+	<div className="max-h-svh max-w-svw h-screen w-screen overflow-hidden bg-white text-white grid grid-rows-12 gap-2 p-2">
+		<main className="row-span-11 bg-black rounded-md flex p-1 relative ">
+			<div className="border border-red-500 game-hud h-full w-full absolute top-0 right-0 p-2 bg-transparent flex flex-col items-end justify-between">
+				<div className="player-hud border border-green-500 p-2">
+					World HUD
+				</div>
+				<div className="player-hud border border-green-500 p-2">
+					Player HUD
+				</div>
 			</div>
-			<div className="flex justify-center items-center border border-white rounded col-span-3">
+			<div className="border border-red-500 player-hud h-full w-full absolute top-0 right-0 p-2 bg-transparent flex flex-col justify-center items-center">
+				<div className="border absolute border-blue-500 p-2 inline-flex justify-center items-center self-start">
+					Left Content
+				</div>
+				<div className="border absolute border-blue-500 p-2 inline-flex justify-center items-center self-center">
+					Center Content
+				</div>
+			</div>
+		</main>
+		<footer className="row-span-1 grid grid-cols-12 bg-black rounded-md p-0 md:p-1 gap-2 text-sm">
+			<div className="border border-white rounded-md col-span-3 px-2 flex items-center justify-center">
+				<div className="">Game Code:</div>
+				<div className="bg-white text-black p-1 px-2 mx-2 rounded-md">ABCD1234</div>
+			</div>
+			<div className="flex justify-center items-center border border-white rounded-md col-span-3">
 				<span className="">Game:</span><span className="game-name px-1">Game 1</span>
 			</div>
-			<div className="flex justify-center items-center border border-white rounded col-span-2">
+			<div className="flex justify-center items-center border border-white rounded-md col-span-2">
 				<span className="">Players:</span>
 				<span className="px-1">
 					<span className="player-count px-1">8</span>
@@ -26,15 +41,15 @@ export default function Game() {
 					<span className="player-max-count px-1">10</span>
 				</span>
 			</div>
-			<div className="flex justify-center items-center border border-white rounded col-span-2">
+			<div className="flex justify-center items-center border border-white rounded-md col-span-2">
 			<span className="">Host:</span><span className="host-name px-1">Dr F. Tax</span>
 			</div>
-			<div className="flex relative justify-center items-center border border-white rounded col-start-11">
+			<div className="flex relative justify-center items-center border border-white rounded-md col-start-11">
 				<SVGIcon className="">
 					<BackSquare fill='white'/>
 				</SVGIcon>
 			</div>
-			<div className="flex justify-center items-center border border-white rounded col-start-12">
+			<div className="flex justify-center items-center border border-white rounded-md col-start-12">
 				<SVGIcon className="">
 					<ExitDoor fill='white'/>
 				</SVGIcon>
