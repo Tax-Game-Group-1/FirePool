@@ -1,0 +1,62 @@
+"use client"
+
+import { mergeRefs } from "@/mergeRefs/mergeRefs";
+import { forwardRef, Children, cloneElement, ReactNode, DetailedReactHTMLElement, LegacyRef, useEffect, useRef } from "react";
+
+
+///By Catsums
+const SVGIcon = forwardRef(function SVGIcon({children, className=""}:{
+	children: ReactNode,
+	className?: string,
+}, ref){
+
+	const childRefs = useRef<any[]>([]);
+
+	useEffect(()=>{
+		let childs = childRefs.current;
+		function resetSVG(svg:SVGElement){
+			svg.setAttribute('height', `0`);
+			svg.setAttribute('width', `0`);
+			svg.style.height = `0`;
+			svg.style.width = `0`;
+		}
+		function scaleSVG(svg:SVGElement, parent:Element) {
+			const { width, height } = parent.getBoundingClientRect();
+			svg.setAttribute('height', `${height}`);
+			svg.setAttribute('width', `${width}`);
+
+			svg.style.height = `${height}`;
+			svg.style.width = `${width}`;
+
+			console.log({svg, parent})
+		}
+		for(let child of childs){
+			let svg = child as SVGElement;
+			window.addEventListener('resize', ()=>{
+				resetSVG(svg);
+				let cont = svg.parentElement;
+				if(!cont) return;
+				scaleSVG(svg, cont);
+			});
+			
+			resetSVG(svg);
+			let cont = svg.parentElement;
+			if(!cont) return;
+			scaleSVG(svg, cont);
+		}
+	})
+
+	let childs = Children.map(children as any, (child:any,i) =>
+		cloneElement(child, {
+		  className: `${child?.props?.className || ""} ${className}`,
+		  ref: (r:any)=>(childRefs.current[i] = r),
+		})
+	  );
+	return (
+		<>
+			{childs}
+		</>
+	)
+})
+
+export default SVGIcon;

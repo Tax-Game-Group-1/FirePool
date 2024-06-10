@@ -1,0 +1,2 @@
+
+export { BackSquare } from './svg';
