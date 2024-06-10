@@ -1,11 +1,14 @@
 import * as React from "react"
 
-export const BackSquare = (props) => (
+export const BackSquare = (props:{
+	className?: string,
+	[key:string]: any,
+}) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
     fill="none"
     viewBox="0 0 24 24"
-	preserveAspectRatio
+	preserveAspectRatio="true"
     {...props}
   >
     <path
