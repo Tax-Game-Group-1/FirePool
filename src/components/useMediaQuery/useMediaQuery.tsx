@@ -181,16 +181,17 @@ export const MatchMedia = forwardRef(function MediaQuery({children, query, hidin
 	let childRefs = useRef<any[]>([]);
 	let propRefs = useRef<any[]>([]);
 
+	let firstRender = useRef(true);
+
 	let childs = Children.map(children as any, (child:any,i) =>{
-		let c = (hidingType === "display" || hidingType === "visibility") ? className : "";
+		let c = className;
 		let k = React.createElement(child.type, Object.assign(child.props,{
-			className: `${child.props.className} ${c}`,
+			className: `${child.props?.className || ""} ${c}`,
 			ref:(r: any)=>{
 				if(ref && typeof ref === "object"){
 					ref.current[i] = r;
 				}
 				childRefs.current[i] = r;
-				console.log({r})
 			}
 		}), child.props.children);
 		return k;
@@ -215,7 +216,10 @@ export const MatchMedia = forwardRef(function MediaQuery({children, query, hidin
 						let parent = prop as Node;
 						if(parent && child.parentNode != parent){
 							parent.appendChild(child);
+							console.log("B")
 						}
+						console.log("A")
+						console.log({prop, child, p:propRefs.current})
 					} break;
 				}
 			}
@@ -239,27 +243,26 @@ export const MatchMedia = forwardRef(function MediaQuery({children, query, hidin
 		}
 	}
 
-	useEffect(() => {
-		if(!hideOnRender){
-			match();
-		}
-	},[matches])
-
+	
 	useEffect(()=>{
+		let childElems = childRefs.current as Element[];
+		for(let i = 0;i<childElems.length;i++){
+			let child = childElems[i];
+			child.classList.remove(className);
+		}
+
 		if(!hideOnRender){
 			injectStyleInDocument();
-			
-			let childElems = childRefs.current as Element[];
-			console.log({childElems})
 
 			for(let i = 0;i<childElems.length;i++){
 				let child = childElems[i];
 				switch(hidingType){
-					// case "display": case "visibility":
-					// 	child.classList.add(className);
-					// 	break;
+					case "display": case "visibility":
+						child.classList.add(className);
+						break;
 					case "dom":{
 						let parent = child.parentNode;
+						console.log({parent, child})
 						if(parent){
 							propRefs.current[i] = parent;
 							childElems[i].remove();
@@ -271,6 +274,13 @@ export const MatchMedia = forwardRef(function MediaQuery({children, query, hidin
 		match();
 		
 	})
+
+	
+	useEffect(() => {
+		if(!hideOnRender){
+			match();
+		}
+	},[matches])
 
 	return (
 		<>
