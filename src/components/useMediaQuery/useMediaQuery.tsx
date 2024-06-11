@@ -1,8 +1,10 @@
 "use client"
-import { useState, useCallback, useEffect, forwardRef, Children, cloneElement, LegacyRef, useRef } from "react"
+import { isValidElement, useState, useCallback, useEffect, forwardRef, Children, cloneElement, LegacyRef, useRef } from "react"
 import _ from "lodash";
 
 import { MediaWidthBreakPoints } from "./breakpoints";
+import { randomID } from "@catsums/my";
+import React from "react";
 
 export interface IMediaQuery {
 	// [query:string] : string | number | boolean;"
@@ -146,29 +148,143 @@ export function useMediaQuery(query:string|MediaQueryList|IMediaQuery|IMediaQuer
 }
 
 ///By Catsum
-export const MatchMedia = forwardRef(function MediaQuery({children=[], query}:{
+type HidingMode = "display" | "visibility" | "dom" | "render";
+
+const className = randomID("hidden-");
+const styleSheetID = "injected-query-control-style"
+
+function injectStyleInDocument(){
+	let style = document.querySelector(`#${styleSheetID}`)
+	if(!style){
+		let style = document.createElement("style");
+		style.id = styleSheetID;
+		style.setAttribute("type","text/css");
+		style.innerHTML = `
+			.${className} {
+				display: none;
+				visibility: hidden;
+			}
+		`;
+		document.getElementsByTagName('head')[0].appendChild(style);
+	}
+}
+
+export const MatchMedia = forwardRef(function MediaQuery({children, query, hidingType="render"}:{
 	children?: React.ReactNode,
 	query: string | MediaQueryList | IMediaQuery | IMediaQuery[],
+	hidingType?: HidingMode,
 }, ref:LegacyRef<any>) {
+
+	injectStyleInDocument();
 	
 	let matches = useMediaQuery(query);
 	let childRefs = useRef<any[]>([]);
+	let propRefs = useRef<any[]>([]);
 
-	let childs = Children.map(children as any, (child:any,i) =>
-		cloneElement(child, {
-			ref: (r: any)=>{
+	let childs = Children.map(children as any, (child:any,i) =>{
+		let k = React.createElement(child.type, Object.assign(child.props,{
+			className: `${child.props.className} ${className}`,
+			ref:(r: any)=>{
 				if(ref && typeof ref === "object"){
 					ref.current[i] = r;
 				}
 				childRefs.current[i] = r;
-			},
-		})
-	);
+				console.log({r})
+			}
+		}), child.props.children);
+		// let c = cloneElement(child, {
+		// 	ref: (r: any)=>{
+		// 		if(ref && typeof ref === "object"){
+		// 			ref.current[i] = r;
+		// 		}
+		// 		childRefs.current[i] = r;
+		// 		console.log({r})
+		// 	},
+		// })
+		// console.log({child,c, k})
+		return k;
+	});
+
+	let hideOnRender = (hidingType === "render");
+
+	function match(){
+		let childElems = childRefs.current as Element[];
+		let props = propRefs.current;
+		
+		if(matches){
+			for(let i = 0;i<childElems.length;i++){
+				let prop = props[i];
+				let child = childElems[i];
+
+				switch(hidingType){
+					case "display": case "visibility":
+						child.classList.remove(className);
+						break;
+					case "dom":{
+						let parent = prop as Node;
+						if(parent && child.parentNode != parent){
+							parent.appendChild(child);
+						}
+					} break;
+				}
+			}
+		}else{
+			for(let i = 0;i<childElems.length;i++){
+				let child = childElems[i];
+
+				switch(hidingType){
+					case "display": case "visibility":
+						child.classList.add(className);
+						break;
+					case "dom":{
+						let parent = props[i] as Node;
+						if(!parent){
+							props[i] = parent;
+						}
+						childElems[i].remove();
+					} break;
+				}
+			}
+		}
+	}
+
+	useEffect(() => {
+		if(!hideOnRender){
+			match();
+		}
+	},[matches])
+
+	useEffect(()=>{
+		if(!hideOnRender){
+			injectStyleInDocument();
+			
+			let childElems = childRefs.current as Element[];
+			console.log({childElems})
+
+			for(let i = 0;i<childElems.length;i++){
+				let child = childElems[i];
+				switch(hidingType){
+					case "display": case "visibility":
+						child.classList.add(className);
+						break;
+					case "dom":{
+						let parent = child.parentNode;
+						if(parent){
+							propRefs.current[i] = parent;
+							childElems[i].remove();
+						}
+					} break;
+				}
+			}
+		}
+		match();
+		
+	})
 
 	return (
 		<>
 			{
-				matches && <>{childs}</>
+				(matches || !hideOnRender) && childs
 			}
 		</>
 	)
