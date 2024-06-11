@@ -1,18 +1,19 @@
-
-import React from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 
 import { IMediaQuery, MatchMedia } from '@/components/useMediaQuery/useMediaQuery'
 import AnimationContainer from '@/components/AnimationContainer/AnimationContainer'
 
 import { MediaWidthBreakPoints } from "@/components/useMediaQuery/breakpoints";
 
+import {SelfCounter as Counter} from "./Counter";
+import {forwardRef} from 'react';
 
-function Card({children, bgColor="black", txtColor="white", borderColor=bgColor}:{
+const Card = forwardRef(function Card({children, bgColor="black", txtColor="white", borderColor=bgColor}:{
 	children: React.ReactNode,
 	bgColor?: string,
 	txtColor?: string,
 	borderColor?: string,
-}){
+}, ref:any){
 	return (
 		<div 
 			className="card m-2 p-2 border inline-flex justify-center items-center rounded-md"
@@ -21,11 +22,12 @@ function Card({children, bgColor="black", txtColor="white", borderColor=bgColor}
 				color: txtColor,
 				borderColor: borderColor,
 			}}
+			ref={ref}
 		>
 			{children}
 		</div>
 	)
-}
+});
 
 export default function TestPage() {
 
@@ -52,12 +54,31 @@ export default function TestPage() {
 		}
 
 		let card = (
-			<MatchMedia query={query}>
-				<Card key={i} bgColor={color} txtColor="white">
-					<div className="w-[30vw] aspect-[3/4] flex justify-center items-center">
-						Card size {size}
-					</div>
-				</Card>
+			<MatchMedia query={query} hidingType="display">
+				{/* <><>
+					<span className="flex">Meow A{i}</span>
+					<span className="flex">Meow B{i}</span>
+				</></> */}
+				<span>
+					<AnimationContainer
+						enter={{
+							animations:{
+								opacity: [0,1],
+								y: [-100,0],
+							},
+							options:{
+								duration: 0.5,
+							}
+						}}
+					>
+						<Card key={i} bgColor={color} txtColor="white">
+							<div className="w-[30vw] aspect-[3/4] flex flex-col justify-center items-center">
+								<span className="p-2">Card size: {size}</span>
+								<Counter/>
+							</div>
+						</Card>
+					</AnimationContainer>
+				</span>
 			</MatchMedia>
 		)
 		cards.push(card);
