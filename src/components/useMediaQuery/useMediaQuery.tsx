@@ -182,8 +182,9 @@ export const MatchMedia = forwardRef(function MediaQuery({children, query, hidin
 	let propRefs = useRef<any[]>([]);
 
 	let childs = Children.map(children as any, (child:any,i) =>{
+		let c = (hidingType === "display" || hidingType === "visibility") ? className : "";
 		let k = React.createElement(child.type, Object.assign(child.props,{
-			className: `${child.props.className} ${className}`,
+			className: `${child.props.className} ${c}`,
 			ref:(r: any)=>{
 				if(ref && typeof ref === "object"){
 					ref.current[i] = r;
@@ -192,16 +193,6 @@ export const MatchMedia = forwardRef(function MediaQuery({children, query, hidin
 				console.log({r})
 			}
 		}), child.props.children);
-		// let c = cloneElement(child, {
-		// 	ref: (r: any)=>{
-		// 		if(ref && typeof ref === "object"){
-		// 			ref.current[i] = r;
-		// 		}
-		// 		childRefs.current[i] = r;
-		// 		console.log({r})
-		// 	},
-		// })
-		// console.log({child,c, k})
 		return k;
 	});
 
@@ -264,9 +255,9 @@ export const MatchMedia = forwardRef(function MediaQuery({children, query, hidin
 			for(let i = 0;i<childElems.length;i++){
 				let child = childElems[i];
 				switch(hidingType){
-					case "display": case "visibility":
-						child.classList.add(className);
-						break;
+					// case "display": case "visibility":
+					// 	child.classList.add(className);
+					// 	break;
 					case "dom":{
 						let parent = child.parentNode;
 						if(parent){
