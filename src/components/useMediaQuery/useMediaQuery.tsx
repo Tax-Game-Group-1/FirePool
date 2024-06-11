@@ -207,6 +207,7 @@ export const MatchMedia = forwardRef(function MediaQuery({children, query, hidin
 			for(let i = 0;i<childElems.length;i++){
 				let prop = props[i];
 				let child = childElems[i];
+				if(!child) return;
 
 				switch(hidingType){
 					case "display": case "visibility":
@@ -226,6 +227,7 @@ export const MatchMedia = forwardRef(function MediaQuery({children, query, hidin
 		}else{
 			for(let i = 0;i<childElems.length;i++){
 				let child = childElems[i];
+				if(!child) return;
 
 				switch(hidingType){
 					case "display": case "visibility":
@@ -248,6 +250,7 @@ export const MatchMedia = forwardRef(function MediaQuery({children, query, hidin
 		let childElems = childRefs.current as Element[];
 		for(let i = 0;i<childElems.length;i++){
 			let child = childElems[i];
+			if(!child) return;
 			child.classList.remove(className);
 		}
 
@@ -256,6 +259,7 @@ export const MatchMedia = forwardRef(function MediaQuery({children, query, hidin
 
 			for(let i = 0;i<childElems.length;i++){
 				let child = childElems[i];
+				if(!child) return;
 				switch(hidingType){
 					case "display": case "visibility":
 						child.classList.add(className);
