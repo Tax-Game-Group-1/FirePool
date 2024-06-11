@@ -4,7 +4,7 @@ import Image from "next/image"
 import GameHUD, {WorldHUD, PlayerHUD} from '@/components/GameHUD/GameHUD'
 import GameFooter from '@/components/GameFooter/GameFooter'
 import GameContentContainer, { GameContent } from '@/components/GameContentContainer/GameContentContainer'
-import AnimationContainer from './AnimationContainer';
+import AnimationContainer from '@/components/AnimationContainer/AnimationContainer';
 import { stagger } from 'framer-motion'
 
 export default function Game() {
