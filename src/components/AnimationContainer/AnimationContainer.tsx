@@ -49,7 +49,7 @@ function useDelayUnmount(
     return shouldRender;
 }
 
-const AnimationContainer = forwardRef(function AnimationContainer({children=[], enter={}, className="", exit={}, ...other}:{
+const AnimationContainer = forwardRef(function AnimationContainer({children=[], enter={}, className="", exit={}}:{
 	children?: React.ReactNode,
 	enter?: {
 		options?: ValueAnimationTransition,
@@ -60,7 +60,7 @@ const AnimationContainer = forwardRef(function AnimationContainer({children=[], 
 		animations?: DOMKeyframesDefinition,
 	};
 	className?: string,
-	[key:string]: any,
+	// [key:string]: any,
 }, ref:LegacyRef<any>) {
 
 	let [ isMounted, setIsMounted ] = useState(false);
@@ -84,7 +84,6 @@ const AnimationContainer = forwardRef(function AnimationContainer({children=[], 
 				}
 				scopeRef.current[i] = r;
 			},
-			...other
 		})
 	);
 
