@@ -33,8 +33,6 @@ const SVGIcon = forwardRef(function SVGIcon({children, className="", resizeBased
 
 			svg.style.height = `${height}`;
 			svg.style.width = `${width}`;
-
-			console.log({svg, parent})
 		}
 		for(let child of childs){
 			let svg = child as SVGElement;
