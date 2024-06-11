@@ -10,11 +10,6 @@ export default function Boxes() {
 
 	let [on, setOn] = useState(true);
 
-	function onClick(){
-		// setOn(false);
-		console.log("Happy")
-	}
-
 	return (
 		<>
 			{on && (<><AnimationContainer 
@@ -30,7 +25,6 @@ export default function Boxes() {
 						delay: 0.0,
 					}
 				}}
-				onClick={onClick}
 			>
 				<GameContent className="absolute self-end m-2">
 					<div className="min-w-24 aspect-square bg-green-200"></div>
