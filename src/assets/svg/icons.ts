@@ -1,9 +1,2 @@
 
-export { 
-	BackSquare, 
-	ExitDoor, 
-	StatsIcon, 
-	CurrencyIcon, 
-	PercentageIcon, 
-	CopyIcon
-} from './svg';
+export * from "./svg";
