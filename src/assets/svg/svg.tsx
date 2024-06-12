@@ -1,12 +1,16 @@
-import * as React from "react"
+import React from "react"
 
 import { forwardRef, Ref } from "react"
 
-export const BackSquare = forwardRef(({className="",fill="white", ...other}:{
+interface ISVGProps {
 	className?: string,
+	style?: React.CSSProperties,
 	fill?: string,
-	[key:string]: any,
-}, ref:Ref<any>) => (
+	stroke?: string,
+	// [key:string]: any,
+}
+
+export const BackSquare = forwardRef(({className="",fill="white", ...other}:ISVGProps, ref:Ref<any>) => (
 	<svg
 		xmlns="http://www.w3.org/2000/svg"
 		viewBox="0 0 24 24"
@@ -22,11 +26,7 @@ export const BackSquare = forwardRef(({className="",fill="white", ...other}:{
   </svg>
 ));
 
-export const ExitDoor = forwardRef(({className="",fill="white", ...other}:{
-	className?: string,
-	fill?: string,
-	[key:string]: any,
-}, ref:Ref<any>) => (
+export const ExitDoor = forwardRef(({className="",fill="white", ...other}:ISVGProps, ref:Ref<any>) => (
 	<svg
 		xmlns="http://www.w3.org/2000/svg"
 		fill={fill}
@@ -38,11 +38,7 @@ export const ExitDoor = forwardRef(({className="",fill="white", ...other}:{
 	</svg>
 ));
 
-export const StatsIcon = forwardRef(({className="",fill="white", ...other}:{
-	className?: string,
-	fill?: string,
-	[key:string]: any,
-}, ref:Ref<any>) => (
+export const StatsIcon = forwardRef(({className="",fill="white", ...other}:ISVGProps, ref:Ref<any>) => (
 	<svg
 	  xmlns="http://www.w3.org/2000/svg"
 	  viewBox="0 0 31 31"
@@ -57,11 +53,7 @@ export const StatsIcon = forwardRef(({className="",fill="white", ...other}:{
 	</svg>
 ));
 
-export const CurrencyIcon = forwardRef(({className="",fill="white", ...other}:{
-	className?: string,
-	fill?: string,
-	[key:string]: any,
-}, ref:Ref<any>) => (
+export const CurrencyIcon = forwardRef(({className="",fill="white", ...other}:ISVGProps, ref:Ref<any>) => (
 	<svg
 	  xmlns="http://www.w3.org/2000/svg"
 	  viewBox="0 0 69 69"
@@ -124,11 +116,7 @@ export const CurrencyIcon = forwardRef(({className="",fill="white", ...other}:{
 	  />
 	</svg>
 ));
-export const PercentageIcon = forwardRef(({className="",fill="white", ...other}:{
-	className?: string,
-	fill?: string,
-	[key:string]: any,
-}, ref:Ref<any>) => (
+export const PercentageIcon = forwardRef(({className="",fill="white", ...other}:ISVGProps, ref:Ref<any>) => (
 	<svg
 	  xmlns="http://www.w3.org/2000/svg"
 	  fill={fill}
@@ -144,12 +132,7 @@ export const PercentageIcon = forwardRef(({className="",fill="white", ...other}:
 
 export const CopyIcon = forwardRef(({
 	className="",fill="transparent", stroke="white", ...other
-}:{
-	className?: string,
-	fill?: string,
-	stroke?: string,
-	[key:string]: any,
-}, ref:Ref<any>) => (
+}:ISVGProps, ref:Ref<any>) => (
 	<svg
 	xmlns="http://www.w3.org/2000/svg"
 	fill={fill}
@@ -169,12 +152,7 @@ export const CopyIcon = forwardRef(({
 
 export const MenuIcon = forwardRef(({
 	className="",fill="transparent", stroke="white", ...other
-}:{
-	className?: string,
-	fill?: string,
-	stroke?: string,
-	[key:string]: any,
-}, ref:Ref<any>) => (
+}:ISVGProps, ref:Ref<any>) => (
 	<svg
 	  xmlns="http://www.w3.org/2000/svg"
 	  fill={fill}
@@ -189,5 +167,5 @@ export const MenuIcon = forwardRef(({
 			strokeWidth={2}
 			d="M4 6h16M4 12h16M4 18h16"
 		/>
-		</svg>
+	</svg>
 ))
