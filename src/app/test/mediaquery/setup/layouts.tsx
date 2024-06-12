@@ -15,7 +15,7 @@ const MatchMedia = dynamic(async() => {
 }, { ssr: false })
  
 
-const Layouts = forwardRef(function PCLayout({},ref:Ref<any>){
+const Layouts = forwardRef(function Layout({},ref:Ref<any>){
 
 	let [count, setCount] = useState(0);
 	let [myNumber, setNumber] = useState(rndInt(0, 100));

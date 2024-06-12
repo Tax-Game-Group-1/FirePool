@@ -2,7 +2,7 @@
 
 import React, { useRef, useState } from 'react'
 import AnimationContainer from '@/components/AnimationContainer/AnimationContainer'
-import { GameContent } from '@/components/GameContentContainer/GameContentContainer'
+import { GameContent } from '@/components/Game/GameContentContainer'
 
 export default function Boxes() {
 

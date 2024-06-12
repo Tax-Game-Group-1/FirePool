@@ -1,6 +1,6 @@
 import React, { lazy, Suspense } from 'react'
 
-import GameContentContainer, { GameContent } from '@/components/GameContentContainer/GameContentContainer'
+import GameContentContainer, { GameContent } from '@/components/Game/GameContentContainer'
 
 import Boxes from './testingStuff'
 
