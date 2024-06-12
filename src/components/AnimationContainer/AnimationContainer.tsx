@@ -61,7 +61,7 @@ const AnimationContainer = forwardRef(function AnimationContainer({children=[], 
 	};
 	className?: string,
 	// [key:string]: any,
-}, ref:LegacyRef<any>) {
+}, ref:Ref<any>) {
 
 	let [ isMounted, setIsMounted ] = useState(false);
 
@@ -81,6 +81,8 @@ const AnimationContainer = forwardRef(function AnimationContainer({children=[], 
 			ref: (r: any)=>{
 				if(ref && typeof ref === "object"){
 					ref.current[i] = r;
+				}else if(typeof ref === "function"){
+					ref(r);
 				}
 				scopeRef.current[i] = r;
 			},

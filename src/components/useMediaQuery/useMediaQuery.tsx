@@ -181,27 +181,26 @@ export const MatchMedia = forwardRef(function MediaQuery({children, query, hidin
 	let childRefs = useRef<any[]>([]);
 	let propRefs = useRef<any[]>([]);
 
-	let firstRender = useRef(true);
-
-	let childs = Children.map(children as any, (child:any,i) =>{
-		let c = className;
-		let k = React.createElement(child.type, Object.assign(child.props,{
-			className: `${child.props?.className || ""} ${c}`,
+	let childs = Children.map(children as any, (child:any, i:number) =>{
+		let c = cloneElement(child, {
+			className: `${child.props?.className || ""} ${className}`,
 			ref:(r: any)=>{
 				if(ref && typeof ref === "object"){
 					ref.current[i] = r;
+				}else if(typeof ref === "function"){
+					ref(r);
 				}
 				childRefs.current[i] = r;
-			}
-		}), child.props.children);
-		return k;
+			},
+		})
+		return c;
 	});
 
 	let hideOnRender = (hidingType === "render");
 
 	function match(){
 		let childElems = childRefs.current as Element[];
-		let props = propRefs.current;
+		let props = propRefs.current as (Node|null)[];
 		
 		if(matches){
 			for(let i = 0;i<childElems.length;i++){
@@ -217,10 +216,7 @@ export const MatchMedia = forwardRef(function MediaQuery({children, query, hidin
 						let parent = prop as Node;
 						if(parent && child.parentNode != parent){
 							parent.appendChild(child);
-							console.log("B")
 						}
-						console.log("A")
-						console.log({prop, child, p:propRefs.current})
 					} break;
 				}
 			}
