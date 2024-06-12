@@ -5,6 +5,7 @@ import _ from "lodash";
 import { MediaWidthBreakPoints } from "./breakpoints";
 import { randomID } from "@catsums/my";
 import React from "react";
+import { mergeRefs } from "@/mergeRefs/mergeRefs";
 
 export interface IMediaQuery {
 	// [query:string] : string | number | boolean;"
@@ -61,7 +62,7 @@ export interface IMediaQuery {
 ///https://stackoverflow.com/questions/72238021/how-to-apply-media-query-in-nextjs
 ///Modified by Catsum
 
-export function useMediaQuery(query:string|MediaQueryList|IMediaQuery|IMediaQuery[]){
+export function useMediaQuery(query:string|MediaQueryList|IMediaQuery|(IMediaQuery|string)[]){
 	const [targetReached, setTargetReached] = useState(false)
 
 	const updateTarget = useCallback((e:MediaQueryListEvent) => {
@@ -105,7 +106,7 @@ export function useMediaQuery(query:string|MediaQueryList|IMediaQuery|IMediaQuer
 			}
 		}
 
-		return out;
+		return `(${out})`;
 	}
 
 	useEffect(() =>{
@@ -119,7 +120,7 @@ export function useMediaQuery(query:string|MediaQueryList|IMediaQuery|IMediaQuer
 			}
 			media = window.matchMedia(`${out}`)
 		}else{
-			let arr:IMediaQuery[] = [];
+			let arr:(IMediaQuery|string)[] = [];
 			if(_.isArray(query)){
 				arr = query;
 			}else{
@@ -128,7 +129,15 @@ export function useMediaQuery(query:string|MediaQueryList|IMediaQuery|IMediaQuer
 			let out = "";
 			for(let i = 0;i<arr.length;i++){
 				let obj = arr[i];
-				out += createMediaQuery(obj);
+				if(_.isString(obj)){
+					let str = obj.trim();
+					if(MediaWidthBreakPoints[str]){
+						str = `(min-width: ${MediaWidthBreakPoints[str].min}px) and (max-width: ${MediaWidthBreakPoints[str].max}px)`
+					}
+					out += `(${str})`;
+				}else if(_.isObject(obj)){
+					out += createMediaQuery(obj);
+				}
 
 				if(i < arr.length - 1){
 					out += " or ";
@@ -171,7 +180,7 @@ function injectStyleInDocument(){
 
 export const MatchMedia = forwardRef(function MediaQuery({children, query, hidingType="render"}:{
 	children?: React.ReactNode,
-	query: string | MediaQueryList | IMediaQuery | IMediaQuery[],
+	query: string | MediaQueryList | IMediaQuery | (IMediaQuery|string)[],
 	hidingType?: HidingMode,
 }, ref:LegacyRef<any>) {
 
