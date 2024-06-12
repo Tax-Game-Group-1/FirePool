@@ -163,6 +163,9 @@ const className = randomID("hidden-");
 const styleSheetID = "injected-query-control-style"
 
 function injectStyleInDocument(){
+	if(!process.browser){
+		return;
+	}
 	let style = document.querySelector(`#${styleSheetID}`)
 	if(!style){
 		let style = document.createElement("style");
@@ -182,7 +185,13 @@ export const MatchMedia = forwardRef(function MediaQuery({children, query, hidin
 	children?: React.ReactNode,
 	query: string | MediaQueryList | IMediaQuery | (IMediaQuery|string)[],
 	hidingType?: HidingMode,
-}, ref:LegacyRef<any>) {
+}, ref:Ref<any>) {
+
+	///defaulting dom to display because dom is being buggy
+	if(hidingType === "dom"){
+		hidingType = "display";
+	}
+
 
 	injectStyleInDocument();
 	
