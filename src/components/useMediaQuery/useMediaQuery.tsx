@@ -52,7 +52,7 @@ export interface IMediaQuery {
 	"max-color-index"?: number;
 	"forced-colors"?: "none" | "active";
 
-	not?: IMediaQuery;
+	not?: IMediaQuery | (IMediaQuery|string)[] | string;
 
 	screen?: boolean;
 	print?: boolean;
@@ -71,35 +71,76 @@ export function useMediaQuery(query:string|MediaQueryList|IMediaQuery|(IMediaQue
 	}, [])
 
 	function createMediaQuery(obj:IMediaQuery){
-		let entries = Object.entries(query)
+		let entries = Object.entries(obj)
 		let out = "";
 		for(let i=0; i<entries.length; i++){
 			let [k,v] = entries[i];
 			k = k.trim();
-			if(_.isNumber(v)){
+
+			let _out = "";
+			if(k == "not"){
+				let val = v as IMediaQuery | (IMediaQuery|string)[] | string;
+				let _not = "not (";
+				if(_.isString(val)){
+					let k = val.trim();
+					if(MediaWidthBreakPoints[k]){
+						k = `(min-width: ${MediaWidthBreakPoints[k].min}px) and (max-width: ${MediaWidthBreakPoints[k].max}px)`
+					}
+					_not += k;
+				}else{
+					let arr:(IMediaQuery|string)[] = [];
+					if(_.isArray(val)){
+						arr = val;
+					}else{
+						arr = [val];
+					}
+					let out = "";
+					for(let i = 0;i<arr.length;i++){
+						let x = arr[i];
+						if(_.isString(x)){
+							let str = x.trim();
+							if(MediaWidthBreakPoints[str]){
+								str = `(min-width: ${MediaWidthBreakPoints[str].min}px) and (max-width: ${MediaWidthBreakPoints[str].max}px)`
+							}
+							out += `(${str})`;
+						}else if(_.isObject(x)){
+							out += createMediaQuery(x);
+						}
+		
+						if(i < arr.length - 1){
+							out += " or ";
+						}
+					}
+					_not += out;
+				}
+				_not += ")";
+				out += _not;
+			}else if(_.isNumber(v)){
 				if(k.endsWith("width") || k.endsWith("height")){
-					out += `(${k}: ${v}px)`;
+					_out += `(${k}: ${v}px)`;
 				}
 				else if(k.endsWith("resolution")){
-					out += `(${k}: ${v}dpi)`;
+					_out += `(${k}: ${v}dpi)`;
 				}
 				else{
-					out += `(${k}: ${v})`;
+					_out += `(${k}: ${v})`;
 				}
 			}else if(_.isString(v)){
 				if(k.endsWith("-width") && MediaWidthBreakPoints[v]){
 					let val = (k == "min-width") ? MediaWidthBreakPoints[v].min : MediaWidthBreakPoints[v].max;
-					out += `(${k}: ${val}px)`;
+					_out += `(${k}: ${val}px)`;
 				}else{
-					out += `(${k}: ${v})`;
+					_out += `(${k}: ${v})`;
 				}
 			}else if(_.isBoolean(v)){
 				if(k == "grid"){
-					out += `${k ? 1 : 0}`;
+					_out += `(${k}: ${v ? 1 : 0})`;
 				}else{
-					out += `${k}`;
+					_out += `${k}`;
 				}
 			}
+
+			out += _out;
 
 			if(i < entries.length - 1){
 				out += " and ";
@@ -303,6 +344,7 @@ export const MatchMedia = forwardRef(function MediaQuery({children, query, hidin
 						}
 					} break;
 				}
+			}
 			match();
 		}
 	},[matches])
