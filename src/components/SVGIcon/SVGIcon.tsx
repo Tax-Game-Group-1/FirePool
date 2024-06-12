@@ -9,7 +9,7 @@ const SVGIcon = forwardRef(function SVGIcon({children, className="", resizeBased
 	children: ReactNode,
 	className?: string,
 	resizeBasedOnContainer?: boolean,
-}, ref){
+}, ref:LegacyRef<any>){
 
 	const childRefs = useRef<any[]>([]);
 
@@ -56,12 +56,21 @@ const SVGIcon = forwardRef(function SVGIcon({children, className="", resizeBased
 
 	let childs = Children.map(children as any, (child:any,i) =>
 		cloneElement(child, {
-		  className: `${child?.props?.className || ""} ${className}`,
-		  style: Object.assign(child?.props?.style || {}, {
-			width: resizeBasedOnContainer ? 0 : "initial", 
-			height: resizeBasedOnContainer ? 0 : "initial", 
-		  }),
-		  ref: (r:any)=>(childRefs.current[i] = r),
+			className: `${child?.props?.className || ""} ${className}`,
+			style: Object.assign(child?.props?.style || {}, {
+				width: resizeBasedOnContainer ? 0 : "initial", 
+				height: resizeBasedOnContainer ? 0 : "initial", 
+			}),
+			ref: (r:any)=>{
+				// if(ref){
+				// 	if(typeof ref == "object"){
+				// 		ref.current = r;
+				// 	}else if(typeof ref == "function"){
+				// 		ref(r);
+				// 	}
+				// }
+				childRefs.current[i] = r
+			},
 		})
 	  );
 	return (
