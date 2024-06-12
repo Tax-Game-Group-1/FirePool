@@ -49,10 +49,10 @@ export class Game {
     public assignPlayerToUniverse(playerId: string, universeId: string, isLocalWorker: boolean) {
 
         //find universe
-        let myUniverse:Universe = null;
+        let myUniverse: Universe = null;
         for (let u of this._universes)
             if (u.id == universeId)
-               myUniverse = u;
+                myUniverse = u;
 
         if (myUniverse == null)
             throw "cannot find universe"
@@ -70,7 +70,7 @@ export class Game {
                 else
                     myUniverse.addPlayer(p as ForeignWorker);
 
-                return ;
+                return;
             }
 
         throw "unable to find player, player not added"
@@ -159,7 +159,7 @@ export class Game {
         for (let u of this._universes)
             if (u.id == id)
                 return u;
-       throw "Cannot find universe"
+        throw "Cannot find universe"
     }
 }
 
@@ -191,10 +191,29 @@ export class Universe {
     }
 
     public divideTaxAmongPlayers(toDivide: number) {
+        if (this._players.length == 0)
+            throw "no players in the game yet";
+
         let eachPlayerReceives = toDivide / this._players.length;
+
+        console.log(eachPlayerReceives)
 
         for (let player of this._players) {
             player.receiveFunds(eachPlayerReceives);
+        }
+    }
+
+    public toJSON() {
+        let players = [];
+
+        for (let p of this._players)
+
+
+        return {
+           id: this._id,
+           minister: this.minister,
+           taxRate: this.taxRate,
+           players: players
         }
     }
 
@@ -226,7 +245,7 @@ export class Universe {
             players.push(p.toJSON);
 
         let json = {
-           id: this._id,
+            id: this._id,
             minister: this.minister.toJSON(),
             taxRate: this.taxRate,
             players: players
@@ -242,13 +261,14 @@ export abstract class Player {
     private _funds;
     private _hasBeenKicked;
 
-    constructor(id: string, name: string, client: Socket){
+    constructor(id: string, name: string, client: Socket) {
         this._id = id;
         this._name = name;
         this.client = client;
+        this._funds = 0;
     }
 
-    public get name(){
+    public get name() {
         return this._name;
     }
 
@@ -260,8 +280,14 @@ export abstract class Player {
         this._funds += toReceive;
     }
 
-    public payFunds(toPlay: number) {
+    public get funds() {
+        return this._funds;
+    }
 
+    public payFunds(toPay: number) {
+        this._funds -= toPay;
+        if (this._funds <= 0)
+            throw "Player is bankrupt";
     }
 
     public kickPlayer() {
@@ -286,7 +312,7 @@ export abstract class Player {
 }
 
 export class Minister extends Player {
-    constructor(name: string, id: string, client: Socket){
+    constructor(name: string, id: string, client: Socket) {
         super(id, name, client);
     }
 
