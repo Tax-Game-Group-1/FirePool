@@ -4,7 +4,7 @@ export default function GameContentContainer({children}:{
 	children?: React.ReactNode,
 }){
 	return (
-		<div className="game-content h-full w-full absolute top-0 right-0 p-2 bg-transparent flex flex-col justify-center items-center">
+		<div className="game-content-container h-full w-full absolute top-0 right-0 p-2 bg-transparent flex flex-col justify-center items-center">
 			{children}
 		</div>
 	)
@@ -16,7 +16,7 @@ export const GameContent = forwardRef(function GameContent(
 		className?:string,
 	}, ref:Ref<any>
 ){
-	let _class = ["border rounded-md p-2 inline-flex", className].join(" ");
+	let _class = ["game-content border rounded-md p-2 inline-flex", className].join(" ");
 	
 	return (
 		<div className={_class} ref={ref}>

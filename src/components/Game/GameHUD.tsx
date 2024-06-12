@@ -1,9 +1,10 @@
 
-import React from "react"
+import React, { forwardRef, Ref } from "react"
 import SVGIcon from '@/components/SVGIcon/SVGIcon'
 import { BackSquare, CurrencyIcon, ExitDoor, StatsIcon, PercentageIcon } from "@/assets/svg/icons";
 
-export function WorldHUD(){
+
+export const WorldHUD = forwardRef(function WorldHUD({}, ref:Ref<any>){
 	return (
 		<div className="world-hud bg-white text-black rounded-md p-2 flex flex-col gap-1">
 			<div className="flex gap-2 justify-between">
@@ -56,7 +57,7 @@ export function WorldHUD(){
 			</div>
 		</div>
 	)
-}
+});
 
 export function PlayerHUD(){
 	return (
