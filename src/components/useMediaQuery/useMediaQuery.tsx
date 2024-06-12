@@ -250,9 +250,11 @@ export const MatchMedia = forwardRef(function MediaQuery({children, query, hidin
 					case "dom":{
 						let parent = props[i] as Node;
 						if(!parent){
-							props[i] = parent;
+							props[i] = child.parentNode;
 						}
-						childElems[i].remove();
+						if(child.parentNode || parent){
+							child.remove();
+						}
 					} break;
 				}
 			}
@@ -278,24 +280,29 @@ export const MatchMedia = forwardRef(function MediaQuery({children, query, hidin
 					case "display": case "visibility":
 						child.classList.add(className);
 						break;
-					case "dom":{
-						let parent = child.parentNode;
-						console.log({parent, child})
-						if(parent){
-							propRefs.current[i] = parent;
-							childElems[i].remove();
-						}
-					} break;
 				}
 			}
 		}
 		match();
+
 		
 	})
 
 	
 	useEffect(() => {
 		if(!hideOnRender){
+			let childElems = childRefs.current as Element[];
+			for(let i = 0;i<childElems.length;i++){
+				let child = childElems[i];
+				if(!child) return;
+				switch(hidingType){
+					case "dom":{
+						let parent = child.parentNode;
+						if(parent && !matches){
+							propRefs.current[i] = parent;
+						}
+					} break;
+				}
 			match();
 		}
 	},[matches])
