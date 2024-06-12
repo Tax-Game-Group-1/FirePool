@@ -141,3 +141,26 @@ export const PercentageIcon = forwardRef(({className="",fill="white", ...other}:
 	  </g>
 	</svg>
 ));
+
+export const CopyIcon = forwardRef(({className="",fill="white", stroke="white", ...other}:{
+	className?: string,
+	fill?: string,
+	stroke?: string,
+	[key:string]: any,
+}, ref:Ref<any>) => (
+	<svg
+	xmlns="http://www.w3.org/2000/svg"
+	fill={fill}
+	viewBox="0 0 24 24"
+	ref={ref}
+	{...other}
+	>
+	<path
+		stroke={stroke}
+		strokeLinecap="round"
+		strokeLinejoin="round"
+		strokeWidth={2}
+		d="M3 16V4a2 2 0 0 1 2-2h10M9 22h9a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2H9a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2Z"
+	/>
+	</svg>
+));

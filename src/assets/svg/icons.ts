@@ -5,4 +5,5 @@ export {
 	StatsIcon, 
 	CurrencyIcon, 
 	PercentageIcon, 
+	CopyIcon
 } from './svg';
