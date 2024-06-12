@@ -5,8 +5,8 @@ export const MediaWidthBreakPoints:{
 		max: string | number;
 	},
 } = {
-	'xs': { min: 100, max: 374 },
-	'sm': { min: 375, max: 767 },
+	'xs': { min: 210, max: 424 },
+	'sm': { min: 425, max: 767 },
 	'md': { min: 768, max: 1023 },
 	'lg': { min: 1024, max: 1279 },
 	'xl': { min: 1280, max: 1535 },
