@@ -222,11 +222,14 @@ function injectStyleInDocument(){
 	}
 }
 
-export const MatchMedia = forwardRef(function MediaQuery({children, query, hidingType="render"}:{
-	children?: React.ReactNode,
-	query: string | MediaQueryList | IMediaQuery | (IMediaQuery|string)[],
-	hidingType?: HidingMode,
-}, ref:Ref<any>) {
+export const MatchMedia = forwardRef(
+	function MediaQuery({children, query, hidingType="render", onMatch, onUnmatch}:{
+		children?: React.ReactNode,
+		query: string | MediaQueryList | IMediaQuery | (IMediaQuery|string)[],
+		hidingType?: HidingMode,
+		onMatch?: (children:Element[]) => void,
+		onUnmatch?: (children:Element[]) => void,
+	}, ref:Ref<any>) {
 
 	///defaulting dom to display because dom is being buggy
 	if(hidingType === "dom"){
@@ -262,41 +265,48 @@ export const MatchMedia = forwardRef(function MediaQuery({children, query, hidin
 		let props = propRefs.current as (Node|null)[];
 		
 		if(matches){
-			for(let i = 0;i<childElems.length;i++){
-				let prop = props[i];
-				let child = childElems[i];
-				if(!child) return;
-
-				switch(hidingType){
-					case "display": case "visibility":
-						child.classList.remove(className);
-						break;
-					case "dom":{
-						let parent = prop as Node;
-						if(parent && child.parentNode != parent){
-							parent.appendChild(child);
-						}
-					} break;
+			if(onMatch){
+				onMatch(childElems);
+			}else{
+				for(let i = 0;i<childElems.length;i++){
+					let prop = props[i];
+					let child = childElems[i];
+					if(!child) return;
+	
+					switch(hidingType){
+						case "display": case "visibility":
+							child.classList.remove(className);
+							break;
+						case "dom":{
+							let parent = prop as Node;
+							if(parent && child.parentNode != parent){
+								parent.appendChild(child);
+							}
+						} break;
+					}
 				}
 			}
 		}else{
-			for(let i = 0;i<childElems.length;i++){
-				let child = childElems[i];
-				if(!child) return;
-
-				switch(hidingType){
-					case "display": case "visibility":
-						child.classList.add(className);
-						break;
-					case "dom":{
-						let parent = props[i] as Node;
-						if(!parent){
-							props[i] = child.parentNode;
-						}
-						if(child.parentNode || parent){
-							child.remove();
-						}
-					} break;
+			if(onUnmatch){
+				onUnmatch(childElems);
+			}else{
+				for(let i = 0;i<childElems.length;i++){
+					let child = childElems[i];
+					if(!child) return;
+	
+					switch(hidingType){
+						case "display": case "visibility":
+							child.classList.add(className);
+							break;
+						case "dom":{
+							let parent = props[i] as Node;
+							if(!parent){
+								props[i] = child.parentNode;
+							}
+							if(child.parentNode || parent){
+								child.remove();
+							}
+						} break;
 				}
 			}
 		}
