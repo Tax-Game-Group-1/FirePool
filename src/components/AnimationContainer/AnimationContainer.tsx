@@ -4,61 +4,58 @@ import React, {Children, cloneElement, forwardRef, LegacyRef, Ref, RefObject, us
 
 import { DOMKeyframesDefinition, useAnimate, ValueAnimationOptions, ValueAnimationTransition } from 'framer-motion'
 
-function useDelayUnmount(
+export function useDelayUnmount(
 	isMounted: boolean,
 	scopeRef:LegacyRef<any>,
-	enter?: {
-		options?: ValueAnimationTransition,
-		animations?: DOMKeyframesDefinition,
-	},
-	exit?: {
-		options?: ValueAnimationTransition,
-		animations?: DOMKeyframesDefinition,
-	},
+	enter?: IAnimationSettings | ((arr:Element[])=>void),
+	exit?: IAnimationSettings | ((arr:Element[])=>void),
 ){
     const [ shouldRender, setShouldRender ] = useState(false);
 	let [scope, animate] = useAnimate();
 
     useEffect(() => {
+		//for every update
         let anim;
 		let scopes:Element[] = [];
 		if(scopeRef){
 			scopes = (scopeRef as any).current as Element[];
 		}
+		//if element is going to be mounted, render it
         if (isMounted && !shouldRender) {
-			if(enter){
+			if(typeof enter == "object"){
 				anim = animate(scopes, enter?.animations, enter?.options);
+			}else if(typeof enter == "function"){
+				enter(scopes);
 			}
 			setShouldRender(true);
         }
+		//if element is going to be unmounted, unrender it
         else if(!isMounted && shouldRender) {
-			if(exit){
+			if(typeof exit == "object"){
 				anim = animate(scopes, exit?.animations, exit?.options);
 				anim.then(()=>{
 					setShouldRender(false);
 				})
+			}else if(typeof exit == "function"){
+				exit(scopes);
+				setShouldRender(false);
 			}else{
 				setShouldRender(false);
 			}
         }
         return () => {
 			//idk what to do here
+			//this is meant to clear the animation
 		};
-    }, [isMounted, shouldRender]);
+    }, [animate, enter, exit, isMounted, scopeRef, shouldRender]);
 
     return shouldRender;
 }
 
 const AnimationContainer = forwardRef(function AnimationContainer({children=[], enter={}, className="", exit={}}:{
 	children?: React.ReactNode,
-	enter?: {
-		options?: ValueAnimationTransition,
-		animations?: DOMKeyframesDefinition,
-	};
-	exit?: {
-		options?: ValueAnimationTransition,
-		animations?: DOMKeyframesDefinition,
-	};
+	enter?: IAnimationSettings | ((arr:Element[])=>void),
+	exit?: IAnimationSettings | ((arr:Element[])=>void),
 	className?: string,
 	// [key:string]: any,
 }, ref:Ref<any>) {
