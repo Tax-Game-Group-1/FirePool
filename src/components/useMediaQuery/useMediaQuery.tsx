@@ -5,8 +5,11 @@ import _ from "lodash";
 import { MediaWidthBreakPoints } from "./breakpoints";
 import { randomID } from "@catsums/my";
 import React from "react";
-import { mergeRefs } from "@/mergeRefs/mergeRefs";
 
+/**
+ * An interface for storing feature values for media queries and features to ignore.
+ * This is normally used with the `<MatchMedia/>` component and `useMediaQuery()` hook
+ */
 export interface IMediaQuery {
 	// [query:string] : string | number | boolean;"
 	"min-height"?: string | number;
@@ -62,6 +65,15 @@ export interface IMediaQuery {
 ///https://stackoverflow.com/questions/72238021/how-to-apply-media-query-in-nextjs
 ///Modified by Catsum
 
+/**
+ * A hook that allows for tracking whether a certain type of media or media features have been matched based on a query.
+ * This will take in a query string, query object, a `MediaQueryList` or an array of strings and objects to conditionally switch between.
+ * @param query 
+ * Accepts a query string, `MediaQueryList`, query object or an array.
+ * For arrays, it splits them based on the OR operator for media queries
+ * @returns 
+ * A state value that determines whether the media has been matched or not
+ */
 export function useMediaQuery(query:string|MediaQueryList|IMediaQuery|(IMediaQuery|string)[]){
 	const [targetReached, setTargetReached] = useState(false)
 
@@ -186,6 +198,7 @@ export function useMediaQuery(query:string|MediaQueryList|IMediaQuery|(IMediaQue
 			}
 			media = window.matchMedia(`${out}`);
 		}
+		console.log({media})
 		media.addEventListener('change', updateTarget)
 
 		// Check on mount (callback is not called until a change occurs)
@@ -222,6 +235,127 @@ function injectStyleInDocument(){
 	}
 }
 
+/**
+ * A wrapper component that allows for components to show or hide based on media queries. 
+ * It will also allow to run certain functions on children based on the media queries.
+ * It also comes with a hiding mode that allows you to hide elements based on unmounting, visibility or setting display to none.
+ * 
+ * @param props
+ * The props to be accepted by the component.
+ * @param props.children 
+ * Components and elements to wrap around so they can hidden or unmounted based on the media queries
+ * @param props.query 
+ * A query that is to be matched in order to hide/unmount the components
+ * @param props.hidingType 
+ * Determines whether to hide elements based on:
+ * - `render` : Hides by unmounting the children
+ * - `display` : Hides by setting display to none
+ * - `visibility` : Hides by setting visibility to invisible
+ * @param props.onMatch 
+ * A function that if provided, will use this to run on every element to perform a custom unhiding function. This will make it ignore the `hidingType`.
+ * @param props.onUnmatch 
+ * A function that if provided, will use this to run on every element to perform a custom hiding function. This will make it ignore the `hidingType`.
+ * @param ref 
+ * A reference that can be passed to the child elements/components. Usually treated as an array
+ * @returns 
+ * A wrapper component that can wrap any child components into it.
+ * @example
+ * Here's a way to have two completely different layouts while sharing the state across all of them
+ * 
+ * ```tsx
+ * 
+ * import {useState} from "react"
+ * 
+ * export function MyComponent({myProp}){
+ * 
+ * 		let [state, setState] = useEffect(0);
+ * 
+ * 		let mediaQueryList = window.matchMedia("min-width: 1080px");
+ * 		let elementThatExistsEveryWhere = (<div>Exists every layout</div>);
+ * 		
+ * 		return (
+ * 			<div class="container">
+ * 				<MatchMedia query={{
+ * 					"min-width" : 320,	//this accepts numbers
+ * 					"max-width" : "760px"	//accepts strings as well
+ * 				}}>
+ * 					<div>Mobile only Element</div>
+ * 					{elementThatExistsEveryWhere}
+ * 				</MatchMedia>
+ * 
+ * 	{
+ * 					//query can be a string entirely
+ * 	}
+ * 
+ * 				<MatchMedia query="(min-width: 760px) and (max-width: 1080px)"> 
+ * 					<div>Tablet only Element</div>
+ * 					{elementThatExistsEveryWhere}
+ * 					<div>Tablet only Element</div>
+ * 				</MatchMedia>
+ * 	{
+ * 				//query can be a MediaQueryList object
+ * 	}
+ * 				<MatchMedia query={mediaQueryList}>
+ * 					<div>PC only Element</div>
+ * 					{elementThatExistsEveryWhere}
+ * 	{
+ *					//Allows for nesting MatchMedia components too
+ *	}
+ * 					<MatchMedia query={{
+ * 						print: true,
+ * 						not: {
+ * 							"min-width": 2000,		//inside `not`, it excludes this query
+ * 						}
+ * 					}}>
+ * 						<div>Print only Element that wont appear for 2k size</div>
+ * 					</MatchMedia>
+ * 					<div>PC only Element</div>
+ * 				</MatchMedia>
+ * 			</div>
+ * 		)
+ * 
+ * }
+ * 
+ * ```
+ * 
+ * @example
+ * Here's how to add a custom unmatching function to the MatchMedia component
+ * 
+ * ```tsx
+ * function MyComponent(){
+ * 		function customMatch(childElements){
+ * 			for(let child of childElements){
+ * 				child.classList.add("showElementClass");
+ * 			}
+ * 		}
+ * 		function customUnmatch(childElements){
+ * 			for(let child of childElements){
+ * 				child.classList.remove("showElementClass");
+ * 			}
+ * 		}
+ * 
+ * 		return (
+ * 			<div class="container">
+ * 				<MatchMedia 
+ * 					query={{ not: ["sm","xs", "md"] }} 
+ * 					onMatch={customMatch} 
+ * 					onUnmatch={customUnmatch}
+ * 				>
+ * 					<div>PC only</div>
+ * 				</Media>
+ * 				<MatchMedia 
+ * 					query="md" 
+ * 					onMatch={customMatch}
+ * 					onUnmatch={customUnmatch}
+ * 				>
+ * 					<div>Tablet only</div>
+ * 				</Media>
+ * 			</div>
+ * 		)
+ * }
+ * ```
+ * 
+ */
 export const MatchMedia = forwardRef(
 	function MediaQuery({children, query, hidingType="render", onMatch, onUnmatch}:{
 		children?: React.ReactNode,
@@ -307,6 +441,7 @@ export const MatchMedia = forwardRef(
 								child.remove();
 							}
 						} break;
+					}
 				}
 			}
 		}

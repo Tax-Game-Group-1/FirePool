@@ -1,15 +1,31 @@
 "use client"
 
 import { mergeRefs } from "@/mergeRefs/mergeRefs";
-import { forwardRef, Children, cloneElement, ReactNode, DetailedReactHTMLElement, LegacyRef, useEffect, useRef } from "react";
+import { forwardRef, Children, cloneElement, ReactNode, DetailedReactHTMLElement, LegacyRef, useEffect, useRef, Ref } from "react";
 
 
 ///By Catsums
+
+/**
+ * A wrapper component that allows for an SVG (or multiple SVGs) to size better with its container.
+ * It has a setting to remove the resize setting, which can have it passed as a state when needed.
+ * 
+ * @param children 
+ * The children to be passed. Preferably, the children have to be SVG Elements or components
+ * @param className
+ * Any class names to inject into the children elements for better control
+ * @param resizeBasedOnContainer
+ * A setting that allows for deciding if the SVG should resize based on the container's dimensions or not.
+ * @param ref
+ * A reference that can be passed to the SVG elements wrapped in this component
+ * @returns
+ * A wrapper component to wrap your SVG components or elements into it
+ */
 const SVGIcon = forwardRef(function SVGIcon({children, className="", resizeBasedOnContainer=true}:{
 	children: ReactNode,
 	className?: string,
 	resizeBasedOnContainer?: boolean,
-}, ref:LegacyRef<any>){
+}, ref:Ref<any>){
 
 	const childRefs = useRef<any[]>([]);
 
