@@ -124,7 +124,7 @@ const Layouts = forwardRef(function Layouts({}, ref:Ref<any>) {
 	return (
 		<>
 			<MatchMedia 
-				query={["xs","sm"]}
+				query={["xs","sm", "md"]}
 				hidingType="display"
 			>
 				<MobileLayout/>
