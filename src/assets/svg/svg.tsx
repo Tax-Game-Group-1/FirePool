@@ -10,23 +10,26 @@ interface ISVGProps {
 	// [key:string]: any,
 }
 
-export const BackSquare = forwardRef(({className="",fill="white", ...other}:ISVGProps, ref:Ref<any>) => (
-	<svg
-		xmlns="http://www.w3.org/2000/svg"
-		viewBox="0 0 24 24"
-		className={className}
-		fill={fill}
-		ref={ref}
-		{...other}
-	>
-		<path
-		fill={fill}
-		d="M16.19 2H7.81C4.17 2 2 4.17 2 7.81v8.37C2 19.83 4.17 22 7.81 22h8.37c3.64 0 5.81-2.17 5.81-5.81V7.81C22 4.17 19.83 2 16.19 2Zm-2.27 14.13H9c-.41 0-.75-.34-.75-.75s.34-.75.75-.75h4.92c1.28 0 2.33-1.04 2.33-2.33s-1.04-2.33-2.33-2.33H8.85l.26.26c.29.3.29.77-.01 1.07-.15.15-.34.22-.53.22s-.38-.07-.53-.22L6.47 9.72a.754.754 0 0 1 0-1.06l1.57-1.57c.29-.29.77-.29 1.06 0 .29.29.29.77 0 1.06l-.33.33h5.15c2.11 0 3.83 1.72 3.83 3.83 0 2.11-1.72 3.82-3.83 3.82Z"
-		/>
-  </svg>
-));
+export const BackSquare = forwardRef(function BackSquare({className="",fill="white", ...other}:ISVGProps, ref:Ref<any>){
+	return (
+		<svg
+			xmlns="http://www.w3.org/2000/svg"
+			viewBox="0 0 24 24"
+			className={className}
+			fill={fill}
+			ref={ref}
+			{...other}
+		>
+			<path
+			fill={fill}
+			d="M16.19 2H7.81C4.17 2 2 4.17 2 7.81v8.37C2 19.83 4.17 22 7.81 22h8.37c3.64 0 5.81-2.17 5.81-5.81V7.81C22 4.17 19.83 2 16.19 2Zm-2.27 14.13H9c-.41 0-.75-.34-.75-.75s.34-.75.75-.75h4.92c1.28 0 2.33-1.04 2.33-2.33s-1.04-2.33-2.33-2.33H8.85l.26.26c.29.3.29.77-.01 1.07-.15.15-.34.22-.53.22s-.38-.07-.53-.22L6.47 9.72a.754.754 0 0 1 0-1.06l1.57-1.57c.29-.29.77-.29 1.06 0 .29.29.29.77 0 1.06l-.33.33h5.15c2.11 0 3.83 1.72 3.83 3.83 0 2.11-1.72 3.82-3.83 3.82Z"
+			/>
+	</svg>
+	)
+});
 
-export const ExitDoor = forwardRef(({className="",fill="white", ...other}:ISVGProps, ref:Ref<any>) => (
+export const ExitDoor = forwardRef(function ExitDoor({className="",fill="white", ...other}:ISVGProps, ref:Ref<any>){
+	return (
 	<svg
 		xmlns="http://www.w3.org/2000/svg"
 		fill={fill}
@@ -36,9 +39,11 @@ export const ExitDoor = forwardRef(({className="",fill="white", ...other}:ISVGPr
 	>
 		<path d="M30.9 13.6c-.1-.1-.1-.2-.2-.3l-4-4c-.4-.4-1-.4-1.4 0s-.4 1 0 1.4l2.3 2.3H22V3c0-.6-.4-1-1-1H4c-.1 0-.3 0-.4.1h-.1s-.1 0-.1.1l-.1.1c-.1.1-.2.2-.2.3v.1c-.1.1-.1.2-.1.3v22c0 .4.2.8.6.9l9 4c.1.1.3.1.4.1.2 0 .4-.1.5-.2.3-.2.5-.5.5-.8v-3h7c.6 0 1-.4 1-1V15h5.6l-2.3 2.3c-.4.4-.4 1 0 1.4.2.2.5.3.7.3s.5-.1.7-.3l4-4c.1-.1.2-.2.2-.3.1-.3.1-.5 0-.8zM10 21c0 .6-.4 1-1 1s-1-.4-1-1v-4c0-.6.4-1 1-1s1 .4 1 1v4zm10-11v14h-6V7c0-.4-.2-.8-.6-.9L8.7 4H20v6z" />
 	</svg>
-));
+	)
+});
 
-export const StatsIcon = forwardRef(({className="",fill="white", ...other}:ISVGProps, ref:Ref<any>) => (
+export const StatsIcon = forwardRef(function StatsIcon({className="",fill="white", ...other}:ISVGProps, ref:Ref<any>){
+	return (
 	<svg
 	  xmlns="http://www.w3.org/2000/svg"
 	  viewBox="0 0 31 31"
@@ -51,9 +56,11 @@ export const StatsIcon = forwardRef(({className="",fill="white", ...other}:ISVGP
 		d="M27.308.741H3.702A2.95 2.95 0 0 0 .75 3.692v23.607a2.95 2.95 0 0 0 2.95 2.95h23.607a2.95 2.95 0 0 0 2.951-2.95V3.692a2.95 2.95 0 0 0-2.95-2.95Zm-16.23 22.131a1.475 1.475 0 1 1-2.95 0v-2.95a1.475 1.475 0 0 1 2.95 0v2.95Zm5.902 0a1.475 1.475 0 0 1-2.95 0V14.02a1.475 1.475 0 1 1 2.95 0v8.852Zm5.902 0a1.475 1.475 0 1 1-2.95 0V8.118a1.476 1.476 0 0 1 2.95 0v14.754Z"
 	  />
 	</svg>
-));
+	)
+});
 
-export const CurrencyIcon = forwardRef(({className="",fill="white", ...other}:ISVGProps, ref:Ref<any>) => (
+export const CurrencyIcon = forwardRef(function CurrencyIcon({className="",fill="white", ...other}:ISVGProps, ref:Ref<any>){
+	return (
 	<svg
 	  xmlns="http://www.w3.org/2000/svg"
 	  viewBox="0 0 69 69"
@@ -115,57 +122,86 @@ export const CurrencyIcon = forwardRef(({className="",fill="white", ...other}:IS
 		clipRule="evenodd"
 	  />
 	</svg>
-));
-export const PercentageIcon = forwardRef(({className="",fill="white", ...other}:ISVGProps, ref:Ref<any>) => (
-	<svg
-	  xmlns="http://www.w3.org/2000/svg"
-	  fill={fill}
-	  viewBox="0 0 24 24"
-	  ref={ref}
-	  {...other}
-	>
-	  <g fill={fill}>
-		<path d="M7.05 17.7a.74.74 0 0 1-.53-.22.75.75 0 0 1 0-1.06l9.9-9.9a.75.75 0 1 1 1.06 1.06l-9.9 9.9a.74.74 0 0 1-.53.22ZM8.5 10.75a2.25 2.25 0 1 1 0-4.5 2.25 2.25 0 0 1 0 4.5Zm0-3a.75.75 0 1 0 .75.75.76.76 0 0 0-.75-.75ZM15.5 17.75a2.25 2.25 0 1 1 0-4.5 2.25 2.25 0 0 1 0 4.5Zm0-3a.75.75 0 1 0 .75.75.76.76 0 0 0-.75-.75Z" />
-	  </g>
-	</svg>
-));
+	)
+});
 
-export const CopyIcon = forwardRef(({
-	className="",fill="transparent", stroke="white", ...other
-}:ISVGProps, ref:Ref<any>) => (
-	<svg
-	xmlns="http://www.w3.org/2000/svg"
-	fill={fill}
-	viewBox="0 0 24 24"
-	ref={ref}
-	{...other}
-	>
-	<path
-		stroke={stroke}
-		strokeLinecap="round"
-		strokeLinejoin="round"
-		strokeWidth={2}
-		d="M3 16V4a2 2 0 0 1 2-2h10M9 22h9a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2H9a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2Z"
-	/>
-	</svg>
-));
+export const PercentageIcon = forwardRef(function PercentageIcon({className="",fill="white", ...other}:ISVGProps, ref:Ref<any>){
+	return (
+		<svg
+		xmlns="http://www.w3.org/2000/svg"
+		fill={fill}
+		viewBox="0 0 24 24"
+		ref={ref}
+		{...other}
+		>
+		<g fill={fill}>
+			<path d="M7.05 17.7a.74.74 0 0 1-.53-.22.75.75 0 0 1 0-1.06l9.9-9.9a.75.75 0 1 1 1.06 1.06l-9.9 9.9a.74.74 0 0 1-.53.22ZM8.5 10.75a2.25 2.25 0 1 1 0-4.5 2.25 2.25 0 0 1 0 4.5Zm0-3a.75.75 0 1 0 .75.75.76.76 0 0 0-.75-.75ZM15.5 17.75a2.25 2.25 0 1 1 0-4.5 2.25 2.25 0 0 1 0 4.5Zm0-3a.75.75 0 1 0 .75.75.76.76 0 0 0-.75-.75Z" />
+		</g>
+		</svg>
+	)
+});
 
-export const MenuIcon = forwardRef(({
+export const CopyIcon = forwardRef(function CopyIcon({
 	className="",fill="transparent", stroke="white", ...other
-}:ISVGProps, ref:Ref<any>) => (
-	<svg
-	  xmlns="http://www.w3.org/2000/svg"
-	  fill={fill}
-	  viewBox="0 0 24 24"
-	  ref={ref}
-	  {...other}
-	>
+}:ISVGProps, ref:Ref<any>){
+	return (
+		<svg
+		xmlns="http://www.w3.org/2000/svg"
+		fill={fill}
+		viewBox="0 0 24 24"
+		ref={ref}
+		{...other}
+		>
 		<path
 			stroke={stroke}
 			strokeLinecap="round"
 			strokeLinejoin="round"
 			strokeWidth={2}
-			d="M4 6h16M4 12h16M4 18h16"
+			d="M3 16V4a2 2 0 0 1 2-2h10M9 22h9a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2H9a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2Z"
 		/>
-	</svg>
-))
+		</svg>
+	)
+});
+
+export const MenuIcon = forwardRef(function MenuIcon({
+	className="",fill="transparent", stroke="white", ...other
+}:ISVGProps, ref:Ref<any>){
+	return (
+		<svg
+		xmlns="http://www.w3.org/2000/svg"
+		fill={fill}
+		viewBox="0 0 24 24"
+		ref={ref}
+		{...other}
+		>
+			<path
+				stroke={stroke}
+				strokeLinecap="round"
+				strokeLinejoin="round"
+				strokeWidth={2}
+				d="M4 6h16M4 12h16M4 18h16"
+			/>
+		</svg>
+	)
+})
+
+export const InfoIcon = forwardRef(function InfoIcon({
+	className="",fill="transparent", stroke="white", ...other
+}:ISVGProps, ref:Ref<any>){
+	return (
+		<svg
+			xmlns="http://www.w3.org/2000/svg"
+			fill={fill}
+			viewBox="0 0 24 24"
+			ref={ref}
+			{...other}
+		>
+		<path
+			fill={fill}
+			fillRule="evenodd"
+			d="M22 12c0 5.523-4.477 10-10 10S2 17.523 2 12 6.477 2 12 2s10 4.477 10 10Zm-10 5.75a.75.75 0 0 0 .75-.75v-6a.75.75 0 0 0-1.5 0v6c0 .414.336.75.75.75ZM12 7a1 1 0 1 1 0 2 1 1 0 0 1 0-2Z"
+			clipRule="evenodd"
+		/>
+		</svg>
+	)
+})
