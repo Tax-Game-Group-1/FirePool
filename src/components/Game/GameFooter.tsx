@@ -1,9 +1,10 @@
 "use client"
-import React, { forwardRef, Ref, useState } from 'react'
+import React, { forwardRef, MouseEvent, Ref, useEffect, useRef, useState } from 'react'
 import dynamic from 'next/dynamic';
 
 import SVGIcon from '@/components/SVGIcon/SVGIcon'
-import { BackSquare, CurrencyIcon, ExitDoor, StatsIcon, PercentageIcon, CopyIcon, MenuIcon } from "@/assets/svg/icons";
+import { BackSquare, CurrencyIcon, ExitDoor, StatsIcon, PercentageIcon, CopyIcon, MenuIcon, InfoIcon } from "@/assets/svg/icons";
+import { mergeRefs } from '@/mergeRefs/mergeRefs';
 
 const MatchMedia = dynamic(async() => {
 	let x = await import('@/components/useMediaQuery/useMediaQuery')
@@ -21,6 +22,21 @@ const GameFooter = forwardRef(function GameFooter(props,ref:Ref<any>) {
 
 
 	const Mobile = forwardRef(function Mobile(props,ref:Ref<any>){
+
+		let [popMenuOpen, setPopMenuOpen] = useState(false);
+		let popMenuBtnRef = useRef<any>();
+		let popMenuRef = useRef<any>();
+
+		useEffect(()=>{
+			let popUpBtn = popMenuBtnRef.current as HTMLDivElement;
+			popUpBtn?.classList.add(popMenuOpen ? "bg-white" : "bg-black");
+			popUpBtn?.classList.remove(popMenuOpen ? "bg-black" : "bg-white");
+
+			let popMenu = popMenuRef.current as HTMLDivElement;
+			popMenuOpen ? popMenu?.classList.remove("hidden", "scale-y-0") : popMenu?.classList.add("hidden", "scale-y-0");
+			
+		})
+
 		return (
 			<footer ref={ref} className="row-span-1 grid grid-cols-12 bg-black rounded-md p-0 px-2 gap-0 text-xs sm:text-sm">
 				<div className="rounded-md col-span-4 px-0 flex items-center justify-center">
@@ -44,23 +60,21 @@ const GameFooter = forwardRef(function GameFooter(props,ref:Ref<any>) {
 					</div>
 				</div>
 				<div className="flex flex-col justify-center items-center rounded-md col-span-2">
-					<div className="popmenu-menu absolute grid grid-flow-row bg-black border rounded-md w-20 p-4 bottom-[9%] gap-4">
+					<div ref={popMenuRef} className="popmenu-menu absolute grid grid-flow-row bg-black border rounded-md w-20 p-4 bottom-[10%] gap-4 transition-all scale-y-0 origin-bottom hidden">
 						<div className="grid grid-flow-row">
 							<SVGIcon resizeBasedOnContainer={false}>
-								<BackSquare fill="white"/>
-							</SVGIcon>
-							<SVGIcon resizeBasedOnContainer={false}>
-								<BackSquare fill="white"/>
-							</SVGIcon>
-							<SVGIcon resizeBasedOnContainer={false}>
-								<BackSquare fill="white"/>
+								<InfoIcon fill="white"/>
+								<InfoIcon fill="white"/>
+								<InfoIcon fill="white"/>
 							</SVGIcon>
 						</div>
 						<div className="popmenu-spacing"></div>
 					</div>
-					<div className="popmenu-icon flex absolute justify-center items-center rounded-full border w-14 p-3 bottom-[4.5%] aspect-square bg-black">
+					<div ref={popMenuBtnRef} onClick={()=>{
+						setPopMenuOpen(!popMenuOpen);
+					}} className="popmenu-icon flex absolute justify-center items-center rounded-full border w-14 p-3 bottom-[4.5%] aspect-square transition-all duration-300 bg-black">
 						<SVGIcon resizeBasedOnContainer={false}>
-							<MenuIcon fill="none" stroke="white"/>
+							<MenuIcon fill="none" stroke={popMenuOpen ? "black" : "white"}/>
 						</SVGIcon>
 					</div>
 				</div>

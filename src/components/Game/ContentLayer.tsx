@@ -1,5 +1,6 @@
 
 import {forwardRef, Ref} from 'react';
+import style from "./ContentLayer.module.scss";
 
 export const ContentLayersContainer = forwardRef(function ContentLayers({children, className=""}:{
 	children: React.ReactNode,
@@ -7,7 +8,7 @@ export const ContentLayersContainer = forwardRef(function ContentLayers({childre
 }, ref:Ref<any>){
 	
 	return (
-		<div ref={ref} className={"content-layers-container flex rounded-md w-full h-full"+` ${className}`}>
+		<div ref={ref} className={`${style.contentLayersContainer} ${className}`}>
 			{children}
 		</div>
 	)
@@ -19,7 +20,7 @@ export const ContentLayer = forwardRef(function ContentLayer({children, classNam
 }, ref:Ref<any>){
 
 	return (
-		<div ref={ref} className={"content-layer h-full w-full absolute top-0 right-0 bg-transparent"+` ${className}`}>
+		<div ref={ref} className={`${style.contentLayer} ${className}`}>
 			{children}
 		</div>
 	)
