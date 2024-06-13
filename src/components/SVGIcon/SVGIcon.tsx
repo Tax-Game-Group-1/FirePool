@@ -62,13 +62,13 @@ const SVGIcon = forwardRef(function SVGIcon({children, className="", resizeBased
 				height: resizeBasedOnContainer ? 0 : "initial", 
 			}),
 			ref: (r:any)=>{
-				// if(ref){
-				// 	if(typeof ref == "object"){
-				// 		ref.current = r;
-				// 	}else if(typeof ref == "function"){
-				// 		ref(r);
-				// 	}
-				// }
+				if(ref){
+					if(typeof ref == "object"){
+						ref.current[i] = r;
+					}else if(typeof ref == "function"){
+						ref(r);
+					}
+				}
 				childRefs.current[i] = r
 			},
 		})
