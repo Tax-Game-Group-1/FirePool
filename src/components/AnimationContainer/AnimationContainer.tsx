@@ -174,9 +174,9 @@ const AnimationContainer = forwardRef(function AnimationContainer({children=[], 
 		cloneElement(child, {
 			className: `${child?.props?.className || ""} ${className}`,
 			ref: (r: any)=>{
-				if(ref && typeof ref === "object"){
+				if(ref && typeof ref === "object" && ref.current){
 					ref.current[i] = r;
-				}else if(typeof ref === "function"){
+				}else if(ref && typeof ref === "function"){
 					ref(r);
 				}
 				scopeRef.current[i] = r;
