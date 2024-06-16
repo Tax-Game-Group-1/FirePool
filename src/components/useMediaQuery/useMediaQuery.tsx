@@ -198,7 +198,6 @@ export function useMediaQuery(query:string|MediaQueryList|IMediaQuery|(IMediaQue
 			}
 			media = window.matchMedia(`${out}`);
 		}
-		console.log({media})
 		media.addEventListener('change', updateTarget)
 
 		// Check on mount (callback is not called until a change occurs)
@@ -227,8 +226,8 @@ function injectStyleInDocument(){
 		style.setAttribute("type","text/css");
 		style.innerHTML = `
 			.${className} {
-				display: none;
-				visibility: hidden;
+				display: none !important;
+				visibility: hidden !important;
 			}
 		`;
 		document.getElementsByTagName('head')[0].appendChild(style);
@@ -411,12 +410,12 @@ export const MatchMedia = forwardRef(
 						case "display": case "visibility":
 							child.classList.remove(className);
 							break;
-						case "dom":{
-							let parent = prop as Node;
-							if(parent && child.parentNode != parent){
-								parent.appendChild(child);
-							}
-						} break;
+						// case "dom":{
+						// 	let parent = prop as Node;
+						// 	if(parent && child.parentNode != parent){
+						// 		parent.appendChild(child);
+						// 	}
+						// } break;
 					}
 				}
 			}
@@ -432,15 +431,15 @@ export const MatchMedia = forwardRef(
 						case "display": case "visibility":
 							child.classList.add(className);
 							break;
-						case "dom":{
-							let parent = props[i] as Node;
-							if(!parent){
-								props[i] = child.parentNode;
-							}
-							if(child.parentNode || parent){
-								child.remove();
-							}
-						} break;
+						// case "dom":{
+						// 	let parent = props[i] as Node;
+						// 	if(!parent){
+						// 		props[i] = child.parentNode;
+						// 	}
+						// 	if(child.parentNode || parent){
+						// 		child.remove();
+						// 	}
+						// } break;
 					}
 				}
 			}
@@ -477,22 +476,22 @@ export const MatchMedia = forwardRef(
 	
 	useEffect(() => {
 		if(!hideOnRender){
-			let childElems = childRefs.current as Element[];
-			for(let i = 0;i<childElems.length;i++){
-				let child = childElems[i];
-				if(!child) return;
-				switch(hidingType){
-					case "dom":{
-						let parent = child.parentNode;
-						if(parent && !matches){
-							propRefs.current[i] = parent;
-						}
-					} break;
-				}
-			}
+			// let childElems = childRefs.current as Element[];
+			// for(let i = 0;i<childElems.length;i++){
+			// 	let child = childElems[i];
+			// 	if(!child) return;
+			// 	switch(hidingType){
+			// 		case "dom":{
+			// 			let parent = child.parentNode;
+			// 			if(parent && !matches){
+			// 				propRefs.current[i] = parent;
+			// 			}
+			// 		} break;
+			// 	}
+			// }
 			match();
 		}
-	},[matches])
+	},[hideOnRender, match, matches])
 
 	return (
 		<>
