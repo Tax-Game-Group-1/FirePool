@@ -10,7 +10,9 @@
   },
   "dependencies": {
     "@catsums/my": "latest",
+    "@catsums/signal-event-bus": "^1.0.2",
     "@gsap/react": "^2.1.1",
+    "@preact/signals-react": "^2.0.2",
     "animejs": "^3.2.2",
     "framer-motion": "^11.2.10",
     "gsap": "^3.12.5",
