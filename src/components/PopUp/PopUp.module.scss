@@ -1,0 +1,32 @@
+
+.popUpContainer {
+	@apply flex justify-center items-center w-full h-full;
+
+	.containerElements {
+		@apply absolute w-full h-full flex justify-center items-center z-10;
+	}
+
+	.containerHide {
+		@apply absolute w-full h-full z-0;
+
+		pointer-events: all;
+
+		background-color: color-mix(in srgb, var(--btnShadow1) 40%, black);
+	}
+
+	.popUp {
+		@apply flex flex-col absolute justify-center items-center p-2 m-2 max-w-full break-all rounded-md min-w-[50%] md:min-w-[33%];
+		
+		pointer-events: all;
+		
+		.popUpClose{
+			@apply inline-flex justify-center items-center self-end rounded-lg p-0 min-w-1 md:min-w-4 aspect-square;
+		}
+		.popUpContent{
+			@apply flex justify-center items-center p-2 m-2;
+		}
+		.popUpButtons{
+			@apply flex justify-around gap-2 items-center p-2;
+		}
+	}
+}
