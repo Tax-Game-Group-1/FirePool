@@ -3,3 +3,38 @@ $border-width: 2px;
 $off-white: #fcfcfc;
 $toolbar-height: 140px;
 $margin: 20px;
+
+
+$colors : (
+	"mainColor": #ffffff,
+	"solidWindow": #0b2631,
+	"accent": #0a222b,
+	"accentText": #0a222b,
+	"solidElement": #084c61,
+	"solidText": #7ce,
+	"gradientA": #082933,
+	"gradientB": #052c38,
+	"textBoxBackground": #ffffff,
+	"textBoxFontColor": #7ce,
+	"toolBar": #0d2c39,
+	"input": #000000,
+	"background": #05222b,
+	"btnBorder": #ffffff,
+	"btnBackgroundA": #0d2c39,
+	"btnBackgroundB": #2797c7,
+	"btnReflection": #dcf5ff2a,
+	"btnShadow0": #16223082,
+	"btnShadow1": #16223052,
+	"btnShadow2": #1622306d,
+	"btnColor": #ffffff,
+	"currency": #d7a826,
+);
+
+@each $key,$val in $colors {
+	// --#{$key}: {$val};
+	@property --#{$key} {
+		syntax: '<color>';
+		initial-value: #{$val};
+		inherits: false;
+	}
+}

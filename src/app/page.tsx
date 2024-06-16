@@ -1,17 +1,17 @@
 'use client'
 import s from './page.module.scss'
 import {useTheme} from "@/components/ThemeContext/themecontext";
-import t from '@/components/ThemeContext/themes.module.scss'
+import t from '../elements.module.scss'
 import {transform} from "sucrase";
 import {rotate} from "next/dist/server/lib/squoosh/impl";
 
 export default function Home() {
 
-  const { toggleTheme, getThemeClass  } = useTheme();
+  const { toggleTheme, theme  } = useTheme();
 
   return (
-        <main className={[s.splash, getThemeClass()].join(' ')} id={"top"}>
-          <section className={t.solidElement}>
+        <main className={`${s.splash} ${theme}`} id={"top"}>
+          <section className={`${t.solidElement} ${t.solidText}`}>
             <nav className={s.nav}>
               <ul>
                 <li>About Us</li>
@@ -42,16 +42,16 @@ export default function Home() {
               </div>
             </div>
           </section>
-          <section id={"bottom"} className={t.gradient}>
+          <section id={"bottom"} className={`${t.gradient} ${t.solidText}`}>
             <h2 className={s.prompt}>What would you like to do?</h2>
             <div className={s.cards}>
               <div/>
-              <div className={[s.card, t.solidElement].join(' ')}>
+              <div className={`${s.card} ${t.solidElement}`}>
                 <img src="/images/create.png"/>
                 <p>Create Game</p>
               </div>
               <div/>
-              <div className={[s.card, t.solidElement].join(' ')}>
+              <div className={`${s.card} ${t.solidElement}`}>
                 <img src="/images/join.png"/>
                 <p>Join Game</p>
               </div>

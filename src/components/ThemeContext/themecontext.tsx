@@ -1,37 +1,40 @@
 // contexts/ThemeContext.tsx
 import { createContext, useState, useContext, ReactNode } from 'react';
-export enum AvailableThemes {
-  PALEBLUE,
-  DARKBLUE,
-}
+import "./themes.scss";
+import Themes from "./themes.module.scss";
+// export enum ThemeType {
+//   PALEBLUE,
+//   DARKBLUE,
+//   DARDRED,
+// }
+
+type ThemeType = string;
 
 interface ThemeContextProps {
-  theme: AvailableThemes;
+  theme: string;
   toggleTheme: () => void;
-  getThemeClass: () => string;
 }
 
-const ThemeContext = createContext<ThemeContextProps | undefined>(undefined);
+const defaultThemeContext:ThemeContextProps = {
+	theme: Themes.darkBlue,
+	toggleTheme: () => {},
+}
+
+const ThemeContext = createContext(defaultThemeContext);
 
 export const ThemeProvider = ({ children }: { children: ReactNode }) => {
-  const [theme, setTheme] = useState<AvailableThemes>(AvailableThemes.DARKBLUE);
+  const [theme, setTheme] = useState<ThemeType>(defaultThemeContext.theme);
 
   const toggleTheme = () => {
-    setTheme((prevTheme) => (prevTheme === AvailableThemes.PALEBLUE ? AvailableThemes.DARKBLUE : AvailableThemes.PALEBLUE));
+	let themesArr = Object.values(Themes);
+	let index = themesArr.indexOf(theme);
+	let newIndex = (index+1) % themesArr.length;
+	console.log({index,newIndex, i:themesArr[index], n:themesArr[newIndex]})
+    setTheme(themesArr[newIndex]);
   };
 
-  const getThemeClass = () : string => {
-    const t = require('./themes.module.scss')
-    switch (theme) {
-      case AvailableThemes.DARKBLUE:
-        return t.darkBlue
-      case AvailableThemes.PALEBLUE:
-        return t.paleBlue
-    }
-  }
-
   return (
-      <ThemeContext.Provider value={{ theme, toggleTheme, getThemeClass }}>
+      <ThemeContext.Provider value={{ theme, toggleTheme }}>
         {children}
       </ThemeContext.Provider>
   );
@@ -39,8 +42,9 @@ export const ThemeProvider = ({ children }: { children: ReactNode }) => {
 
 export const useTheme = () => {
   const context = useContext(ThemeContext);
-  if (context === undefined) {
-    throw new Error('useTheme must be used within a ThemeProvider');
-  }
+
+//   if (context === undefined) {
+//     throw new Error('useTheme must be used within a ThemeProvider');
+//   }
   return context;
 };
