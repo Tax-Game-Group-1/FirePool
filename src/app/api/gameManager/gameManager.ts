@@ -1,5 +1,11 @@
 import {Socket} from "socket.io-client";
 
+
+/*
+ GAME:
+  | id | penalty | roundNumber | taxCoefficient | maxPlayers | auditProbability | kickPlayersOnBankruptcy |
+ */
+
 export class Game {
     //manage the game id
     private _id: string;
@@ -163,6 +169,10 @@ export class Game {
     }
 }
 
+/*
+ UNIVERSE:
+ | id | gameID | ministerID | taxRate |
+ */
 export class Universe {
     public readonly minister: Minister;
     public readonly taxRate: number;
@@ -254,6 +264,10 @@ export class Universe {
 
 }
 
+/*
+ PLAYER
+ | id | universeID (null if not defined) | name | type (minster | localWorker | foreignWorker) | currentFunds | hasBeenKicked |
+ */
 export abstract class Player {
     private _name: string;
     private _id: string;
@@ -331,17 +345,29 @@ export class Minister extends Player {
 
 }
 
+interface declareVsPaidTax {
+    incomeReceived: number,
+    declared: number,
+    calculatedTax: number
+}
+
 export abstract class Citizen extends Player {
-    private _taxPaid;
+    private declaredArray: declareVsPaidTax[];
 
     constructor(name: string, id: string, client: Socket) {
         super(id, name, client);
-        this._taxPaid = 0;
+        this.declaredArray = Array();
     }
 
-    public payTax(amount: number) {
-        this._taxPaid += amount;
+    //todo: continue with this
+    public payTax(received: number, declared: number, calculatedTax: number) {
+        this.declaredArray.push({
+            incomeReceived: received,
+            declared: declared,
+            calculatedTax: calculatedTax
+        })
     }
+
 }
 
 export class LocalWorker extends Citizen {
