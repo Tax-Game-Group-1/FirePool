@@ -1,0 +1,22 @@
+
+.worldHUD {
+	@apply rounded-md p-2 flex flex-col gap-1 max-w-full self-stretch sm:self-end;
+
+	pointer-events: all;
+
+	.row {
+		@apply flex justify-between;
+	}
+
+	.col {
+		@apply flex flex-col justify-between;
+	}
+	.displayBox {
+		@apply mx-1 ml-8 rounded-md p-1 text-xl flex justify-end;
+	}
+
+	.currencyIcon {
+		@apply border aspect-square rounded-full self-center w-6 flex justify-start;
+	}
+
+}

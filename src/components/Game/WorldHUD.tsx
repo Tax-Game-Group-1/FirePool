@@ -3,10 +3,13 @@ import React, { forwardRef, Ref } from "react"
 import SVGIcon from '@/components/SVGIcon/SVGIcon'
 import { CurrencyIcon, PercentageIcon } from "@/assets/svg/icons";
 
+import t from "../../elements.module.scss";
+import style from "./WorldHUD.module.scss";
+
 export const WorldHUD = forwardRef(function WorldHUD({}, ref:Ref<any>){
 	return (
-		<div ref={ref} className="world-hud bg-white text-black rounded-md p-2 flex flex-col gap-1">
-			<div className="flex gap-2 justify-between">
+		<div ref={ref} className={`${style.worldHUD} ${t.solidElement} ${t.solidText}`}>
+			<div className={`${style.row} gap-2 justify-between`}>
 				<div className="world-year-label mx-1 text-sm">
 					<span>World name</span>
 				</div>
@@ -14,36 +17,36 @@ export const WorldHUD = forwardRef(function WorldHUD({}, ref:Ref<any>){
 					<span>Mike Hunt</span>
 				</div>
 			</div>
-			<div className="flex gap-2">
-				<div className="flex flex-col justify-between border border-white">
+			<div className={`${style.row} gap-2`}>
+				<div className="flex flex-col justify-between ">
 					<div className="world-taxrate-label mx-1 text-sm">
 						<span>Tax Rate</span>
 					</div>
-					<div className="world-taxrate mx-1 text-white bg-black rounded-md p-1 flex justify-end min-w-24">
+					<div className={`${t.inputBox} ${style.displayBox} ${t.fillSolidText} min-w-24`}>
 						<span className="world-taxrate-value">40</span>
 						<span className="percent-icon px-0 w-5">
 							<SVGIcon>
-								<PercentageIcon fill='white'/>
+								<PercentageIcon fill=""/>
 							</SVGIcon>
 						</span>
 					</div>
 				</div>
-				<div className="flex flex-col justify-between self-end border border-white min-w-40">
+				<div className={`${style.col} self-end min-w-28 sm:min-w-40`}>
 					<div className="world-year-label mx-1 ml-8 text-sm">
 						<span>Year</span>
 					</div>
-					<div className="world-year mx-1 ml-8 text-white bg-black rounded-md p-1 flex justify-end">
+					<div className={`${t.inputBox} ${t.mainText} ${style.displayBox}`}>
 						<span className="world-year-value">1</span>
 					</div>
 				</div>
 			</div>
-			<div className="flex justify-end gap-2">
-				<div className="flex flex-col justify-items-end border border-white min-w-40">
+			<div className={`${style.row} gap-2 justify-end self-end`}>
+				<div className={`${style.col} min-w-40 justify-items-end`}>
 					<div className="world-funds-label world-funds mx-1 ml-8 text-sm">
 						<span>World Funds</span>
 					</div>
-					<div className="mx-1 ml-8 text-white bg-black rounded-md p-1 text-xl flex justify-end">
-						<div className="w-6 flex justify-start player-currency-icon">
+					<div className={`${t.inputBox} ${t.mainText} ${style.displayBox}`}>
+						<div className={`${t.currencyIcon} ${style.currencyIcon}`}>
 							<SVGIcon>
 								<CurrencyIcon fill='white'/>
 							</SVGIcon>
