@@ -1,4 +1,5 @@
 import {NextResponse} from "next/server";
+import { tblAdmin } from "../../../../lib/db";
 
 /**
  * Handles setting up the games
@@ -19,8 +20,11 @@ export async function POST(request: Request) {
     const data = await request.json();
     console.log("POST REQUEST")
     console.log(data);
+
+
+
     return NextResponse.json({
         status: "success"
     })
-
+    
 }

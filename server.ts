@@ -9,6 +9,15 @@ const port = 3000;
 
 const app = next({dev, hostname, port});
 const handler = app.getRequestHandler();
+let game: Game;
+
+//set the current game instance on the server. This is the function that the API uses. 
+//The actual game is posted to the database initially using the API. 
+//This instance is just stored here, but will make API requests after each round 
+//to update the instance
+export function setGameInstance(newGame: Game) {
+  game = newGame;
+}
 
 function randomID(length = 8, prefix = '', suffix = '') {
     let characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
@@ -20,6 +29,7 @@ function randomID(length = 8, prefix = '', suffix = '') {
     return `${prefix}${result}${suffix}`;
 }
 
+console.log(`Trying to listen on ${port} (kill port if failing)`);
 app.prepare().then(() => {
     const httpServer = createServer(handler);
     const io = new Server(httpServer);
@@ -33,12 +43,14 @@ app.prepare().then(() => {
      */
     //handle the connection of players
     io.on("connection", (socket) => {
-        console.log("Player joined...");
+        console.log("Player connected to the socket...");
 
         //when players try to join the game, it generates a random ID for them
         // we will maybe have to change this later if games need to be resumed
         socket.on("joinGame", ({code}) => {
             console.log(code);
+
+
 
             let id = randomID(8);
 
