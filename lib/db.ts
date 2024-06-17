@@ -16,7 +16,6 @@ export const rdsClient = new RDSDataClient({
     region: 'us-east-1',
 });
 
-
 const db = drizzle(rdsClient, {
     database: process.env['DATABASE']!,
     secretArn: process.env['SECRET_ARN']!,
