@@ -1,0 +1,10 @@
+
+.gameLayout {
+	@apply max-h-svh max-w-[100svw] h-screen w-screen overflow-hidden grid grid-rows-12 gap-2 p-2;
+
+	main {
+		@apply row-span-11 rounded-md flex p-2 mb-8 relative justify-center items-center border;
+		border-color: var(--gradientB);
+		background: linear-gradient(var(--gradientA), var(--gradientB));
+	}
+}

@@ -1,0 +1,193 @@
+
+.mainText {
+	color: var(--mainColor);
+
+	@apply transition-colors duration-300;
+}
+.mainBG {
+	background-color: var(--mainColor);
+
+	@apply transition-colors duration-300;
+}
+.solidText {
+	color: var(--solidText);
+
+	@apply transition-colors duration-300;
+}
+.solidBG {
+	background-color: var(--solidText);
+
+	@apply transition-colors duration-300;
+}
+.solidBorder {
+	border-color: var(--solidText);
+	outline-color: var(--solidText);
+
+	@apply transition-colors duration-300;
+}
+
+.solidWindow {
+	background-color: var(--solidWindow);
+	fill: var(--solidWindow);
+
+	@apply transition-colors duration-300;
+}
+
+.accent {
+	background-color: var(--accent);
+	fill: var(--accent);
+
+	@apply transition-colors duration-300;
+}
+.accentBorder {
+	border-color: var(--accent);
+	outline-color: var(--accent);
+
+	@apply transition-colors duration-300;
+}
+
+.accentText {
+	color: var(--accentText);
+
+	@apply transition-colors duration-300;
+}
+
+.solidElement {
+	background-color: var(--solidElement);
+	fill: var(--solidElement);
+
+	@apply transition-colors duration-300;
+}
+
+.gradient {
+	--gradient: linear-gradient(0deg, var(--gradientA) 0%, var(--gradientB) 100%);
+	background: var(--gradient);
+	fill: var(--gradient);
+
+	@apply transition-colors duration-300;
+}
+
+.textBoxBackground {
+	background-color: var(--textBoxBackground);
+	// fill: var(--textBoxBackground);
+
+	@apply transition-colors duration-300;
+}
+
+.textBoxFont {
+	color: var(--textBoxFontColor);
+	
+	@apply transition-colors duration-300;
+}
+
+.toolBar {
+	background-color: var(--toolBar);
+	fill: var(--toolBar);
+	
+	@apply transition-colors duration-300;
+}
+
+.inputBox {
+	background-color: var(--input);
+
+	@apply transition-colors duration-300;
+}
+.inputText {
+	color: var(--input);
+
+	@apply transition-colors duration-300;
+}
+
+.background {
+	background-color: var(--background);
+	fill: var(--background);
+
+	@apply transition-colors duration-300;
+}
+
+.buttonText {
+	color: var(--btnColor);
+}
+
+.buttonBorder {
+	outline-color: var(--btnBorder);
+	border-color: var(--btnBorder);
+}
+
+.buttonBackground {
+	--btnBackground: linear-gradient(var(--btnBackgroundA), var(--btnBackgroundB));
+	// background: rgb(255, 255, 255);
+	background: var(--btnBackground);
+	border-color: var(--btnBorder);
+
+	@apply transition-colors duration-300;
+}
+
+.fillMain {
+	fill: var(--mainColor);
+}
+.fillAccent {
+	fill: var(--accent);
+}
+.fillToolbar {
+	fill: var(--toolBar);
+}
+.fillToolbar {
+	fill: var(--toolBar);
+}
+.fillButtonA {
+	fill: var(--btnBackgroundA);
+}
+.fillButtonB {
+	fill: var(--btnBackgroundB);
+}
+.fillButtonC {
+	fill: var(--btnColor);
+}
+.fillCurrency {
+	fill: var(--currency);
+}
+.fillSolidElement {
+	fill: var(--solidElement);
+}
+.fillSolidText {
+	fill: var(--solidText);
+}
+
+.strokeMain {
+	stroke: var(--mainColor);
+}
+.strokeAccent {
+	stroke: var(--accent);
+}
+.strokeToolbar {
+	stroke: var(--toolBar);
+}
+.strokeToolbar {
+	stroke: var(--toolBar);
+}
+.strokeButtonA {
+	stroke: var(--btnBackgroundA);
+}
+.strokeButtonB {
+	stroke: var(--btnBackgroundB);
+}
+.strokeButtonC {
+	stroke: var(--btnColor);
+}
+.strokeCurrency {
+	stroke: var(--currency);
+}
+.strokeSolidElement {
+	stroke: var(--solidElement);
+}
+.strokeSolidText {
+	stroke: var(--solidText);
+}
+
+.currencyIcon {
+	path {
+		stroke: var(--currency);
+		fill: var(--currency);
+	}
+}

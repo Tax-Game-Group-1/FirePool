@@ -1,0 +1,94 @@
+@import "@/variables";
+@import "@/fonts/fonts";
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  scroll-behavior: smooth;
+  font-family: "Montserrat", "MyriadPro";
+//   background-color: black;
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+
+//input {
+//  border: none;
+//  outline: none;
+//  display: inline-block;
+//  height: 34px;
+//  vertical-align: middle;
+//  bottom: 14px;
+//  right: 9px;
+//  border-radius: 22px;
+//  width: 220px;
+//  color: black;
+//}
+
+::-webkit-scrollbar {
+	width: 0.75em;
+	box-sizing: content-box;
+}
+
+::-webkit-scrollbar-track {
+	background: var(--background);
+	border: thick solid var(--background);
+	box-sizing: content-box;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+	background: var(--solidElement);
+	margin: 4em;
+	border-radius: 0.5em;
+	border: 0.15em solid var(--background);
+	
+	transition: all 0.3s;
+	
+	&:hover {
+		background: var(--background);
+		border-color: var(--solidElement);
+	}
+	&:active {
+		background: var(--solidText);
+		border-color: var(--background);
+	}
+}
+
+// button {
+//   background-color: white;
+//   color: black;
+//   font-size: clamp(1.75rem, 1.6441rem + 0.565vw, 3rem);
+//   border-radius: $border-radius;
+//   display: flex;
+//   position: relative;
+//   padding: 5px;
+// }
+
+// button:hover {
+//   color: $off-white;
+//   background-color: black;
+//   outline: 2px solid white;
+// }
+
+// nav li {
+//   cursor: pointer;
+// }
+
+// nav li:hover {
+//   color: black;
+//   background-color: $off-white;
+// }
+
+// button img {
+//   position: absolute;
+//   height: 50%;
+//   top: 25%;
+//   right: 10px
+// }
+

@@ -1,0 +1,40 @@
+
+.playerHUD {
+	@apply rounded-md p-2 inline-flex justify-around items-center self-center sm:self-auto gap-1 sm:gap-3 relative w-full sm:w-auto max-w-full;
+	@apply transition-transform;
+
+
+	pointer-events: all;
+
+	.HUDIcon {
+		@apply min-h-24 aspect-square rounded-md p-2 ml-0 sm:ml-2 flex sm:self-center self-start items-center justify-center;
+
+		.icon {
+			@apply w-full h-full rounded-md;
+		}
+	}
+
+	.playerName {
+		@apply p-1 text-xs sm:text-sm md:text-xl text-wrap;
+	}
+	.playerRole {
+		@apply rounded-3xl text-xs p-1 px-4 flex justify-center;
+	}
+
+	.playerFunds {
+		@apply flex justify-between self-end rounded-md p-1 text-xl m-0;
+	}
+
+	.currencyIcon {
+		@apply w-6 aspect-square flex justify-start self-center border rounded-full;
+
+	}
+
+	.hudIcons {
+		@apply w-10 flex flex-col justify-items-end items-center gap-1 p-1 self-end;
+		.iconContainer {
+			@apply flex flex-col content-end sm:content-normal flex-wrap sm:flex-nowrap aspect-square w-12 sm:w-11 md:w-9 p-0 self-end;
+		}
+	}
+	
+}

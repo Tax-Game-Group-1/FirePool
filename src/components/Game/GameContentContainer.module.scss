@@ -1,0 +1,24 @@
+
+.gameContentContainer {
+	@apply h-full w-full absolute top-0 right-0 p-2 bg-transparent flex flex-col justify-center items-center;
+	
+	pointer-events: none;
+	
+	.gameContent {
+		@apply rounded-md inline-flex mb-2 relative;
+		background-color: var(--solidWindow);
+		color: var(--solidText);
+		user-select: none;
+		transform-origin: center;
+		box-sizing: border-box;
+
+		pointer-events: all;
+
+		box-shadow: 0 1rem var(--btnShadow0);
+		.gameContentInner {
+			@apply rounded-md p-2 inline-flex relative;
+			background: linear-gradient(25deg, transparent 50%, var(--btnReflection) 50%);
+			box-shadow: inset 0 0.1em var(--btnReflection);
+		}
+	}
+}
