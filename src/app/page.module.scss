@@ -49,6 +49,10 @@
     // padding: 50px 50px 0;
 }
 
+.interactable {
+	pointer-events: all;
+}
+
 // .container div:nth-child(1) {
 //     padding: 50px;
 // }
