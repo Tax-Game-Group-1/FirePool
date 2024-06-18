@@ -139,9 +139,7 @@ describe('test the game manager', () => {
 
         //pay 3 times, but lie
         citizens[1].payTaxAndRevieve(100, 50, 50 * TAX_PERCENT_TO_PAY) // pay 60 penalty
- 
         citizens[1].payTaxAndRevieve(100, 40, 40 * TAX_PERCENT_TO_PAY) // pay 72 penalty
-
         citizens[1].payTaxAndRevieve(100, 30, 30 * TAX_PERCENT_TO_PAY) // pay 84 penalty = 216
       
 
@@ -172,12 +170,32 @@ describe('test the game manager', () => {
             c.audit(g.penalty);
         }
 
-        
         expect(citizens[0].funds).toBe(170 -(170 * TAX_PERCENT_TO_PAY));
         expect(citizens[1].funds).toBe(36);
         expect(citizens[2].funds).toBe(76);
 
     })
 
+    test ("Remove Player", ()=>{
+        const g = new Game("1", 1.4, 5, 0.2, 0, 0.4, false);
+
+        g.addUniverse(new Universe(new Minister("Julius", "0", io()), 0.4, "1"))
+
+        //generic citizens in the waiting area
+        const citizens: Citizen[] = [
+            new ForeignWorker("John", "1", io()),
+            new LocalWorker("Tracy", "2", io()),
+            new LocalWorker("Max", "3", io()),
+        ]
+
+        for (let c of citizens) {
+            g.addPlayerToWaitingArea(c);
+            g.assignPlayerToUniverse(c.id, "1", true);
+        }
+        console.log(g.getUniverse("1"));
+        g.getUniverse("1").removePlayer("2");
+        g.getUniverse("1").removePlayer(citizens[0]);
+        console.log(g.getUniverse("1"));
+    })
 
 });

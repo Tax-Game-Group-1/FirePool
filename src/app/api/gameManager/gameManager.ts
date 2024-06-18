@@ -1,3 +1,4 @@
+
 import {Socket} from "socket.io-client";
 
 
@@ -262,10 +263,10 @@ export class Universe {
     }
 
     //todo: test
-    public removePlayer(player: Player): void;
+    public removePlayer(player: Citizen): void;
     public removePlayer(id: string): void;
 
-    public removePlayer(a: any) {
+    public removePlayer(a:(Citizen|string)) {
         let index = 0;
         for (let cit of this._players) {
 
@@ -275,7 +276,7 @@ export class Universe {
                     return;
                 }
 
-            if (typeof a == typeof Player)
+            if ( a instanceof Citizen)
                 if (cit.id == a.id) {
                     this._players.splice(index, 1);
                     return;
