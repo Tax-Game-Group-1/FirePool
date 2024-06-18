@@ -42,11 +42,12 @@ const Layouts = forwardRef(function Layouts({}, ref:Ref<any>) {
 	useSignals();
 	let {theme} = useTheme();
 
-	let [gameScreen, setGameScreen] = useState(GameScreen.InGame);
+	let [gameScreen, setGameScreen] = useState(GameScreen.WaitingRoom);
 
 	useEffect(()=>{
 		window.scrollTo(0,0);
 		if(!isLoaded.value) return;
+		return;
 
 		// let x = setTimeout(()=>{
 		// 	createContent({
