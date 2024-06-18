@@ -70,6 +70,7 @@ export interface IRoomData extends IData  {
   penalty:number;
   kickPlayersOnBackruptcy:boolean;
   auditProbability:number;
+  gameState?: GameState;
 }
 
 const hosts:IObject<IHostData> = {
@@ -161,6 +162,27 @@ const rooms:IObject<IRoomData> = {
 		kickPlayersOnBackruptcy: true,
 		auditProbability: 0.1,
 	},
+	"1234ABCD" : {
+		id: "1234ABCD",
+		name: "Game 2",
+		year: 1,
+		host:  "1234abcd",
+		players: [
+			// "1234abcd",
+			"01235you",
+			"12443ghy",
+			"abcd3456",
+			"1234abce",
+		],
+		worlds: [
+			"1234abce"
+		],
+		taxCoeff: 1.5,
+		maxNumberOfPlayers: 15,
+		penalty: 0.3,
+		kickPlayersOnBackruptcy: true,
+		auditProbability: 0.2,
+	},
 };
 const worlds:IObject<IWorldData> = {
 	"1234abcd" : {
@@ -181,6 +203,8 @@ export function setData(table:"players", data:IPlayerData) : boolean;
 export function setData(table:"rooms", data:IRoomData) : boolean;
 export function setData(table:"hosts", data:IHostData) : boolean;
 export function setData(table:"worlds", data:IWorldData) : boolean;
+
+export function setData(table:"worlds", data:IData) : boolean;
 
 export function setData(table:string, data:IData){
 	let obj:IObject<IData>;
@@ -205,6 +229,7 @@ export function getData(table:"rooms", id:string) : IRoomData | null;
 export function getData(table:"hosts", id:string) : IHostData | null;
 export function getData(table:"worlds", id:string) : IWorldData | null;
 
+export function getData(table:string, id:string) : IData | null;
 
 export function getData(table:string, id:string){
 	let obj:IObject<IData>;
@@ -227,6 +252,8 @@ export function findData(table:"players", q:any) : IPlayerData[];
 export function findData(table:"rooms", q:any) : IRoomData[];
 export function findData(table:"hosts", q:any) : IHostData[];
 export function findData(table:"worlds", q:any) : IWorldData[];
+
+export function findData<T=IData>(table:string, query:any) : T[];
 
 export function findData<T=IData>(table:string, query:any){
 	let obj:IObject<IData>;
