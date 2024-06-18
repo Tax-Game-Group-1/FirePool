@@ -1,5 +1,5 @@
 @import "@/variables";
-@import "@/fonts/fonts.scss";
+@import "@/fonts/fonts";
 
 @tailwind base;
 @tailwind components;
@@ -17,7 +17,7 @@
 }
 
 body {
-	font-family: "Montserrat";
+	font-family: "Montserrat", "MyriadPro";
 	overflow: hidden;
 	width: 100svw;
 	height: 100dvh;
