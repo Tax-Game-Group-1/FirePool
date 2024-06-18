@@ -17,7 +17,7 @@ export const rdsClient = new RDSDataClient({
 });
 
 const db = drizzle(rdsClient, {
-    database: process.env['DATABASE']!,
+    database: (process.env['NODE_ENV'] == "test" ) ? process.env['TEST_DATABASE'] : process.env['DATABASE']!,
     secretArn: process.env['SECRET_ARN']!,
     resourceArn: process.env['RESOURCE_ARN']!,
 });

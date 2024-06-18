@@ -1,5 +1,4 @@
 import {NextResponse} from "next/server";
-import { tblAdmin } from "../../../../lib/db";
 
 /**
  * Handles setting up the games
