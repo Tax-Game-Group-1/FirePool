@@ -1,6 +1,8 @@
 import dynamic from 'next/dynamic'
 import React, { lazy, Suspense } from 'react'
 
+import "./page.scss"
+
 const Layouts = dynamic(() => import("./layouts"), {ssr: false})
 
 export default function Layout() {

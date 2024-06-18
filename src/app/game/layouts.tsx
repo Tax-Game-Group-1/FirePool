@@ -72,6 +72,7 @@ const Layouts = forwardRef(function Layouts({}, ref:Ref<any>) {
 	},[])
 
 	useEffect(()=>{
+		window.scrollTo(0,0);
 		if(!isLoaded.value) return;
 
 		// let x = setTimeout(()=>{
