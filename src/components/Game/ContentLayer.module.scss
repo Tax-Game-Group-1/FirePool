@@ -4,5 +4,6 @@
 	pointer-events: none;
 	.contentLayer {
 		@apply h-full w-full absolute top-0 right-0 bg-transparent;
+		pointer-events: fill;
 	}
 }

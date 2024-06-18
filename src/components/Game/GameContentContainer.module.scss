@@ -2,7 +2,7 @@
 .gameContentContainer {
 	@apply h-full w-full absolute top-0 right-0 p-2 bg-transparent flex flex-col justify-center items-center;
 	
-	pointer-events: all;
+	pointer-events: none;
 	
 	.gameContent {
 		@apply rounded-md inline-flex mb-2 relative;
