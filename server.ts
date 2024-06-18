@@ -1,7 +1,10 @@
-import {createServer} from "node:http";
 import next from "next";
 import {Server, Socket} from "socket.io";
-import {Player, Game, Citizen, Minister, ForeignWorker, LocalWorker, Universe} from "@/app/api/gameManager/gameManager"
+import {Player, Game, Citizen, Minister, ForeignWorker, LocalWorker, Universe} from "./lib/gameManager/gameManager"
+import express, {Express} from "express"
+import {setUpServer} from "./api";
+import exp from "node:constants";
+import * as http from "node:http";
 
 const dev = process.env.NODE_ENV !== "production";
 const hostname = "localhost";
@@ -31,8 +34,9 @@ function randomID(length = 8, prefix = '', suffix = '') {
 
 console.log(`Trying to listen on ${port} (kill port if failing)`);
 app.prepare().then(() => {
-    const httpServer = createServer(handler);
-    const io = new Server(httpServer);
+    const expressServer: Express = express();
+    const server = http.createServer(expressServer);
+    const io = new Server(server);
 
     //--------------------------- socket stuff -------------------------//
     /**
@@ -60,16 +64,10 @@ app.prepare().then(() => {
         });
     });
 
-    httpServer.on("error", (err) => {
-        console.error("Server error:", err);
-        process.exit(1);
-    });
+    //----------------------------- server stuff ------------------------//
 
-    httpServer.listen(port, () => {
-        console.log(`> Ready on http://${hostname}:${port}`);
-    });
-
-
+    //set up all the API routes for the server, even though the server still lives here
+    setUpServer(expressServer);
 
 }).catch((err) => {
     console.error("Next.js app error:", err);
