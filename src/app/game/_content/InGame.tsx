@@ -22,13 +22,11 @@ export default function InGame() {
 			</GameContentContainer>
 		</ContentLayer>
 
-		<ContentLayer z={200}>
-			<PopUpContainer>
-			</PopUpContainer>
+		<ContentLayer z={100}>
+			<NotifContainer></NotifContainer>
 		</ContentLayer>
-		<ContentLayer z={300}>
-			<NotifContainer>
-			</NotifContainer>
+		<ContentLayer z={100}>
+			<PopUpContainer></PopUpContainer>
 		</ContentLayer>
 	</ContentLayersContainer>
   )
