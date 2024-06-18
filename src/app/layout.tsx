@@ -11,6 +11,7 @@ export default function RootLayout({
     <html lang="en">
       <head>
         <link rel="icon" href="/images/icons/icon.ico" sizes="any"/>
+		<meta name="wow"/>
       </head>
       <ThemeProvider>
         <body>{children}</body>
