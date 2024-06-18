@@ -1,3 +1,4 @@
+import Declare from "@/app/declare/page";
 import {Socket} from "socket.io-client";
 
 
@@ -32,6 +33,9 @@ export class Game {
         this._universes = [];
     }
 
+    /*
+        copy constructor for when user modifies the settings of the universe in the fronted
+    */
     public setValues(id: string, taxCoefficient: number, maxPlayers: number, penalty: number, roundNumber: number, auditProbability: number, kickPlayersOnBankruptcy: boolean) {
         this._id = id;
         this._penalty = penalty;
@@ -44,6 +48,7 @@ export class Game {
         this.kickPlayersOnBankruptcy = kickPlayersOnBankruptcy;
     }
 
+    // waiting area for players who have joined a game, but are not assigned to a universe yet
     public addPlayerToWaitingArea(player: Player): void {
         if (this._playersNotAssignedToUniverse.length >= this.maxPlayers)
             throw "waiting area full"
@@ -52,6 +57,7 @@ export class Game {
 
     public numPlayersNotAssigned = () => this._playersNotAssignedToUniverse.length;
 
+    // take a plyer from the waiting are and put it in a universe object, universes are managed by players
     public assignPlayerToUniverse(playerId: string, universeId: string, isLocalWorker: boolean) {
 
         //find universe
@@ -82,6 +88,7 @@ export class Game {
         throw "unable to find player, player not added"
     }
 
+    // add univers from the database to the game
     public addUniverse(universe: Universe) {
         for (let u of this._universes)
             if (u.id == universe.id)
@@ -91,20 +98,22 @@ export class Game {
         return universe.id;
     }
 
+    //get the id of the game
     public get id(): string {
         return this._id;
     }
 
+    //get the penalty of the game (used in fining players)
     public get penalty(): number {
         return this._penalty;
     }
-
     public set penalty(value: number) {
         if (value < 0 || value > 100)
             throw "invalid penalty, must be from 0 to 100";
         this._penalty = value;
     }
 
+    //round number is how many rounds have passed, starts at 0
     public set roundNumber(value: number) {
         if (value < 0)
             throw "Cannot set round number less than 0"
@@ -115,6 +124,7 @@ export class Game {
         return this._roundNumber;
     }
 
+    // go to the next round
     public incrementRoundNumber(): void {
         this._roundNumber++;
     }
@@ -144,11 +154,26 @@ export class Game {
         return this._auditProbability;
     }
 
+    //set the probability that a player gets audited
     public set auditProbability(value: number) {
         if (value < 0 || value > 100)
             throw "invalid audit probablity";
         this._auditProbability = value;
     }
+
+    //todo: add a function to audit players
+    //loop through all the players
+    //make a random number between 0 and 100
+    //if it's lower than audit probability, then audit the player
+    //fine the player the fine percent
+    //increase the audit count on the player
+    public auditAllPlayers() {
+
+        for (const universe of this._universes)
+            universe.auditPlayers(this._auditProbability, this._penalty);
+
+        throw "unimplementded"
+    }  
 
     public toString() {
         let str = "";
@@ -161,6 +186,7 @@ export class Game {
         return str;
     }
 
+    //get univers by id
     getUniverse(id: string) {
         for (let u of this._universes)
             if (u.id == id)
@@ -188,6 +214,7 @@ export class Universe {
         this._players = [];
     }
 
+    //add player to a universe, check that you can't add duplicates
     public addPlayer(player: Citizen) {
         for (let p of this._players)
             if (p.id == player.id)
@@ -195,11 +222,24 @@ export class Universe {
 
         this._players.push(player);
     }
+    //run through the players
+    //roll a dice weigthed by audit probability
+    //audit players if they are unluckly
+    auditPlayers(auditProbability: number, finePercent: number) {
+        for (const c of this._players){
+           const random = Math.random();
+           if (random <= auditProbability)
+               c.audit(finePercent);
+        }
 
+    }
+
+    //get the universe id
     public get id() {
         return this._id;
     }
 
+    //give players tax by dividing the total amount given by the minister
     public divideTaxAmongPlayers(toDivide: number) {
         if (this._players.length == 0)
             throw "no players in the game yet";
@@ -213,20 +253,16 @@ export class Universe {
         }
     }
 
+    //todo: implement
+    //call the toJSON on the players, and add it to an array
+    //also add all the details for the universe
     public toJSON() {
         let players = [];
 
-        for (let p of this._players)
-
-
-        return {
-           id: this._id,
-           minister: this.minister,
-           taxRate: this.taxRate,
-           players: players
-        }
+                
     }
 
+    //todo: test
     public removePlayer(player: Player): void;
     public removePlayer(id: string): void;
 
@@ -249,6 +285,7 @@ export class Universe {
         }
     }
 
+    //todo: test
     toJson(): void {
         let players = [];
         for (const p of this._players)
@@ -300,10 +337,11 @@ export abstract class Player {
 
     public payFunds(toPay: number) {
         this._funds -= toPay;
-        if (this._funds <= 0)
+        if (this._funds < 0)
             throw "Player is bankrupt";
     }
 
+    //todo: test
     public kickPlayer() {
         this._hasBeenKicked = true;
     }
@@ -352,6 +390,7 @@ interface declareVsPaidTax {
 }
 
 export abstract class Citizen extends Player {
+    //player 
     private declaredArray: declareVsPaidTax[];
 
     constructor(name: string, id: string, client: Socket) {
@@ -360,12 +399,36 @@ export abstract class Citizen extends Player {
     }
 
     //todo: continue with this
-    public payTax(received: number, declared: number, calculatedTax: number) {
+    //subtract from funds to pay the tax
+    public payTaxAndRevieve(received: number, declared: number, calculatedTax: number) {
         this.declaredArray.push({
             incomeReceived: received,
             declared: declared,
             calculatedTax: calculatedTax
         })
+
+        this.receiveFunds(received - calculatedTax)
+    }
+    
+    public audit(finePercent) {
+        //loop through the declared array
+        //check that declared is the same as recieved
+        //if there is a discrepency, fix it (set declared = recievd) && set a flag to fine player
+        //if flag is true: funds -= funds * finepercent
+        //get penalty from game ojbect
+
+        let fineDifference = 0; 
+        for(let d of this.declaredArray) {
+            //player has lied, fine the player
+            if(d.declared < d.incomeReceived)
+            {
+                //add the difference if they have lied
+                fineDifference += d.incomeReceived - d.declared;
+                d.declared = d.incomeReceived;
+            }
+            
+        }
+        this.payFunds(fineDifference + (fineDifference * finePercent));
     }
 
 }
