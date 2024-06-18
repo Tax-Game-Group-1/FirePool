@@ -127,7 +127,7 @@ export const GameContent = forwardRef(function GameContent(
 
 	return (
 		active &&
-		<div data-content-id={id} className={`${style.gameContent} ${t.solidElement} ${className}`} ref={mergeRefs(ref, scope)}>
+		<div data-content-id={id} className={`${style.gameContent} ${t.solidElement} ${className}`} ref={mergeRefs(ref, scope) as any}>
 			<div className={`${style.gameContentInner}`}>
 				{children}
 			</div>

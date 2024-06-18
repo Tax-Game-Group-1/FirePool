@@ -12,7 +12,7 @@ import style from "./waitingRoom.module.scss"
 import { changeWaitingRoomPage, Page } from './waitingRoom';
 
 import { computed } from '@preact/signals-react';
-import { GameGlobal, updateGameGlobal } from '../global';
+import { GameGlobal, updateGameGlobal } from '@/app/global';
 import { getIconURL } from '@/utils/utils';
 import { useSignals } from '@preact/signals-react/runtime';
 import { animate, useAnimate } from 'framer-motion';

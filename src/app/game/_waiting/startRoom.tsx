@@ -19,7 +19,7 @@ import { useSignals } from '@preact/signals-react/runtime';
 
 import btnStyle from "../../../components/Button/Btn.module.scss"
 
-import { GameGlobal, playerData, roomData, updateGameGlobal } from '../global';
+import { GameGlobal, playerData, roomData, updateGameGlobal } from '@/app/global';
 import NameRoom, { AvatarIcon } from './namingRoom';
 import { getData, IPlayerData, setData } from '@/app/dummyData';
 import SignalEventBus, { useSignalEvent } from '@catsums/signal-event-bus';

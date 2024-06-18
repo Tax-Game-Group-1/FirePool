@@ -18,7 +18,7 @@ import TestContent1 from './_content/test1';
 import { signal } from '@preact/signals-react';
 import { WaitingRoom } from './_waiting/waitingRoom';
 import { animate } from 'framer-motion';
-import { updateGameGlobal } from './global';
+import { updateGameGlobal } from '@/app/global';
 
 let isLoaded = signal(false);
 

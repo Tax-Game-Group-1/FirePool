@@ -9,7 +9,7 @@ import style from "./PlayerHUD.module.scss";
 
 import { computed } from '@preact/signals-react';
 
-import { GameGlobal } from '@/app/game/global';
+import { GameGlobal } from '@/app/global';
 import { getData } from '@/app/dummyData';
 import { getIconURL } from "@/utils/utils";
 

@@ -8,7 +8,7 @@ import style from "./WorldHUD.module.scss";
 
 import { computed } from '@preact/signals-react';
 
-import { GameGlobal } from '@/app/game/global';
+import { GameGlobal } from '@/app/global';
 import { getData } from '@/app/dummyData';
 
 export let worldName = computed(()=>{

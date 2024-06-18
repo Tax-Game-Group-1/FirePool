@@ -1,5 +1,5 @@
 import { signal } from "@preact/signals-react";
-import { getData, Role } from "../dummyData";
+import { getData, Role } from "./dummyData";
 
 export let hostData = signal({
 	id: "1234abcd",
