@@ -16,12 +16,14 @@ import { animate, DOMKeyframesDefinition } from 'framer-motion';
 import { AvatarIcon, iconURL } from './game/_waiting/namingRoom';
 import SignalEventBus, { useSignalEvent } from '@catsums/signal-event-bus';
 import { useSignals } from '@preact/signals-react/runtime';
-import NotifContainer, { createNotif } from '@/components/Notification/Notification';
+import NotifContainer, { closeAllNotifs, createNotif } from '@/components/Notification/Notification';
 import { ContentLayer, ContentLayersContainer } from '@/components/Game/ContentLayer';
 import { getData, setData } from './dummyData';
 import { sanitizeString } from '@catsums/my';
 import LoadingScreen from '@/components/LoadingScreen/LoadingScreen';
 import { useRemoveLoadingScreen } from '@/components/LoadingScreen/LoadingScreenUtil';
+import { closeContentAll } from '@/components/Game/GameContentContainer';
+import { closeAllPopUps } from '@/components/PopUp/PopUp';
 
 function HomeCard({icon, text, onClick}:{
 	icon: React.ReactNode,
@@ -66,6 +68,7 @@ function goToSection(section: PageSection){
 			break;
 		
 	}
+	closeAllNotifs();
 	animate(document.body, dir, {duration: 0.3}).then(()=>{
 		homePageSectionBus.emit("section", section);
 	});
@@ -372,7 +375,7 @@ export default function Home() {
 	const { theme  } = useTheme();
 
 	useRemoveLoadingScreen(()=>{
-		
+
 	});
 
 	useEffect(()=>{
