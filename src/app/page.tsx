@@ -11,7 +11,7 @@ import { MinimalMountains } from '../assets/svg/svg';
 
 function HomeCard({icon, text}){
 	return (
-		<div className={`h-full m-0 flex flex-col rounded-md p-6 text-2xl ${t.solidElement} gap-8`}>
+		<div className={` ${t.solidElement} ${s.card}`}>
 			<div className={`${t.fillToolbar} ${t.textBoxBackground} aspect-square rounded-md p-8`}>
 				{icon}
 			</div>
@@ -29,7 +29,7 @@ export default function Home() {
   return (
         <main className={`${s.splash} ${theme} overflow-auto`} id={"top"}>
           <section className={`${t.solidElement} ${t.solidText}`}>
-            <nav className={s.nav}>
+            <nav className={`${s.nav}`}>
               <ul>
                 <li>About Us</li>
                 <li>Case Study</li>
@@ -51,38 +51,42 @@ export default function Home() {
                   <MinimalMountains className={`${s.splashImage}`}/>
                 </div>
 				<div className={` flex items-center justify-center self-center opacity-100`}>
-					<Btn>
-						<a href={"#bottom"} className={`flex gap-1`}>
-							<div>{`Let's Begin`}</div>
-							<div className={`aspect-square w-8 ${t.fillSolidText}`}>
-								<SVGIcon>
-									<PlayIcon/>
-								</SVGIcon>
+					<a href={"#bottom"} className={`flex gap-1`}>
+						<Btn>
+							<div className={`flex gap-1`}>
+								<div>{`Let's Begin`}</div>
+								<div className={`aspect-square w-8 ${t.fillSolidText}`}>
+									<SVGIcon>
+										<PlayIcon/>
+									</SVGIcon>
+								</div>
 							</div>
-						</a>
-					</Btn>
+						</Btn>
+					</a>
 				</div>
               </div>
             </div>
           </section>
           <section id={"bottom"} className={`h-screen flex flex-col justify-evenly items-center ${t.gradient} ${t.solidText}`}>
             <h2 className={s.prompt}>What would you like to do?</h2>
-            <div className={`flex flex-row justify-center items-center gap-4`}>
+            <div className={`flex flex-row justify-around items-center w-1/2`}>
 				<HomeCard icon={<UserIcon/>} text={"Host Game"}/>
 				<HomeCard icon={<UserIcon/>} text={"Join Game"}/>
             </div>
 
 			<div className={`${s.backToTop} flex justify-center items-center`}>
-				<Btn>
-					<a href={"#top"} className={`flex justify-center items-center`}>
-						<div>Back to top</div>
-						<div className={`aspect-square w-10 ${t.fillSolidText}`}>
-							<SVGIcon>
-								<CaretArrow/>
-							</SVGIcon>
+				<a href={"#top"} className={`flex justify-center items-center`}>
+					<Btn>
+						<div className={`flex justify-center items-center`}>
+							<div>Back to top</div>
+							<div className={`aspect-square w-10 ${t.fillSolidText}`}>
+								<SVGIcon>
+									<CaretArrow/>
+								</SVGIcon>
+							</div>
 						</div>
-					</a>
-				</Btn>
+					</Btn>
+				</a>
 			</div>
           </section>
         </main>

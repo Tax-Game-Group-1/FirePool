@@ -69,35 +69,35 @@ body {
 	}
 }
 
-button {
-  background-color: white;
-  color: black;
-  font-size: clamp(1.75rem, 1.6441rem + 0.565vw, 3rem);
-  border-radius: $border-radius;
-  display: flex;
-  position: relative;
-  padding: 5px;
-}
+// button {
+//   background-color: white;
+//   color: black;
+//   font-size: clamp(1.75rem, 1.6441rem + 0.565vw, 3rem);
+//   border-radius: $border-radius;
+//   display: flex;
+//   position: relative;
+//   padding: 5px;
+// }
 
-button:hover {
-  color: $off-white;
-  background-color: black;
-  outline: 2px solid white;
-}
+// button:hover {
+//   color: $off-white;
+//   background-color: black;
+//   outline: 2px solid white;
+// }
 
-nav li {
-  cursor: pointer;
-}
+// nav li {
+//   cursor: pointer;
+// }
 
-nav li:hover {
-  color: black;
-  background-color: $off-white;
-}
+// nav li:hover {
+//   color: black;
+//   background-color: $off-white;
+// }
 
-button img {
-  position: absolute;
-  height: 50%;
-  top: 25%;
-  right: 10px
-}
+// button img {
+//   position: absolute;
+//   height: 50%;
+//   top: 25%;
+//   right: 10px
+// }
 
