@@ -1,24 +1,34 @@
 'use client'
-import t from '../../components/ThemeContext/themes.module.scss'
+import t from '../themes.module.scss'
 import s from './join.module.scss'
-import {useTheme} from "@/components/ThemeContext/themecontext";
+import {useTheme} from "@/app/themecontext";
 import {useRouter} from "next/navigation";
+import {socket} from "@/socket"
+import { useRef } from 'react';
 
 export default function JoinGame() {
-    const {theme} = useTheme();
+    const {getThemeClass} = useTheme();
     const router = useRouter();
-
+    const roomCode = useRef(null);
+    
     const checkRoomCode = () => {
+        let code = roomCode.current.value;
         //see that room code is correct and connect to server
+        socket.emit("joinGame",{code});
 
-        router.push('/game')
-        return true;
+        socket.on("joinedGame",(data)=>{
+            // let {id} = data
+            // localStorage.setItem("playerID", id);
 
-
+            console.log("SUCCESS")
+            console.log(data);
+            //goes to page where you set your name in waiting room
+            // router.push('/inGame')
+        })
     }
 
     return (
-        <div className={theme}>
+        <div className={getThemeClass()}>
             <div className={[s.container, t.gradient].join(' ')}>
                 <div>
                     <p className={s.message}>Enter the game code to join</p>
@@ -30,7 +40,7 @@ export default function JoinGame() {
                     <div className={s.room}/>
                     <div>
                         <p>Room code:</p>
-                        <input type={'text'} className={s.input}/>
+                        <input type={'text'} className={s.input} ref={roomCode}/>
                     </div>
                     <button className={s.button}
                             onClick={() => checkRoomCode()}

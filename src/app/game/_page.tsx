@@ -10,6 +10,8 @@ enum State {
 export default function InGame() {
     const [gameState, setGameState] = useState(State.CHARACTER_SELECTION);
 
+    //check for local storage
+    
     return (
         <>
             {
