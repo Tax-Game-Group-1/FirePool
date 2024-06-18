@@ -200,10 +200,10 @@ export function setData(table:string, data:IData){
 	return true;
 }
 
-export function getData(table:"players", id:string) : IPlayerData;
-export function getData(table:"rooms", id:string) : IRoomData;
-export function getData(table:"hosts", id:string) : IHostData;
-export function getData(table:"worlds", id:string) : IWorldData;
+export function getData(table:"players", id:string) : IPlayerData | null;
+export function getData(table:"rooms", id:string) : IRoomData | null;
+export function getData(table:"hosts", id:string) : IHostData | null;
+export function getData(table:"worlds", id:string) : IWorldData | null;
 
 
 export function getData(table:string, id:string){
