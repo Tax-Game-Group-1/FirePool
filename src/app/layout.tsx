@@ -1,5 +1,6 @@
 'use client'
 import "@/globals.scss";
+import "@/components/ThemeContext/themes.scss"
 import {ThemeProvider} from "@/components/ThemeContext/themecontext";
 
 export default function RootLayout({

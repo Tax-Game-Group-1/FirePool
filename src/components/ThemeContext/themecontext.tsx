@@ -1,7 +1,7 @@
 // contexts/ThemeContext.tsx
 import { createContext, useState, useContext, ReactNode } from 'react';
-import "./themes.scss";
 import Themes from "./themes.module.scss";
+import "./themes.scss";
 // export enum ThemeType {
 //   PALEBLUE,
 //   DARKBLUE,

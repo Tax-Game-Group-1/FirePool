@@ -424,3 +424,82 @@ export const EditTextIcon = forwardRef(function EditTextIcon({
 	</svg>
   )
 })
+
+export const CaretArrow = forwardRef(function CaretArrow({
+	className="",fill="", stroke="", ...other
+}:ISVGProps, ref:Ref<any>){
+	return (
+	<svg
+		xmlns="http://www.w3.org/2000/svg"
+		fill={fill}
+		viewBox="0 0 24 24"
+		ref={ref}
+		stroke={stroke}
+		className={className}
+		{...other}
+	>
+		<path
+			// fill="#000"
+			fillRule="evenodd"
+			d="M11.293 8.793a1 1 0 0 1 1.414 0l5 5a1 1 0 0 1-1.414 1.414L12 10.914l-4.293 4.293a1 1 0 0 1-1.414-1.414l5-5Z"
+			clipRule="evenodd"
+		/>
+	</svg>
+  )
+})
+
+
+export const MinimalSun = forwardRef(function MinimalSun({
+	className="",fill="", stroke="", ...other
+}:ISVGProps, ref:Ref<any>){
+	return (
+	<svg
+		xmlns="http://www.w3.org/2000/svg"
+		fill={fill}
+		viewBox="0 0 235 223"
+		ref={ref}
+		stroke={stroke}
+		className={className}
+		{...other}
+	>
+		<path
+			d="M17.2 111.3c0 19.8 5.9 39.2 16.9 55.6 11 16.5 26.6 29.3 45 36.9 18.3 7.6 38.4 9.6 57.9 5.7 19.4-3.9 37.3-13.4 51.3-27.4 14-14 23.5-31.9 27.4-51.3 3.9-19.4 1.9-39.6-5.7-57.9-7.6-18.3-20.4-33.9-36.9-45-16.5-11-35.8-16.9-55.6-16.9s-52 10.6-70.8 29.3-29.3 44.3-29.3 70.8Z"
+			style={{
+				// fill: "none",
+				// stroke: "#fff",
+				strokeLinecap: "round",
+				strokeLinejoin: "round",
+				strokeWidth: 5,
+			}}
+		/>
+	</svg>
+  )
+})
+
+export const MinimalMountains = forwardRef(function MinimalMountains({
+	className="",fill="", stroke="", ...other
+}:ISVGProps, ref:Ref<any>){
+	return (
+	<svg
+		xmlns="http://www.w3.org/2000/svg"
+		fill={fill}
+		viewBox="0 0 607 607"
+		ref={ref}
+		stroke={stroke}
+		className={className}
+		{...other}
+	>
+		<path
+			d="M270.1 604h300.5L450.4 357.3c-2.7-5.6-7-10.4-12.3-13.7-5.3-3.3-11.5-5.1-17.7-5.1s-12.4 1.8-17.7 5.1c-5.3 3.3-9.6 8.1-12.3 13.7L270.2 604Zm0 0H36.4l171-316.5c2.9-5.3 7.1-9.7 12.3-12.8 5.2-3.1 11.1-4.7 17.1-4.7s11.9 1.6 17.1 4.7c5.2 3.1 9.4 7.5 12.3 12.8l83.1 154.3-79.1 162.3ZM3 604h601"
+			style={{
+			// fill: "none",
+			// stroke: "#fff",
+			strokeLinecap: "round",
+			strokeLinejoin: "round",
+			strokeWidth: 5,
+			}}
+		/>
+  </svg>
+  )
+})
+
