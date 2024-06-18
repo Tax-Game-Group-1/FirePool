@@ -42,7 +42,7 @@ export function useRemoveLoadingScreen(callback:()=>void, onLoad?:()=>void, time
 		}
 		// Remove the event listener when component unmounts
 		return () => {
-			anim.cancel();
+			anim?.cancel();
 			window.removeEventListener('load', onPageLoad)
 		};
 	},[callback, onLoad, time])
