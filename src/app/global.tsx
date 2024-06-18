@@ -1,13 +1,13 @@
 import { signal } from "@preact/signals-react";
-import { getData, Role, GameState } from "./dummyData";
+import { getData, Role, GameState, IRoomData, IWorldData, IPlayerData, IHostData, IData, IObject } from './dummyData';
 
-export let hostData = signal({
+export const hostData = signal<IHostData>({
 	id: "1234abcd",
 	key: "1234abcd",
 	name: "Dr. Fax Tax",
 	games: ["1A2B3C4D"],
 })
-export let playerData = signal({
+export const playerData = signal<IPlayerData>({
 	id: "1234abcd",
 	name: "Mike Hunt",
 	funds: 0,
@@ -18,7 +18,7 @@ export let playerData = signal({
 	icon: `https://api.dicebear.com/9.x/fun-emoji/svg?seed=1234abcd-abcdefg`, //iconURL
 	worldID: "",
 })
-export let worldData = signal({
+export const worldData = signal<IWorldData>({
 	id: "1234abcd",
 	name: "Yiffie",
 	ownerID: "7890wxyz",
@@ -26,7 +26,7 @@ export let worldData = signal({
 	taxFunds: 0,
 	taxRate: 0,
 })
-export let roomData = signal({
+export const roomData = signal<IRoomData>({
 	id: "1A2B3C4D",
 	name: "Game 1",
 	year: 0,
@@ -61,23 +61,45 @@ export function updateGameGlobal(table?:string){
 		let val = datas[table];
 		let obj = val.value;
 
-		let newObj = getData(table as any, obj.id) as any;
+		let newObj = getData(table as any, obj.id);
 		if(newObj){
 			val.value = {...newObj};
+			saveGameGlobal();
 			return true;
 		}
+
 		return false;
 	}else{
 		for(let key of Object.keys(datas)){
 			let val = datas[key];
 			let obj = val.value;
-	
+			
 			let newObj = getData(key as any, obj.id) as any;
 			if(newObj){
 				val.value = {...newObj};
 			}
 		}
+		saveGameGlobal();
 		return true;
 	}
 	
+}
+
+export function saveGameGlobal(){
+	for(let [k, v] of Object.entries(GameGlobal)){
+		let obj = v.value as IData;
+		let jsonStr = JSON.stringify(obj);
+	
+		localStorage.setItem(k, jsonStr);
+	}
+}
+export function loadGameGlobal(){
+	for(let [k, v] of Object.entries(GameGlobal)){
+		let str = localStorage.getItem(k);
+		if(!str) return;
+		
+		let obj = JSON.parse(str) as IData;
+	
+		v.value = {...obj} as any;
+	}
 }
