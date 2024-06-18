@@ -1,0 +1,36 @@
+
+.notifContainer {
+	@apply h-full w-full absolute top-0 right-0 p-4 bg-transparent flex flex-col justify-end items-center;
+	
+	.notif {
+		@apply rounded-md inline-flex flex-col justify-center items-center mb-2 p-2 min-h-20 relative opacity-0 gap-4;
+		background-color: var(--solidWindow);
+		color: var(--solidText);
+		user-select: none;
+		transform-origin: center;
+		box-sizing: border-box;
+		border: thin solid var(--background);
+
+		pointer-events: all;
+
+		box-shadow: 0 0.5rem var(--btnShadow0);
+		.notifInner{
+
+		}
+		progress {
+		/* style rules */
+			@apply m-0;
+		}
+		progress::-webkit-progress-bar {
+		/* style rules */
+			@apply rounded-md;
+			background-color: var(--accent);
+		}
+		progress::-webkit-progress-value {
+			/* style rules */
+			border-radius: inherit;
+			background-color: var(--solidText);
+			// border: thin solid var(--accent);
+		}
+	}
+}
