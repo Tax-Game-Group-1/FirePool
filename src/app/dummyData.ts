@@ -11,6 +11,22 @@ export enum Role {
 	B = "LocalCitizen",
 	C = "ForeignCitizen"
 }
+
+export enum GameState {
+	Waiting,
+	Starting,
+	RolePicking,
+	UniverseSetup,
+	YearStart,
+	TaxRateSet, SalarySet,
+	TaxDeclare,
+	Audit,
+	Redistribution,
+	YearEnd,
+	Migration,
+	Processing,
+}
+
 export interface IData {
 	id: string;
 	name:string;

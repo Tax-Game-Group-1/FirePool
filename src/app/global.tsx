@@ -1,5 +1,5 @@
 import { signal } from "@preact/signals-react";
-import { getData, Role } from "./dummyData";
+import { getData, Role, GameState } from "./dummyData";
 
 export let hostData = signal({
 	id: "1234abcd",
@@ -38,6 +38,7 @@ export let roomData = signal({
 	penalty: 0.3,
 	kickPlayersOnBackruptcy: true,
 	auditProbability: 0.1,
+	gameState: GameState.Waiting,
 })
 
 export const GameGlobal = {
