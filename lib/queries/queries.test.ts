@@ -1,7 +1,9 @@
 import {describe} from "@jest/globals";
 import {clearTables, createAdminUser, getAdminIdByUserName} from "./queries";
 
-describe("test admin queries", () => {
+import {io} from "socket.io-client";
+
+describe("test queries", () => {
 
     beforeAll(async () => {
         await clearTables();
@@ -19,4 +21,12 @@ describe("test admin queries", () => {
         const getAdminUser = await getAdminIdByUserName("maryJones", "blah123");
         console.log(getAdminUser);
     })
+
+    // test("insert round", async () => {
+    //      const game= new Game("1", 0.5,4, 0.2, 3, 0.2, true);
+    //     game.addPlayerToWaitingArea(new LocalWorker("John", "1", io()));
+    //     game.addPlayerToWaitingArea(new LocalWorker("Lucy", "2", io()));
+    //     game.addUniverse(new Universe())
+    // })
+
 })
