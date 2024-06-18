@@ -22,6 +22,8 @@ export const notifContents = signal<{
 
 export const notifSignalBus = new SignalEventBus();
 
+const notifLimit = 3;
+
 export default function NotifContainer({children}:{
 	children?: React.ReactNode,
 }) {
@@ -32,6 +34,13 @@ export default function NotifContainer({children}:{
 		if(!newContents[id]){
 			newContents[id] = node;
 			notifContents.value = {...newContents};
+		}
+		let conts = Object.keys(newContents);
+		if(conts.length > notifLimit){
+			for(let i = 0; i < conts.length - notifLimit; i++){
+				let key = conts[i];
+				closeNotif(key);
+			} 
 		}
 	}, notifSignalBus);
 	useSignalEvent("remove", (id)=>{
@@ -73,9 +82,9 @@ export function createNotif({content,className, id=randomID(), useWrapper=true, 
 		);
 	}
 
-	let t = setTimeout(()=>{
+	let t = createTimer(250).onComplete(()=>{
 		notifSignalBus.emit("add",{id, node});
-	}, 250);
+	});
 
 	return {
 		timer: t,

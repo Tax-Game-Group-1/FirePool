@@ -10,6 +10,7 @@ import { useSignals } from '@preact/signals-react/runtime';
 import { randomID } from '@catsums/my';
 import { animate, useAnimate } from 'framer-motion';
 import { mergeRefs } from '@/mergeRefs/mergeRefs';
+import { createTimer } from '@/utils/utils';
 
 export const activeContents = signal<{
 	[id:string] : React.ReactNode,
@@ -67,11 +68,11 @@ export function createContent({content,className, id=randomID(), useWrapper=true
 		);
 	}
 
-	let t = setTimeout(()=>{
+	let t = createTimer(250).onComplete(()=>{
 		console.log("ABC")
 		console.log({contentSignalBus})
 		contentSignalBus.emit("add",{id, node});
-	}, 250);
+	});
 
 	return {
 		timer: t,

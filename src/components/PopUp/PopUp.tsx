@@ -14,6 +14,7 @@ import AnimationContainer from '../AnimationContainer/AnimationContainer';
 import { randomID } from '@catsums/my';
 import { animate, AnimationPlaybackControls, useAnimate } from 'framer-motion';
 import { mergeRefs } from '@/mergeRefs/mergeRefs';
+import { createTimer } from '@/utils/utils';
 
 export let popUpSignalBus = new SignalEventBus();
 
@@ -98,10 +99,15 @@ export function createPopUp(opts:{
 	>
 		{content}
 	</PopUp>)
-
-	setTimeout(()=>{
+	
+	let t = createTimer(100).onComplete(()=>{
 		popUpSignalBus.emit("create", {id, node});
-	},100)
+	})
+
+	return {
+		timer: t,
+		id,
+	}
 }
 
 export const PopUp = forwardRef(function PopUp({
