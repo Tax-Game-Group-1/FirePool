@@ -3,20 +3,22 @@ import "@/globals.scss";
 import "@/components/ThemeContext/themes.scss"
 import {ThemeProvider} from "@/components/ThemeContext/themecontext";
 
+import { GameGlobal } from "./global";
+
 export default function RootLayout({
-  children,
+	children,
 }: Readonly<{
-  children: React.ReactNode;
+	children: React.ReactNode;
 }>) {
-  return (
-    <html lang="en">
-      <head>
-        <link rel="icon" href="/images/icons/icon.ico" sizes="any"/>
-		<meta name="wow"/>
-      </head>
-      <ThemeProvider>
-        <body>{children}</body>
-      </ThemeProvider>
-    </html>
-  );
+	return (
+		<html lang="en">
+		<head>
+			<link rel="icon" href="/images/icons/icon.ico" sizes="any"/>
+			<meta name="wow"/>
+		</head>
+		<ThemeProvider>
+			<body>{children}</body>
+		</ThemeProvider>
+		</html>
+	);
 }
