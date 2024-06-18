@@ -289,3 +289,138 @@ export const LoadingIcon = forwardRef(function LoadingIcon({
 	</svg>
   )
 })
+export const DiceIcon = forwardRef(function DiceIcon({
+	className="",fill="", stroke="", ...other
+}:ISVGProps, ref:Ref<any>){
+	return (
+	<svg
+	  xmlns="http://www.w3.org/2000/svg"
+	  fill={fill}
+	  viewBox="0 0 512 512"
+	  ref={ref}
+	  stroke={stroke}
+	  className={className}
+	  {...other}
+	>
+		<g id="SVGRepo_iconCarrier">
+			{/* <style>{".st0{fill:#000}"}</style> */}
+			<path
+				d="M454.609 111.204 280.557 6.804a47.745 47.745 0 0 0-49.115-.008L57.391 111.204a47.653 47.653 0 0 0-13.556 12.192l207.904 124.708a8.27 8.27 0 0 0 8.519 0L468.16 123.396a47.647 47.647 0 0 0-13.551-12.192zm-296.898 19.109c-10.96 7.611-28.456 7.422-39.081-.452-10.618-7.859-10.342-20.413.618-28.031 10.964-7.626 28.46-7.422 39.081.438 10.621 7.866 10.345 20.412-.618 28.045zm116.448.708c-10.594 7.362-27.496 7.166-37.762-.429-10.263-7.596-9.992-19.727.599-27.089 10.591-7.362 27.492-7.174 37.759.43 10.263 7.595 9.995 19.726-.596 27.088zm117.749 1.681c-10.964 7.618-28.461 7.414-39.085-.444-10.617-7.86-10.343-20.42.621-28.046 10.957-7.61 28.456-7.422 39.078.452 10.625 7.859 10.346 20.412-.614 28.038zM246.136 258.366 38.007 133.523a47.673 47.673 0 0 0-3.798 18.62v208.084a47.752 47.752 0 0 0 23.182 40.946l174.051 104.392A47.707 47.707 0 0 0 250.156 512V265.464a8.272 8.272 0 0 0-4.02-7.098zM75.845 369.736c-12.056-6.57-21.829-21.671-21.829-33.727 0-12.056 9.773-16.502 21.829-9.932 12.056 6.571 21.826 21.671 21.826 33.728 0 12.056-9.77 16.502-21.826 9.931zm0-121.866c-12.056-6.579-21.829-21.679-21.829-33.728 0-12.056 9.773-16.502 21.829-9.931 12.056 6.57 21.826 21.671 21.826 33.728 0 12.048-9.77 16.501-21.826 9.931zm121.87 188.288c-12.052-6.57-21.826-21.671-21.826-33.728 0-12.048 9.773-16.494 21.826-9.924 12.056 6.571 21.826 21.671 21.826 33.72 0 12.058-9.77 16.503-21.826 9.932zm0-121.866c-12.052-6.571-21.826-21.671-21.826-33.728s9.773-16.502 21.826-9.931c12.056 6.57 21.826 21.671 21.826 33.727 0 12.057-9.77 16.502-21.826 9.932zM473.993 133.523l-208.13 124.843a8.272 8.272 0 0 0-4.02 7.099V512a47.696 47.696 0 0 0 18.714-6.435l174.052-104.392a47.763 47.763 0 0 0 23.182-40.946V152.142a47.672 47.672 0 0 0-3.798-18.619zM370.478 355.11c-19.287 10.512-34.922 3.398-34.922-15.892 0-19.282 15.635-43.447 34.922-53.951 19.293-10.519 34.925-3.406 34.925 15.884 0 19.283-15.632 43.447-34.925 53.959z"
+				// className="st0"
+			/>
+		</g>
+	</svg>
+  )
+})
+
+export const EnterArrow = forwardRef(function EnterArrowIcon({
+	className="",fill="", stroke="", ...other
+}:ISVGProps, ref:Ref<any>){
+	return (
+	<svg
+		xmlns="http://www.w3.org/2000/svg"
+		fill={fill}
+		viewBox="0 0 48 48" 
+		ref={ref}
+		stroke={stroke}
+		className={className}
+		{...other}
+	>
+		<g data-name="Layer 2">
+			{/* <path fill="none" d="M0 0h48v48H0z" data-name="invisible box" /> */}
+			<path
+				d="M46 24a22 22 0 0 1-43.9 2h25.1l-4.6 4.6a1.9 1.9 0 0 0 .2 3 2 2 0 0 0 2.7-.3l7.9-7.9a1.9 1.9 0 0 0 0-2.8l-7.9-8a2.3 2.3 0 0 0-2.7-.3 2 2 0 0 0-.2 3.1l4.6 4.6H2.1A22 22 0 0 1 46 24Z"
+				data-name="icons Q2"
+			/>
+		</g>
+	</svg>
+  )
+})
+
+export const PlayIcon = forwardRef(function PlayIcon({
+	className="",fill="", stroke="", ...other
+}:ISVGProps, ref:Ref<any>){
+	return (
+	<svg
+		xmlns="http://www.w3.org/2000/svg"
+		fill={fill}
+		viewBox="0 0 24 24" 
+		ref={ref}
+		stroke={stroke}
+		className={className}
+		{...other}
+	>
+		<path
+			// fill="#050505"
+			fillRule="evenodd"
+			d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10Zm-1.306-6.154 4.72-2.787c.781-.462.781-1.656 0-2.118l-4.72-2.787C9.934 7.706 9 8.29 9 9.214v5.573c0 .923.934 1.507 1.694 1.059Z"
+			clipRule="evenodd"
+		/>
+	</svg>
+  )
+})
+
+export const UserIcon = forwardRef(function UserIcon({
+	className="",fill="", stroke="", ...other
+}:ISVGProps, ref:Ref<any>){
+	return (
+	<svg
+		xmlns="http://www.w3.org/2000/svg"
+		fill={fill}
+		viewBox="0 0 24 24" 
+		ref={ref}
+		stroke={stroke}
+		className={className}
+		{...other}
+	>
+		<g>
+			<path d="M12 1a5.5 5.5 0 1 0 0 11 5.5 5.5 0 0 0 0-11ZM7 14a5 5 0 0 0-5 5v3a1 1 0 0 0 1 1h18a1 1 0 0 0 1-1v-3a5 5 0 0 0-5-5H7Z" />
+		</g>
+	</svg>
+  )
+})
+
+export const ShareIcon = forwardRef(function ShareIcon({
+	className="",fill="", stroke="", ...other
+}:ISVGProps, ref:Ref<any>){
+	return (
+	<svg
+		xmlns="http://www.w3.org/2000/svg"
+		fill={fill}
+		viewBox="0 0 24 24" 
+		ref={ref}
+		stroke={stroke}
+		className={className}
+		{...other}
+	>
+		<path
+			// fill="#000"
+			fillRule="evenodd"
+			d="M13.803 5.333c0-1.84 1.5-3.333 3.348-3.333A3.341 3.341 0 0 1 20.5 5.333c0 1.841-1.5 3.334-3.349 3.334-.933 0-1.777-.381-2.384-.994l-4.635 3.156a3.336 3.336 0 0 1-.182 1.917l5.082 3.34a3.346 3.346 0 0 1 2.12-.753 3.341 3.341 0 0 1 3.348 3.334C20.5 20.507 19 22 17.151 22a3.341 3.341 0 0 1-3.348-3.333c0-.483.103-.942.289-1.356L9.05 14a3.346 3.346 0 0 1-2.202.821A3.34 3.34 0 0 1 3.5 11.487a3.34 3.34 0 0 1 3.348-3.333c1.064 0 2.01.493 2.623 1.261l4.493-3.059a3.317 3.317 0 0 1-.161-1.023Z"
+			clipRule="evenodd"
+		/>
+	</svg>
+  )
+})
+
+export const EditTextIcon = forwardRef(function EditTextIcon({
+	className="",fill="", stroke="", ...other
+}:ISVGProps, ref:Ref<any>){
+	return (
+	<svg
+		xmlns="http://www.w3.org/2000/svg"
+		fill={fill}
+		viewBox="0 -0.5 21 21"
+		ref={ref}
+		stroke={stroke}
+		className={className}
+		{...other}
+	>
+		<path
+			// fill="#000"
+			fillRule="evenodd"
+			d="M18.9 18.01H2.1V2.097h8.4V.106H0V20h21v-9.947h-2.1v7.958ZM6.3 9.95 16.63 0 21 4.115l-10.666 9.917H6.3V9.95Z"
+		/>
+	</svg>
+  )
+})
