@@ -72,8 +72,11 @@ export class TimerInstance implements ITimerInstance {
 	}
 }
 
-export function createTimer(time:number){
+export function createTimer(time:number, onComplete?:(timer?:TimerInstance)=>void){
 	let timer = new TimerInstance(time);
+	if(onComplete){
+		timer.onComplete(onComplete);
+	}
 
 	function wait(currTime){
 		if(!timer.startTime){
