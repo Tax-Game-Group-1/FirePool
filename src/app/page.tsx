@@ -5,9 +5,22 @@ import t from '../elements.module.scss'
 import {transform} from "sucrase";
 import {rotate} from "next/dist/server/lib/squoosh/impl";
 import Btn from '@/components/Button/Btn';
-import { CaretArrow, MinimalSun, PlayIcon } from '@/assets/svg/svg';
+import { CaretArrow, MinimalSun, PlayIcon, UserIcon } from '@/assets/svg/svg';
 import SVGIcon from '@/components/SVGIcon/SVGIcon';
 import { MinimalMountains } from '../assets/svg/svg';
+
+function HomeCard({icon, text}){
+	return (
+		<div className={`h-full m-0 flex flex-col rounded-md p-6 text-2xl ${t.solidElement} gap-8`}>
+			<div className={`${t.fillToolbar} ${t.textBoxBackground} aspect-square rounded-md p-8`}>
+				{icon}
+			</div>
+			<div className={`flex justify-center`}>
+				{text}
+			</div>
+		</div>
+	)
+}
 
 export default function Home() {
 
@@ -37,9 +50,9 @@ export default function Home() {
                   <MinimalSun className={`${s.splashImage} ${s.sun}`}/>
                   <MinimalMountains className={`${s.splashImage}`}/>
                 </div>
-				<div className={`w-1/3 flex items-center justify-center self-center opacity-100`}>
+				<div className={` flex items-center justify-center self-center opacity-100`}>
 					<Btn>
-						<a href={"#bottom"} className={`flex gap-2`}>
+						<a href={"#bottom"} className={`flex gap-1`}>
 							<div>{`Let's Begin`}</div>
 							<div className={`aspect-square w-8 ${t.fillSolidText}`}>
 								<SVGIcon>
@@ -52,20 +65,11 @@ export default function Home() {
               </div>
             </div>
           </section>
-          <section id={"bottom"} className={`${t.gradient} ${t.solidText}`}>
+          <section id={"bottom"} className={`h-screen flex flex-col justify-evenly items-center ${t.gradient} ${t.solidText}`}>
             <h2 className={s.prompt}>What would you like to do?</h2>
-            <div className={s.cards}>
-              <div/>
-              <div className={`${s.card} ${t.solidElement}`}>
-                <img src="/images/create.png"/>
-                <p>Create Game</p>
-              </div>
-              <div/>
-              <div className={`${s.card} ${t.solidElement}`}>
-                <img src="/images/join.png"/>
-                <p>Join Game</p>
-              </div>
-              <div/>
+            <div className={`flex flex-row justify-center items-center gap-4`}>
+				<HomeCard icon={<UserIcon/>} text={"Host Game"}/>
+				<HomeCard icon={<UserIcon/>} text={"Join Game"}/>
             </div>
 
 			<div className={`${s.backToTop} flex justify-center items-center`}>

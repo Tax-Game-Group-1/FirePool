@@ -108,7 +108,8 @@
 .card {
     background-color: black;
     border-radius: $border-radius;
-    padding-bottom: 10%;
+    // padding-bottom: 10%;
+	@apply p-4;
 }
 
 .card:hover {
