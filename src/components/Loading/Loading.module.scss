@@ -1,0 +1,19 @@
+
+@keyframes load{
+	0% {
+		rotate: 0deg;
+	}
+	100% {
+		rotate: 360deg;
+	}
+}
+
+.loading{
+	@apply flex justify-center items-center w-20 aspect-square p-2 m-2;
+}
+.loadingAnim{
+	animation-name: load;
+	animation-duration: 1s;
+	animation-timing-function: linear;
+	animation-iteration-count: infinite;
+}

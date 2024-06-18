@@ -1,0 +1,36 @@
+
+@import "./themes.module.scss";
+
+:root {
+	--gradient: linear-gradient(var(--gradientA), var(--gradientB))
+}
+
+::-webkit-scrollbar {
+	width: 0.75em;
+	box-sizing: content-box;
+}
+
+::-webkit-scrollbar-track {
+	background: var(--background);
+	border: thick solid var(--background);
+	box-sizing: content-box;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+	background: var(--solidElement);
+	margin: 4em;
+	border-radius: 0.5em;
+	border: 0.15em solid var(--background);
+	
+	transition: all 0.3s;
+	
+	&:hover {
+		background: var(--background);
+		border-color: var(--solidElement);
+	}
+	&:active {
+		background: var(--solidText);
+		border-color: var(--background);
+	}
+}

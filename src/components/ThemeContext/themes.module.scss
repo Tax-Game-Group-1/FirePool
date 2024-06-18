@@ -1,0 +1,76 @@
+@use "sass:map";
+
+@import "@/variables.scss";
+
+.darkRed * {
+    --mainColor: #ffe;
+	--solidWindow: #781a14;
+	--accent: #d34;
+	--accentText: #b12;
+	--solidElement: #781a14;
+	--solidText: #ffe;
+	--gradientA: #2b0505;
+	--gradientB: #531108;
+	--textBoxBackground: #ffe;
+	--textBoxFontColor: #924;
+	--toolBar: #521108;
+	--btnShadow0: #470d0b;
+	--btnShadow1: #2b050524;
+	--btnShadow2: #50100857;
+	--input: #511;
+	--background: #2b0505;
+	--btnBorder: #dd3443;
+	--btnBackgroundA: #781a14;
+	--btnBackgroundB: #b12;
+	--btnReflection: #dd344320;
+	--btnColor: #ffe;
+	--currency: #ac5300;
+}
+.darkBlue * {
+	--mainColor: #ffe;
+	--solidWindow: #084c61;
+	--accent: #0a222b;
+	--accentText: #0a222b;
+	--solidElement: #084c61;
+	--solidText: #eff;
+	--gradientA: #082933;
+	--gradientB: #052c38;
+	--textBoxBackground: #fef;
+	--textBoxFontColor: #046;
+	--toolBar: #052c39;
+	--btnShadow0: #073745;
+	--btnShadow1: #1242;
+	--btnShadow2: #0243;
+	--input: #05222b;
+	--background: #05222b;
+	--btnBorder: white;
+	--btnBackgroundA: #145b7e;
+	--btnBackgroundB: #084c61;
+	--btnReflection: #97cee312;
+	--btnColor: #fef;
+	--currency: #eede77;
+}
+.paleBlue * {
+	--mainColor: #eff;
+	--solidWindow: #fff;
+	--solidText: #084c61;
+	--solidElement: #f1fbff;
+	--accent: #49b;
+	--accentText: #167;
+	--gradientA: #eff;
+	--gradientB: #c4e5e8;
+	--textBoxBackground: #084c61;
+	--textBoxFontColor: #7ce;
+	--toolBar: #c3e4e8;
+	--btnShadow0: #c7e0e3;
+	--btnShadow1: #094043a3;
+	--btnShadow2: #8dbdc314;
+	--input: #052c39;
+	--background: #fff;
+	--btnBorder: #09404c;
+	--btnBackgroundA: #052c39;
+	--btnBackgroundB: #09404c;
+	--btnReflection: #eef3;
+	--btnColor: #eef;
+	--currency: #e38c34;
+}
