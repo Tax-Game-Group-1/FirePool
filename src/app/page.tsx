@@ -13,9 +13,15 @@ import { MinimalMountains } from '../assets/svg/svg';
 import "./page.scss"
 import { createTimer, getIconURL } from '@/utils/utils';
 import { animate, DOMKeyframesDefinition } from 'framer-motion';
-import { AvatarIcon } from './game/_waiting/namingRoom';
+import { AvatarIcon, iconURL } from './game/_waiting/namingRoom';
 import SignalEventBus, { useSignalEvent } from '@catsums/signal-event-bus';
 import { useSignals } from '@preact/signals-react/runtime';
+import NotifContainer, { createNotif } from '@/components/Notification/Notification';
+import { ContentLayer, ContentLayersContainer } from '@/components/Game/ContentLayer';
+import { getData, setData } from './dummyData';
+import { sanitizeString } from '@catsums/my';
+import LoadingScreen from '@/components/LoadingScreen/LoadingScreen';
+import { useRemoveLoadingScreen } from '@/components/LoadingScreen/LoadingScreenUtil';
 
 function HomeCard({icon, text, onClick}:{
 	icon: React.ReactNode,
@@ -127,6 +133,7 @@ function SplashSection(){
 			</div>
 		  </div>
 		</div>
+		{active && <FixedContents/>}
 	  </section>
 	)
 }
@@ -174,6 +181,7 @@ function StartSection(){
 					</div>
 				</Btn>
 			</div>
+			{active && <FixedContents/>}
 		</section>
 	)
 }
@@ -238,13 +246,68 @@ function LoginSection(){
 					</div>
 				</div>
 			</div>
+			{active && <FixedContents/>}
 		</section>
 	)
+}
+
+function tryJoin(code:string){
+	code = sanitizeString(code.trim().replaceAll(/[^a-zA-Z0-9]/g,"").slice(0,8));
+
+	if(code.length < 8){
+		createNotif({
+			content: "Room code is too small",
+		})
+		return;
+	}
+	
+	let roomData = getData("rooms", code);
+	if(!roomData){
+		createNotif({
+			content: "Room does not exist",
+		})
+		return;
+	}
+	
+	createNotif({
+		content: "Joining....",
+	})
+	return;
 }
 
 function JoinSection(){
 
 	let [active, setActive] = useState(false);
+
+	let textBoxRef = useRef(null);
+
+	function onChange(e:Event){
+		let elem = e.currentTarget as HTMLInputElement;
+		let text = elem.value.replaceAll(/[^a-zA-Z0-9]/g,"").slice(0,8);
+		console.log({old:elem.value, new:text})
+
+		let newCode = text;
+		if(newCode.length > 4){
+			let arr = new Array<string>(8);
+			(text.split("")).forEach((v,i)=>{
+				arr[i] = v;
+			})
+			arr.splice(4,0,"-")
+			newCode = arr.join("");
+		}
+		
+		elem.value = newCode.toLocaleUpperCase();
+	}
+
+	useEffect(()=>{
+		let textBox = textBoxRef.current as HTMLInputElement;
+		textBox?.addEventListener("input", onChange);
+		
+		return () => {
+			textBox?.removeEventListener("input", onChange);
+		}
+
+	},[])
 
 	useSignalEvent("section",(section:PageSection)=>{
 		
@@ -255,7 +318,7 @@ function JoinSection(){
 
 	return (
 		<section className={`${activeClass} min-h-[100vh] min-w-[100vw] w-max h-screen absolute top-[100svh] left-[100vw] flex flex-row p-8 justify-evenly items-center`}>
-			<div className={` rounded-tl-rounded  w-full h-full grid grid-rows-2 grid-cols-1 md:grid-cols-2 gap-2 p-2 ${t.solidText}`}>
+			<div className={`rounded-tl-rounded  w-full h-full grid grid-rows-2 grid-cols-1 md:grid-cols-2 gap-2 p-2 ${t.solidText}`}>
 				<div className={`rounded-md row-span-1 md:row-span-2 col-span-2 md:col-span-1 flex flex-col justify-evenly items-center`}>
 					<div></div>
 					<div>Enter the game code to join</div>
@@ -273,16 +336,33 @@ function JoinSection(){
 					<div className={`flex justify-center items-center border ${t.buttonBorder} w-1/4 md:w-1/2 p-4 rounded-md`}>
 						<AvatarIcon url={`${getIconURL()}`}/>
 					</div>
-					<div className={`flex flex-col gap-2 w-2/3 lg:w-1/2`}>
+					<div className={`flex flex-col gap-2 `}>
 						<label className={`flex`}>Room Code</label>
-						<input className={`text-sm flex rounded-md p-2 ${t.inputBox} ${t.buttonText}`}/>
+						<input ref={textBoxRef} className={`text-2xl tracking-widest text-center justify-center items-center flex rounded-md p-2 ${t.inputBox} ${t.buttonText}`} maxLength={9}/>
 					</div>
 					<div>
-						<Btn>Join Game</Btn>
+						<Btn onClick={()=>{
+							let textBox = textBoxRef.current as HTMLInputElement;
+							let v = textBox.value;
+							tryJoin(v);
+						}}>
+							Join Game
+						</Btn>
 					</div>
 				</div>
 			</div>
+			{active && <FixedContents/>}
 		</section>
+	)
+}
+
+function FixedContents(){
+	return (
+		<div className={`fixed z-100 pointer-events-none w-screen h-screen m-0 p-0`}>
+			<ContentLayer z={10}>
+				<NotifContainer></NotifContainer>
+			</ContentLayer>
+		</div>
 	)
 }
 
@@ -291,18 +371,25 @@ export default function Home() {
 
 	const { theme  } = useTheme();
 
+	useRemoveLoadingScreen(()=>{
+		
+	});
+
 	useEffect(()=>{
 		window.scrollTo(0,0);
 		goToSection(PageSection.Splash);
 	},[])
 
 	return (
-		<main className={`${s.splash} ${theme} overflow-auto`} id={"top"}>
-			<SplashSection/>
-			<StartSection/>
-			<LoginSection/>
-			<JoinSection/>
-		</main>
+		<>
+			<LoadingScreen/>
+			<main className={`${s.splash} ${theme} overflow-auto`} id={"top"}>
+				<SplashSection/>
+				<StartSection/>
+				<LoginSection/>
+				<JoinSection/>
+			</main>
+		</>
 	);
 }
 
