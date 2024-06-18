@@ -7,19 +7,40 @@ import { CurrencyIcon, SettingsIcon, StatsIcon } from "@/assets/svg/icons";
 import t from "../../elements.module.scss";
 import style from "./PlayerHUD.module.scss";
 
+import { computed } from '@preact/signals-react';
+
+import { GameGlobal } from '@/app/game/global';
+import { getData } from '@/app/dummyData';
+import { getIconURL } from "@/utils/utils";
+
+export let hostName = computed(()=>{
+	let name = GameGlobal.hostData.value?.name || "";
+	return name;
+});
+export let playerName = computed(()=>{
+	let name = GameGlobal.playerData.value?.name || "";
+	return name;
+});
+export let playerRole = computed(()=>{
+	let role = GameGlobal.playerData.value?.role || "";
+	return role;
+});
+export let playerFunds = computed(()=>{
+	let funds = GameGlobal.playerData.value?.funds || 0;
+	return funds.toFixed(2);
+});
+export let iconURL = computed(()=>{
+	let url = GameGlobal.playerData.value?.icon || getIconURL().href;
+	return url;
+});
+
 export const PlayerHUD = forwardRef(function PlayerHUD({}, ref:Ref<any>){
-
-	let [playerName] = useState("Qwertyuiopasdfghjklzxcvbnm");
-	let [playerRole] = useState("Qwertyuiopasdfghjkl");
-
-	let [playerFunds] = useState("100.00");
-
 
 	return (
 		<div ref={ref} className={`${style.playerHUD} ${t.solidElement} ${t.solidText}`}>
 			<div className={`${style.HUDIcon} ${t.toolBar}`}>
 				<div className={`${style.icon} ${t.solidWindow}`}>
-
+					<img className={`rounded-md`} src={iconURL.value} alt={`${playerName.value} icon`}/>
 				</div>
 			</div>
 			<div className="flex flex-col items-stretch min-w-0 sm:min-w-64 gap-2">

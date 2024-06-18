@@ -2,11 +2,6 @@
 
 import dynamic from 'next/dynamic'
 import { useState, forwardRef, Ref, Suspense, lazy, useEffect } from 'react';
-import {WorldHUD, PlayerHUD} from '@/components/Game/GameHUD'
-// import GameFooter from '@/components/Game/GameFooter'
-import GameContentContainer, { contentSignalBus, createContent, GameContent } from '@/components/Game/GameContentContainer'
-import AnimationContainer from '@/components/AnimationContainer/AnimationContainer';
-import { ContentLayer, ContentLayersContainer } from '@/components/Game/ContentLayer';
 
 import { useSignals } from '@preact/signals-react/runtime';
 import { useTheme } from '@/components/ThemeContext/themecontext';
@@ -15,19 +10,29 @@ import t from '../../elements.module.scss';
 
 import style from "./layouts.module.scss"
 
-import Btn from '@/components/Button/Btn';
-import {createPopUp, PopUp, PopUpContainer} from '@/components/PopUp/PopUp';
-
-const GameFooter = lazy(() => import('@/components/Game/GameFooter'))
-const GameHUD = lazy(() => import('@/components/Game/GameHUD'));
-
-import { popUpSignalBus } from '@/components/PopUp/PopUp';
+const GameFooter = lazy(() => import('@/components/Game/GameFooter'));
 import LoadingStatus from '@/components/Loading/Loading';
-import { mergeRefs } from '@/mergeRefs/mergeRefs';
+import InGame from './_content/InGame';
+import { createContent } from '@/components/Game/GameContentContainer';
+import TestContent1 from './_content/test1';
+import { signal } from '@preact/signals-react';
+import { WaitingRoom } from './_waiting/waitingRoom';
+import { animate } from 'framer-motion';
+import { updateGameGlobal } from './global';
+
+let isLoaded = signal(false);
+
+enum GameScreen {
+	WaitingRoom,
+	InGame,
+	Spectate,
+}
 
 const Layouts = forwardRef(function Layouts({}, ref:Ref<any>) {
-	let {theme} = useTheme();
 	useSignals();
+	let {theme} = useTheme();
+
+	let [gameScreen, setGameScreen] = useState(GameScreen.InGame);
 
 	let pre = (
 		<div className={`absolute z-[1000] w-svw h-svh inline-flex justify-center self-center items-center overflow-hidden ${t.background} ${theme} loadingThingy pointer-events-none`}>
@@ -36,17 +41,24 @@ const Layouts = forwardRef(function Layouts({}, ref:Ref<any>) {
 	)
 
 	useEffect(()=>{
+		updateGameGlobal();
 		const onPageLoad = () => {
-			console.log('page loaded');
-			// do something else
 			let gameLayout = document.querySelector(`.${style.gameLayout}`);
 			let loadingThingy = document.querySelector(`.loadingThingy`);
-			gameLayout?.classList.remove("hidden");
 
-			loadingThingy?.classList.add("hidden");
-			try{
-				loadingThingy?.remove();
-			}catch(err){}
+			animate(loadingThingy, { opacity:[1,0] }, {duration: 0.5}).then(()=>{
+
+				console.log('page loaded');
+				// do something else
+				gameLayout?.classList.remove("hidden");
+	
+				loadingThingy?.classList.add("hidden");
+				try{
+					loadingThingy?.remove();
+				}catch(err){}
+	
+				isLoaded.value = true;
+			});
 		}
 	
 		// Check if the page has already loaded
@@ -58,99 +70,48 @@ const Layouts = forwardRef(function Layouts({}, ref:Ref<any>) {
 		// Remove the event listener when component unmounts
 		return () => window.removeEventListener('load', onPageLoad);
 	},[])
+
+	useEffect(()=>{
+		if(!isLoaded.value) return;
+
+		// let x = setTimeout(()=>{
+		// 	createContent({
+		// 		content: (<TestContent1/>),
+		// 		id: "0001",
+		// 		className: "absolute m-2",
+		// 		useWrapper:false,
+		// 	})
+		// }, 1000)
+
+		return () => {
+			// clearTimeout(x);
+		}
+	},[])
 	
-	let gameContent = (
-		<GameContentContainer>
-			<AnimationContainer 
-				className="opacity-0" 
-				enter={{
-					animations:{
-						opacity: [0,1],
-						y: [-100, 0],
-					},
-					options:{
-						duration: 0.5,
-						ease: "circInOut",
-						delay: 0.0,
-					}
-				}}
-			>
-				<GameContent className="absolute m-2" id="0001">
-					<div className="flex flex-col justify-center items-center gap-4 p-8">
-						<p>Click the button to summon the popup</p>
-						<div className={``}>
-							<Btn onClick={()=>{
-								let main, sure : any;
-								main = {
-									content: "Forfeit life savings?",
-									buttons:{
-										"Yes": ()=>{
-											contentSignalBus.emit(`close-0001`);
-											createContent({
-												content: (
-													<p className="flex flex-col justify-center items-center gap-4 p-8">
-														{"Forfeited life savings"}
-													</p>
-												),
-											})
-										},
-										"No": ()=>{
-											createPopUp(sure);
-										}
-									}
-								}
-								sure = {
-									content: "Are you sure?",
-									buttons:{
-										"Yes": ()=>{
-											
-										},
-										"No": ()=>{
-											createPopUp(main);
-										}
-									}
-								}
-								createPopUp(main)
-							}}>Click</Btn>
-						</div>
-					</div>
-				</GameContent>
-			</AnimationContainer>
-		</GameContentContainer>
-	)
+	let content = (<></>)
 
-	let content = (
-		<ContentLayersContainer>
-			<ContentLayer z={100}>
-				<GameHUD>
-					<WorldHUD/>
-					<PlayerHUD/>
-				</GameHUD>
-			</ContentLayer>
-
-			<ContentLayer z={1}>
-				{gameContent}
-			</ContentLayer>
-
-			<ContentLayer z={200}>
-				<PopUpContainer>
-				</PopUpContainer>
-			</ContentLayer>
-
-		</ContentLayersContainer>
-	);
-	
+	switch(gameScreen){
+		case GameScreen.InGame:
+			content = (<InGame/>);
+			break;
+		case GameScreen.WaitingRoom:
+			content = (<WaitingRoom/>);
+			break;
+	}
 
 	return (
 		<>
 			{pre}
 			<Suspense fallback={<span></span>}>
-				<div ref={ref} className={`${style.gameLayout} ${theme} ${t.background} ${t.mainText} hidden`}>
-					<main className={``}>
-						{content}
-					</main>
-					<GameFooter/>
-				</div>
+				{isLoaded && (
+					
+					<div ref={ref} className={`${style.gameLayout} ${theme} ${t.background} ${t.mainText} hidden`}>
+						<main className={``}>
+							{content}
+						</main>
+						<GameFooter/>
+					</div>
+				)}
 			</Suspense>
 		</>
 	);

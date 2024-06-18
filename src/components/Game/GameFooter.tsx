@@ -2,6 +2,8 @@
 import React, { forwardRef, MouseEvent, Ref, useEffect, useRef, useState } from 'react'
 import dynamic from 'next/dynamic';
 
+import { useRouter } from 'next/navigation';
+
 import SVGIcon from '@/components/SVGIcon/SVGIcon'
 import { BackSquare, CurrencyIcon, ExitDoor, StatsIcon, PercentageIcon, CopyIcon, MenuIcon, InfoIcon, SettingsIcon } from "@/assets/svg/icons";
 import { mergeRefs } from '@/mergeRefs/mergeRefs';
@@ -10,6 +12,61 @@ import style from "./GameFooter.module.scss";
 import theme from "../../elements.module.scss";
 import { animate } from 'framer-motion';
 import { useSignalEvent } from '@catsums/signal-event-bus';
+import { copyToClipboard } from '@/utils/utils';
+import { createNotif } from '../Notification/Notification';
+import { createPopUp } from '../PopUp/PopUp';
+
+import { computed } from '@preact/signals-react';
+
+import { GameGlobal } from '@/app/game/global';
+import { getData } from '@/app/dummyData';
+
+export let gameCode = computed(()=>{
+	let code = GameGlobal.roomData.value?.id || "";
+	let mid = Math.trunc(code.length/2);
+	code = [code.slice(0, mid), code.slice(mid)].join("-");
+
+	return code;
+});
+export let gameName = computed(()=>{
+	let name = GameGlobal.roomData.value?.name || "";
+	return name;
+});
+export let hostName = computed(()=>{
+	let name = GameGlobal.hostData.value?.name || "";
+	return name;
+});
+export let playerName = computed(()=>{
+	let name = GameGlobal.playerData.value?.name || "";
+	return name;
+});
+export let players = computed(()=>{
+	//dependancies
+	GameGlobal.playerData.value;
+	GameGlobal.roomData.value;
+
+	let code = gameCode.value.split("-").join("");
+	let roomData = getData("rooms", code);
+	let playerIDs = roomData.players;
+	let players = playerIDs.map((id) => {
+		let player = getData("players", id);
+		return player;
+	});
+
+	return players;
+})
+export let numOfPlayers = computed(()=>{
+	return players.value.length;
+});
+export let maxNumOfPlayers = computed(()=>{
+	GameGlobal.roomData.value;
+
+	let code = gameCode.value.split("-").join("");
+	let roomData = getData("rooms", code);
+	return roomData.maxNumberOfPlayers;
+});
+
+
 
 const MatchMedia = dynamic(async() => {
 	let x = await import('@/components/useMediaQuery/useMediaQuery')
@@ -19,12 +76,8 @@ const MatchMedia = dynamic(async() => {
 const GameFooter = forwardRef(function GameFooter(props,ref:Ref<any>) {
 
 	//temporary states, gonna be replaced with useContext later
-	let [gameCode] = useState("1A2B-3C4D");
-	let [gameName] = useState("Game 1");
-	let [hostName] = useState("Dr F. Tax");
-	let [numOfPlayers] = useState(8);
-	let [maxNumOfPlayers] = useState(20);
-
+	
+	let router = useRouter();
 
 	const Mobile = forwardRef(function Mobile(props,ref:Ref<any>){
 		let popMenuBtnRef = useRef<any>();
@@ -36,6 +89,7 @@ const GameFooter = forwardRef(function GameFooter(props,ref:Ref<any>) {
 			stroke: [theme.strokeSolidText, theme.strokeSolidElement],
 			fill: [theme.toolBar, theme.textBoxBackground],
 		}
+
 
 		function toggleOpen(){
 			popMenuOpen.current = !popMenuOpen.current;
@@ -73,7 +127,22 @@ const GameFooter = forwardRef(function GameFooter(props,ref:Ref<any>) {
 					<div className={`${style.roomCodeCont} ${theme.textBoxBackground} ${theme.inputText}`}>
 						<span className={`${style.roomCodeTxt}`}>{gameCode}</span>
 					</div>
-					<div className={`${style.roomCodeCopyCont} ${theme.strokeSolidText}`}>
+					<div 
+						className={`${style.roomCodeCopyCont} ${theme.strokeSolidText}`}
+						onClick={async()=>{
+							let url = new URL(window.location.href);
+							await copyToClipboard(url.href);
+
+							let notifData = (
+								<p className={`mx-4`}>Copied to clipboard!</p>
+							)
+
+							createNotif({
+								content: (notifData),
+								time: 1.5,
+							});
+						}}
+					>
 						<SVGIcon>
 							<CopyIcon fill="none"/>
 						</SVGIcon>
@@ -104,10 +173,18 @@ const GameFooter = forwardRef(function GameFooter(props,ref:Ref<any>) {
 					<div ref={popMenuRef} className={`${style.popMenu} ${style.popMenuClosed} ${theme.toolBar}`}>
 						<div className="grid grid-flow-row">
 							<SVGIcon resizeBasedOnContainer={false} className={`${theme.fillSolidText} my-2`}>
-								<InfoIcon />
-								<StatsIcon />
-								<SettingsIcon />
-								<ExitDoor />
+								<span>
+									<InfoIcon />
+								</span>
+								<span>
+									<StatsIcon />
+								</span>
+								<span>
+									<SettingsIcon />
+								</span>
+								<span>
+									<ExitDoor />
+								</span>
 							</SVGIcon>
 						</div>
 						<div className="popmenu-spacing"></div>
@@ -125,12 +202,28 @@ const GameFooter = forwardRef(function GameFooter(props,ref:Ref<any>) {
 	})
 
 	const PC = forwardRef(function PC(props,ref:Ref<any>){
+
 		return (
 			<footer ref={ref} className={`${style.gameFooter} ${style.PCGameFooter} ${theme.toolBar} ${theme.solidText}`}>
 				<div className={`${style.col} col-span-3 px-2`}>
 					<div className="mx-2">Game Code:</div>
 					<div className={`${theme.textBoxBackground} ${theme.inputText} font-medium text-xs p-2 rounded-md`}>{gameCode}</div>
-					<div className={`${style.roomCodeCopyCont} ${theme.strokeSolidText}`}>
+					<div 
+						className={`${style.roomCodeCopyCont} ${theme.strokeSolidText}`}
+						onClick={async()=>{
+							let url = new URL(window.location.href);
+							await copyToClipboard(url.href);
+
+							let notifData = (
+								<p className={`mx-4`}>Copied to clipboard!</p>
+							)
+
+							createNotif({
+								content: (notifData),
+								time: 1.5,
+							});
+						}}
+					>
 						<SVGIcon>
 							<CopyIcon fill="none"/>
 						</SVGIcon>
@@ -157,7 +250,22 @@ const GameFooter = forwardRef(function GameFooter(props,ref:Ref<any>) {
 						<BackSquare/>
 					</SVGIcon>
 				</div>
-				<div className={`${style.col} ${theme.fillSolidText} col-start-12 px-2 w-12`}>
+				<div 
+					className={`${style.col} ${theme.fillSolidText} col-start-12 px-2 w-12`} 
+					onClick={()=>{
+						createPopUp({
+							content: (
+								<p>Are you sure you want to exit the game room?</p>
+							),
+							buttons: {
+								"Yes": () => {
+									router.push("/");
+								},
+								"No": () => {},
+							}
+						})
+					}}
+				>
 					<SVGIcon>
 						<ExitDoor/>
 					</SVGIcon>
@@ -170,13 +278,15 @@ const GameFooter = forwardRef(function GameFooter(props,ref:Ref<any>) {
 		<>
 			<MatchMedia 
 				query={{
-					not: ["xs","sm","md"]
+					"min-width": "lg"
 				}}
 			>
 				<PC/>
 			</MatchMedia>
 			<MatchMedia 
-				query={["xs","sm","md"]} 
+				query={{
+					"max-width": "md",
+				}} 
 			>
 				<Mobile/>
 			</MatchMedia>

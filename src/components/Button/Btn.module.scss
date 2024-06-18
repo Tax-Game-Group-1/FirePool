@@ -28,4 +28,12 @@
 			scale: 0.98;
 		}
 	}
+	
+	&.invert {
+		.btnContent {
+			box-shadow: inset 0 0.5em var(--btnShadow2);
+			background-color: var(--btnShadow1);
+			scale: 0.98;
+		}
+	}
 }

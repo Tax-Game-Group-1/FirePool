@@ -1,8 +1,7 @@
+import dynamic from 'next/dynamic'
 import React, { lazy, Suspense } from 'react'
 
-import {forwardRef, Ref} from 'react';
-
-const Layouts = lazy(() => import("./layouts"))
+const Layouts = dynamic(() => import("./layouts"), {ssr: false})
 
 export default function Layout() {
 
