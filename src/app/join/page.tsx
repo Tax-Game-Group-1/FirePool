@@ -1,24 +1,24 @@
 'use client'
-import t from '../themes.module.scss'
+import t from '../../components/ThemeContext/themes.module.scss'
 import s from './join.module.scss'
 import {useTheme} from "@/components/ThemeContext/themecontext";
 import {useRouter} from "next/navigation";
 
 export default function JoinGame() {
-    const {getThemeClass} = useTheme();
+    const {theme} = useTheme();
     const router = useRouter();
 
     const checkRoomCode = () => {
         //see that room code is correct and connect to server
 
-        router.push('/inGame')
+        router.push('/game')
         return true;
 
 
     }
 
     return (
-        <div className={getThemeClass()}>
+        <div className={theme}>
             <div className={[s.container, t.gradient].join(' ')}>
                 <div>
                     <p className={s.message}>Enter the game code to join</p>
