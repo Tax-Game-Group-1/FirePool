@@ -1,4 +1,3 @@
-import Declare from "@/app/declare/page";
 import {Socket} from "socket.io-client";
 
 
