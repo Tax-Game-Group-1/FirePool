@@ -37,6 +37,12 @@ export default function GameContentContainer({children}:{
 			activeContents.value = {...newActiveContents};
 		}
 	}, contentSignalBus);
+	useSignalEvent("closeAll", ()=>{
+		let keys = Object.keys(activeContents.value); 
+		for(let k of keys){
+			closeContent(k);
+		}
+	}, contentSignalBus);
 
 	let contents = Object.values(activeContents.value);
 	
@@ -68,7 +74,7 @@ export function createContent({content,className, id=randomID(), useWrapper=true
 		);
 	}
 
-	let t = createTimer(250).onComplete(()=>{
+	let t = createTimer(0.240).onComplete(()=>{
 		console.log("ABC")
 		console.log({contentSignalBus})
 		contentSignalBus.emit("add",{id, node});
@@ -84,6 +90,10 @@ export function createContent({content,className, id=randomID(), useWrapper=true
 export function closeContent(id){
 	// console.log(activeContents.value[id])
 	contentSignalBus.emit(`close-${id}`);
+}
+export function closeContentAll(){
+	// console.log(activeContents.value[id])
+	contentSignalBus.emit(`closeAll`);
 }
 
 export const GameContent = forwardRef(function GameContent(

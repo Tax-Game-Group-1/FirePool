@@ -41,6 +41,14 @@ export const PopUpContainer = forwardRef(function PopUpContainer({children}:{
 			activePopUps.value = {...newActivePopUps};
 		}
 	}, popUpSignalBus);
+	//on signal closeAll, close all the popups
+	useSignalEvent("closeAll",(id)=>{
+		let newActivePopUps = (activePopUps.value);
+		let keys = Object.keys(newActivePopUps);
+		for(let k of keys){
+			closePopUp(k);
+		}
+	}, popUpSignalBus);
 	//on signal create, open the popup node by adding it
 	useSignalEvent("create",({node, id}:{node:React.ReactNode, id:string})=>{
 		let newActivePopUps = activePopUps.value;
@@ -100,7 +108,7 @@ export function createPopUp(opts:{
 		{content}
 	</PopUp>)
 	
-	let t = createTimer(100).onComplete(()=>{
+	let t = createTimer(0.100).onComplete(()=>{
 		popUpSignalBus.emit("create", {id, node});
 	})
 
@@ -108,6 +116,13 @@ export function createPopUp(opts:{
 		timer: t,
 		id,
 	}
+}
+
+export function closePopUp(id){
+	popUpSignalBus.emit(`close`, id);
+}
+export function closeAllPopUps(){
+	popUpSignalBus.emit(`closeAll`);
 }
 
 export const PopUp = forwardRef(function PopUp({

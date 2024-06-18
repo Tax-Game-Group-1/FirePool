@@ -50,6 +50,12 @@ export default function NotifContainer({children}:{
 			notifContents.value = {...newContents};
 		}
 	}, notifSignalBus);
+	useSignalEvent("closeAll", ()=>{
+		let keys = Object.keys(notifContents.value); 
+		for(let k of keys){
+			closeNotif(k);
+		}
+	}, notifSignalBus);
 
 	let contents = Object.values(notifContents.value);
 
@@ -82,7 +88,7 @@ export function createNotif({content,className, id=randomID(), useWrapper=true, 
 		);
 	}
 
-	let t = createTimer(250).onComplete(()=>{
+	let t = createTimer(0.250).onComplete(()=>{
 		notifSignalBus.emit("add",{id, node});
 	});
 
@@ -95,6 +101,9 @@ export function createNotif({content,className, id=randomID(), useWrapper=true, 
 
 export function closeNotif(id){
 	notifSignalBus.emit(`close-${id}`);
+}
+export function closeAllNotifs(){
+	notifSignalBus.emit(`closeAll`);
 }
 
 export const Notif = forwardRef(function Notif(
