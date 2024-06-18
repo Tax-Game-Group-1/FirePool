@@ -72,12 +72,8 @@ export function WaitingRoom() {
 	useEffect(() => {
 		let k = requestAnimationFrame(()=>{
 			let x = createNotif({
-				content: (<p>Test Notif</p>),
+				content: (<p>Joined Game</p>),
 				time: 3,
-			})
-			let y = createNotif({
-				content: (<p>Test Notif 2</p>),
-				time: 5,
 			})
 		});
 
