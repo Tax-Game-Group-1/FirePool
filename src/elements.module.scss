@@ -4,8 +4,18 @@
 
 	@apply transition-colors duration-300;
 }
+.mainBG {
+	background-color: var(--mainColor);
+
+	@apply transition-colors duration-300;
+}
 .solidText {
 	color: var(--solidText);
+
+	@apply transition-colors duration-300;
+}
+.solidBG {
+	background-color: var(--solidText);
 
 	@apply transition-colors duration-300;
 }
