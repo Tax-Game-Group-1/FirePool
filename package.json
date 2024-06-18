@@ -25,7 +25,6 @@
     "framer-motion": "^11.2.10",
     "gsap": "^3.12.5",
     "lodash": "^4.17.21",
-    "next": "^14.2.3",
     "react": "^18.3.1",
     "react-dom": "^18",
     "react-qr-code": "^2.0.14",
@@ -40,12 +39,14 @@
     "dotenv": "^16.4.5",
     "drizzle-orm": "^0.31.2",
     "esrun": "^3.2.26",
+    "next": "14.2.3",
     "postgres": "^3.4.4",
     "ts-jest": "^29.1.4",
     "ts-node": "^10.9.2"
   },
   "devDependencies": {
     "@types/bcrypt": "^5.0.2",
+    "@types/express": "^4.17.21",
     "@types/jest": "^29.5.12",
     "@types/node": "^20",
     "@types/react": "^18",
