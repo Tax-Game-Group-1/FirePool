@@ -101,11 +101,15 @@ export async function tryLogin(username:string, password:string){
 		return;
 	}
 
-	createNotif({
-		content: "Successfully logged in!",
-	})
-
-	console.log(res.data);
+	if (res.data?.id != null) {
+		localStorage.setItem('admin_id', res.data.id);
+		createNotif({
+			content: "Successfully logged in!",
+		})
+		setTimeout(() => {
+			window.location.href = `/host`;	
+		}, 3500)
+	}
 
 }
 
