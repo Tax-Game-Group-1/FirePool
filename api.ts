@@ -1,7 +1,6 @@
 import express, {Express} from "express";
 import { setGameInstance } from "./server";
-import { createAdminUser, getAdminIdByUserName } from "&/queries/queries"
-
+import { createAdminUser, getAdminIdByUserName, createGame } from "&/queries/queries"
 import _ from "lodash"
 
 export function setUpServer(server:Express) {
@@ -92,6 +91,36 @@ export function setUpServer(server:Express) {
 				message: e
 			});
 		}
+	})
+
+	//create a new game and post it to the database
+	server.post("/createGame", async(req,res) => {
+		
+		try {
+			createGame(req.body.adminId, req.body.taxCoefficient, req.body.maxPlayers, req.body.finePercent, req.body.roundNumber, req.body.auditProbability, req.body.kickPlayersOnBankruptcy);
+		} catch (e) {
+			res.status(500).json({
+				success: false,
+				message: e
+			})
+			return ;
+		}
+
+		res.status(200).json({
+			success: true,
+			message: "successfullly created game"
+		})	
+
+	})
+
+	//sets the game instance on the server when the admin starts the game
+	server.get("/openGame", async() => {
+
+	})
+
+	//retrieves the list of games from the server
+	server.get("/listGames", async () => {
+
 	})
 }
 

@@ -1,6 +1,6 @@
 import bcrypt from 'bcrypt'
 import {db} from '../db'
-import {tblAdmin} from '../schema'
+import {tblAdmin, tblGameInstance} from '../schema'
 import {and, eq} from "drizzle-orm";
 import {Game, Citizen, Minister, ForeignWorker, LocalWorker, Universe, Player} from '&/gameManager/gameManager';
 
@@ -40,6 +40,24 @@ const getAdminIdByUserName = async (username: string, password: string) => {
 }
 
 
+const createGame = async (adminId: number, taxCoefficient: number, maxPlayers: number, finePercent: number, roundNumber: number, auditProbability: number, kickPlayersOnBankruptcy: boolean) => {
+    //test that the game is valid by seeing if you can create an instance
+    const testId = "1";
+    const testGame = new Game(testId, taxCoefficient, maxPlayers, finePercent, roundNumber, auditProbability, kickPlayersOnBankruptcy);
+
+    //if game created successfully, nothing will be thrown by this point, insert it into the database
+    return await db.insert(tblGameInstance).values({
+        adminId,  
+        taxCoefficient, 
+        maxPlayers, 
+        finePercent, 
+        roundNumber,
+        auditProbability,
+        kickPlayersOnBankruptcy
+    })
+}
+
+
 /*
  get the game manager object
  insert the last round added to the game object
@@ -60,5 +78,6 @@ const clearTables = async () => {
 export {
     createAdminUser,
     getAdminIdByUserName,
-    clearTables
+    clearTables, 
+    createGame
 }
