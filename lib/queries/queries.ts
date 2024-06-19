@@ -1,6 +1,6 @@
 import bcrypt from 'bcrypt'
 import {db} from '../db'
-import {tblAdmin} from '../schema'
+import {tblAdmin, tblGameInstance} from '../schema'
 import {and, eq} from "drizzle-orm";
 import {Game, Citizen, Minister, ForeignWorker, LocalWorker, Universe, Player} from '&/gameManager/gameManager';
 
@@ -40,6 +40,43 @@ const getAdminIdByUserName = async (username: string, password: string) => {
 }
 
 
+const createGame = async (adminId: number, taxCoefficient: number, maxPlayers: number, finePercent: number, roundNumber: number, auditProbability: number, kickPlayersOnBankruptcy: boolean) => {
+    //test that the game is valid by seeing if you can create an instance
+    const testId = "1";
+    const testGame = new Game(testId, taxCoefficient, maxPlayers, finePercent, roundNumber, auditProbability, kickPlayersOnBankruptcy);
+
+    if (adminId == null)
+        throw "Admin ID cannot be null";
+    if (taxCoefficient == null)
+        throw "Tax coefficient cannot be null";
+    if (maxPlayers == null)
+        throw "Max players cannot be null";
+    if (finePercent == null)
+        throw "Fine percent cannot be null";
+    if (roundNumber == null)
+        throw "Round number cannot be null";
+    if (auditProbability == null)
+        throw "Audit probability cannot be null";
+    if (kickPlayersOnBankruptcy == null)
+        throw "Kick players on bankruptcy flag cannot be null";
+
+    //if game created successfully, nothing will be thrown by this point, insert it into the database
+    return await db.insert(tblGameInstance).values({
+        adminId,  
+        taxCoefficient, 
+        maxPlayers, 
+        finePercent, 
+        roundNumber,
+        auditProbability,
+        kickPlayersOnBankruptcy
+    })
+}
+
+const getAdminGames = async (adminId: number) => {
+    return await db.select().from(tblGameInstance).where(eq(tblGameInstance.adminId, adminId))
+}
+
+
 /*
  get the game manager object
  insert the last round added to the game object
@@ -60,5 +97,7 @@ const clearTables = async () => {
 export {
     createAdminUser,
     getAdminIdByUserName,
-    clearTables
+    clearTables, 
+    createGame, 
+    getAdminGames
 }

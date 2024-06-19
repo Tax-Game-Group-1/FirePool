@@ -9,8 +9,11 @@ import {Socket} from "socket.io-client";
 export class Game {
     //manage the game id
     private _id: string;
+
     //how much gets deducted if the players get caught
+    //penalty from 10% to 100%
     private _penalty: number;
+
     //the current round, up to a fixed number
     private _roundNumber: number;
     //how much the tax is multiplied by before giving back to the minister
@@ -37,8 +40,6 @@ export class Game {
     */
     public setValues(id: string, taxCoefficient: number, maxPlayers: number, penalty: number, roundNumber: number, auditProbability: number, kickPlayersOnBankruptcy: boolean) {
         this._id = id;
-        this._penalty = penalty;
-
         this.taxCoefficient = taxCoefficient;
         this.maxPlayers = maxPlayers;
         this.auditProbability = auditProbability;
@@ -107,8 +108,8 @@ export class Game {
         return this._penalty;
     }
     public set penalty(value: number) {
-        if (value < 0 || value > 100)
-            throw "invalid penalty, must be from 0 to 100";
+        if (value < 0 || value > 1)
+            throw "invalid penalty, must be from 0% to 100%";
         this._penalty = value;
     }
 

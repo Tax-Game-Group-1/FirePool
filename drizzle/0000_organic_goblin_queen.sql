@@ -8,7 +8,12 @@ CREATE TABLE IF NOT EXISTS "users" (
 CREATE TABLE IF NOT EXISTS "gameInstance" (
 	"gameId" serial PRIMARY KEY NOT NULL,
 	"adminId" integer,
-	"finePercent" integer
+	"taxCoefficient" double precision,
+	"maxPlayers" integer,
+	"finePercent" double precision,
+	"roundNumber" integer,
+	"auditProbability" double precision,
+	"kickPlayersOnBankruptcy" boolean
 );
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "player" (

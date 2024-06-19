@@ -1,6 +1,6 @@
 "use client"
 
-import React from 'react'
+import React, { useEffect } from 'react'
 import Btn from '@/components/Button/Btn'
 import { ContentLayer } from '@/components/Game/ContentLayer'
 import NotifContainer from '@/components/Notification/Notification'
