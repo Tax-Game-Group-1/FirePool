@@ -19,8 +19,7 @@ export const tblGameInstance = pgTable('gameInstance', {
     adminId: integer('adminId').references(() => tblAdmin.id),
     taxCoefficient: doublePrecision("taxCoefficient"),
     maxPlayers: integer("maxPlayers"),
-    finePercent: integer('finePercent'),
-    penalty: doublePrecision("penalty"),
+    finePercent: doublePrecision('finePercent'),
     roundNumber: integer("roundNumber"),
     auditProbability: doublePrecision("auditProbability"),
     kickPlayersOnBankruptcy: boolean("kickPlayersOnBankruptcy")

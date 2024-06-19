@@ -1,6 +1,6 @@
 import express, {Express} from "express";
 import { setGameInstance } from "./server";
-import { createAdminUser, getAdminIdByUserName, createGame } from "&/queries/queries"
+import { createAdminUser, getAdminIdByUserName, createGame, getAdminGames} from "&/queries/queries"
 import _ from "lodash"
 
 export function setUpServer(server:Express) {
@@ -116,11 +116,16 @@ export function setUpServer(server:Express) {
 	//sets the game instance on the server when the admin starts the game
 	server.get("/openGame", async() => {
 
+		console.log("open game request recieved...");
+
 	})
 
 	//retrieves the list of games from the server
-	server.get("/listGames", async () => {
-
+	server.get("/listGames/:adminId", async (req, res) => {
+		console.log("list games")
+		const adminGames = await getAdminGames(Number(req.query.adminId));
+		console.log("admin games: ");
+		console.log(adminGames);
 	})
 }
 

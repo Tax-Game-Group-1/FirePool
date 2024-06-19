@@ -13,7 +13,9 @@
     "db": "sst shell drizzle-kit",
     "db:studio": "sst shell drizzle-kit studio",
     "db:generate": "npx drizzle-kit generate  --dialect postgresql --schema lib/schema.ts --out ./drizzle",
-    "db:migrate": "npx tsx ./lib/migrate.ts"
+    "db:migrate": "npx tsx ./lib/migrate.ts",
+    "db:push-tables": "ts-node ./lib/db.ts",
+    "kill": "npx kill-port 3000"
   },
   "dependencies": {
     "@aws-sdk/client-rds-data": "^3.598.0",
