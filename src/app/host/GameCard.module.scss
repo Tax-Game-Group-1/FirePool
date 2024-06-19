@@ -1,0 +1,8 @@
+
+.gameCard{
+	@apply flex flex-col aspect-[0.75] relative items-center justify-evenly p-2 lg:p-4 gap-2  rounded-md relative;
+	transition: all 0.3s !important;
+	&:hover {
+		scale: 1.05;
+	}
+}
