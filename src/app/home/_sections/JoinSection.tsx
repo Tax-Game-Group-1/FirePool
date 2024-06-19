@@ -53,7 +53,7 @@ export function JoinSection(){
 	let activeClass = active ? "pointer-events-auto" : "pointer-events-none";
 
 	return (
-		<section className={`${activeClass} min-h-[100vh] min-w-[100vw] w-max h-screen absolute top-[100svh] left-[100vw] flex flex-row p-8 justify-evenly items-center`}>
+		<section className={`${activeClass} ${t.background} min-h-[100vh] min-w-[100vw] w-max h-screen absolute top-[100svh] left-[100vw] flex flex-row p-8 justify-evenly items-center`}>
 			<div className={`rounded-tl-rounded  w-full h-full grid grid-rows-2 grid-cols-1 md:grid-cols-2 gap-2 p-2 ${t.solidText}`}>
 				<div className={`rounded-md row-span-1 md:row-span-2 col-span-2 md:col-span-1 flex flex-col justify-evenly items-center`}>
 					<div></div>
