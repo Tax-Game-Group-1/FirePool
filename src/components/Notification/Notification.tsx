@@ -67,7 +67,7 @@ export default function NotifContainer({children}:{
 	)
 }
 
-export function createNotif({content,className, id=randomID(), useWrapper=true, time=5}:{
+export function createNotif({content,className, id=randomID(), useWrapper=true, time=3.5}:{
 	content: React.ReactNode,
 	className?: string,
 	id?: string,

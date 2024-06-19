@@ -18,8 +18,9 @@ import { JoinSection, JoiningSection } from './_sections/JoinSection';
 import { LoginSection } from './_sections/LoginSection';
 import { SplashSection } from './_sections/SplashSection';
 import { StartSection } from './_sections/StartSection';
+import { IRequestResult } from '@/interfaces';
 
-
+//possible sections
 export enum PageSection {
 	Splash,
 	Login,
@@ -30,6 +31,7 @@ export enum PageSection {
 
 export let homePageSectionBus = new SignalEventBus();
 
+//navigates to section
 export function goToSection(section: PageSection){
 	let dir:DOMKeyframesDefinition = {}
 	switch (section){
@@ -56,9 +58,66 @@ export function goToSection(section: PageSection){
 	});
 }
 
-export function tryJoin(code:string){
+/*
+    server.post("/adminLogin", (req, res) => {
+        
+    });
+*/
+
+
+export async function tryLogin(username:string, password:string){
+	username = sanitizeString(username.trim());
+	password = sanitizeString(password.trim());
+
+	if(!username){
+		createNotif({
+			content: "Username is empty!",
+		})
+		return;
+	}
+	if(!password){
+		createNotif({
+			content: "Password is empty",
+		})
+		return;
+	}
+
+	///check if username and password are valid
+	let res = await fetch("/adminLogin", {
+		method: "POST",
+		headers: {
+			'Accept': 'application/json',
+			'Content-Type': 'application/json'
+		},
+		body: JSON.stringify({
+			username, password,
+		}),
+	}).then(r => r.json()) as IRequestResult;
+
+	if(!res.success){
+		createNotif({
+			content: res?.message || "Server error. Check the server admin!",
+		})
+		return;
+	}
+
+	createNotif({
+		content: "Successfully logged in!",
+	})
+
+	console.log(res.data);
+
+}
+
+export async function tryJoin(code:string){
 	code = sanitizeString(code.trim().replaceAll(/[^a-zA-Z0-9]/g,"").slice(0,8));
 
+	if(!code.length){
+		createNotif({
+			content: "Room code is empty",
+		})
+		return;
+	}
 	if(code.length < 8){
 		createNotif({
 			content: "Room code is too small",

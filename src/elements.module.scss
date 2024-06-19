@@ -25,6 +25,12 @@
 
 	@apply transition-colors duration-300;
 }
+.solidElemBorder {
+	border-color: var(--solidElement);
+	outline-color: var(--solidElement);
+
+	@apply transition-colors duration-300;
+}
 
 .solidWindow {
 	background-color: var(--solidWindow);
