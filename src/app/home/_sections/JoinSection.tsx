@@ -68,8 +68,8 @@ export function JoinSection(){
 						</Btn>
 					</div>
 				</div>
-				<div className={`rounded-md rounded-b-none md:rounded-b-md rounded-l-md md:rounded-l-none  ${t.solidElement} row-span-1 md:row-span-2 col-span-2 md:col-span-1 flex flex-col justify-evenly md:gap-20 md:justify-center items-center`}>
-					<div className={`flex justify-center items-center border ${t.buttonBorder} w-1/4 md:w-1/2 p-4 rounded-md`}>
+				<div className={`rounded-md rounded-b-none md:rounded-b-md rounded-l-md md:rounded-l-none  ${t.solidElement} row-span-1 md:row-span-2 col-span-2 md:col-span-1 flex flex-col justify-center md:gap-10 md:justify-center items-center`}>
+					<div className={`flex justify-center items-center border ${t.buttonBorder} w-1/4 md:w-1/2 p-2 md:p-4 m-1 md:m-2 rounded-md`}>
 						<AvatarIcon url={`${getIconURL()}`}/>
 					</div>
 					<div className={`flex flex-col gap-2 `}>
