@@ -5,7 +5,7 @@ import { goToSection, PageSection } from '../home/page';
 import { ContentLayer } from '@/components/Game/ContentLayer';
 import NotifContainer, { createNotif } from '@/components/Notification/Notification';
 
-import t from "../../elements.module.scss"
+import t from "../../elements.module.scss";
 
 import "./page.scss"
 import { PopUpContainer } from '@/components/PopUp/PopUp';
@@ -123,8 +123,8 @@ export default function Page() {
 
 	return (
 		<>
-				<main className={`${""} ${theme} ${t.background} ${t.solidText} min-w-screen min-h-screen flex flex-col p-8 justify-evenly items-center`}>
-					
+				<main className={`${theme}`}>
+				  <div className={`${t.background} ${t.solidText} min-w-screen min-h-screen flex flex-col p-8 justify-evenly items-center`}>	
 					<form ref={scope} className={`opacity-0 rounded-md ${t.solidElement} w-2/3 md:w-1/2 flex flex-col gap-4 p-4 lg:p-8 py-12 justify-center items-center`}>
 						<div className={`flex flex-col gap-2 w-full sm:w-4/5 lg:w-2/3`}>
 							<label htmlFor="username" className={`flex`}>Username</label>
@@ -165,6 +165,7 @@ export default function Page() {
 							<PopUpContainer></PopUpContainer>
 						</ContentLayer>
 					</div>
+				  </div>	
 				</main>
 		</>
 	)

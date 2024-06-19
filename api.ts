@@ -93,7 +93,7 @@ export function setUpServer(server:Express) {
 				}
 			})
 		} catch (e) {
-			let err = "Server error: Contact server admin";
+			let err = "User already exists, please log in";
 			if(_.isString(e)){
 				err = e;
 			}
