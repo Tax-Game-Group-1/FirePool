@@ -10,6 +10,9 @@ export class Game {
     //manage the game id
     private _id: string;
 
+    //name that displays on the frontend
+    private _name: string;
+
     //how much gets deducted if the players get caught
     //penalty from 10% to 100%
     private _penalty: number;
@@ -29,8 +32,8 @@ export class Game {
     //universes which players can switch to if they are not a slave
     private _universes: Universe[];
 
-    constructor(id: string, taxCoefficient: number, maxPlayers: number, penalty: number, roundNumber: number, auditProbability: number, kickPlayersOnBankruptcy: boolean) {
-        this.setValues(id, taxCoefficient, maxPlayers, penalty, roundNumber, auditProbability, kickPlayersOnBankruptcy);
+    constructor(id: string, name: string, taxCoefficient: number, maxPlayers: number, penalty: number, roundNumber: number, auditProbability: number, kickPlayersOnBankruptcy: boolean) {
+        this.setValues(id, name, taxCoefficient, maxPlayers, penalty, roundNumber, auditProbability, kickPlayersOnBankruptcy);
         this._playersNotAssignedToUniverse = [];
         this._universes = [];
     }
@@ -38,11 +41,12 @@ export class Game {
     /*
         copy constructor for when user modifies the settings of the universe in the fronted
     */
-    public setValues(id: string, taxCoefficient: number, maxPlayers: number, penalty: number, roundNumber: number, auditProbability: number, kickPlayersOnBankruptcy: boolean) {
+    public setValues(id: string, name: string, taxCoefficient: number, maxPlayers: number, penalty: number, roundNumber: number, auditProbability: number, kickPlayersOnBankruptcy: boolean) {
         this._id = id;
         this.taxCoefficient = taxCoefficient;
         this.maxPlayers = maxPlayers;
         this.auditProbability = auditProbability;
+        this.name = name;
 
         this._roundNumber = roundNumber;
         this.kickPlayersOnBankruptcy = kickPlayersOnBankruptcy;
@@ -53,6 +57,12 @@ export class Game {
         if (this._playersNotAssignedToUniverse.length >= this.maxPlayers)
             throw "waiting area full"
         this._playersNotAssignedToUniverse.push(player);
+    }
+
+    public set name(newValue: string) {
+        if (newValue == "")
+            throw "new value can't be null"
+        this._name = newValue;
     }
 
     public numPlayersNotAssigned = () => this._playersNotAssignedToUniverse.length;
@@ -145,7 +155,7 @@ export class Game {
     }
 
     public set maxPlayers(value: number) {
-        if (value < 2)
+        if (value < 6)
             throw "too few max players"
         this._maxPlayers = value;
     }

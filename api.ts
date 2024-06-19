@@ -97,7 +97,7 @@ export function setUpServer(server:Express) {
 	server.post("/createGame", async(req,res) => {
 		
 		try {
-			createGame(req.body.adminId, req.body.taxCoefficient, req.body.maxPlayers, req.body.finePercent, req.body.roundNumber, req.body.auditProbability, req.body.kickPlayersOnBankruptcy);
+			createGame(req.body.adminId, req.body.name, req.body.taxCoefficient, req.body.maxPlayers, req.body.finePercent, req.body.roundNumber, req.body.auditProbability, req.body.kickPlayersOnBankruptcy);
 		} catch (e) {
 			res.status(500).json({
 				success: false,

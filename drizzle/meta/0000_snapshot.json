@@ -1,5 +1,5 @@
 {
-  "id": "70f0c2ae-c50d-4fa1-a2d4-3423948f91ae",
+  "id": "5d7e04a7-9363-412a-b96e-865fd64cd0f6",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -51,6 +51,12 @@
         "adminId": {
           "name": "adminId",
           "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
           "primaryKey": false,
           "notNull": false
         },

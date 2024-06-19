@@ -8,6 +8,7 @@ CREATE TABLE IF NOT EXISTS "users" (
 CREATE TABLE IF NOT EXISTS "gameInstance" (
 	"gameId" serial PRIMARY KEY NOT NULL,
 	"adminId" integer,
+	"name" text,
 	"taxCoefficient" double precision,
 	"maxPlayers" integer,
 	"finePercent" double precision,

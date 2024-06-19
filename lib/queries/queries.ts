@@ -7,7 +7,7 @@ import {Game, Citizen, Minister, ForeignWorker, LocalWorker, Universe, Player} f
 export const BCRYPT_SALT_ROUNDS = 10;
 
 //test admin users
-//username: admin
+//username: janeDoe123
 //password: mypass123
 
 const createAdminUser = async (email: string, username: string, password: string) => {
@@ -40,10 +40,10 @@ const getAdminIdByUserName = async (username: string, password: string) => {
 }
 
 
-const createGame = async (adminId: number, taxCoefficient: number, maxPlayers: number, finePercent: number, roundNumber: number, auditProbability: number, kickPlayersOnBankruptcy: boolean) => {
+const createGame = async (adminId: number, name: string, taxCoefficient: number, maxPlayers: number, finePercent: number, roundNumber: number, auditProbability: number, kickPlayersOnBankruptcy: boolean) => {
     //test that the game is valid by seeing if you can create an instance
     const testId = "1";
-    const testGame = new Game(testId, taxCoefficient, maxPlayers, finePercent, roundNumber, auditProbability, kickPlayersOnBankruptcy);
+    const testGame = new Game(testId, name, taxCoefficient, maxPlayers, finePercent, roundNumber, auditProbability, kickPlayersOnBankruptcy);
 
     if (adminId == null)
         throw "Admin ID cannot be null";
@@ -59,10 +59,13 @@ const createGame = async (adminId: number, taxCoefficient: number, maxPlayers: n
         throw "Audit probability cannot be null";
     if (kickPlayersOnBankruptcy == null)
         throw "Kick players on bankruptcy flag cannot be null";
+    if (name == null)
+        throw "Name cannot be null"
 
     //if game created successfully, nothing will be thrown by this point, insert it into the database
     return await db.insert(tblGameInstance).values({
         adminId,  
+        name, 
         taxCoefficient, 
         maxPlayers, 
         finePercent, 

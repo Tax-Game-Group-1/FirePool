@@ -17,6 +17,7 @@ export const tblAdmin = pgTable("users", {
 export const tblGameInstance = pgTable('gameInstance', {
     gameId: serial('gameId').primaryKey(),
     adminId: integer('adminId').references(() => tblAdmin.id),
+    name: text('name'),
     taxCoefficient: doublePrecision("taxCoefficient"),
     maxPlayers: integer("maxPlayers"),
     finePercent: doublePrecision('finePercent'),

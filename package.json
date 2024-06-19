@@ -13,8 +13,7 @@
     "db": "sst shell drizzle-kit",
     "db:studio": "sst shell drizzle-kit studio",
     "db:generate": "npx drizzle-kit generate  --dialect postgresql --schema lib/schema.ts --out ./drizzle",
-    "db:migrate": "npx tsx ./lib/migrate.ts",
-    "db:push-tables": "ts-node ./lib/db.ts",
+    "db:migrate": "npx tsx ./lib/migrate.ts && ts-node ./lib/db.ts",
     "kill": "npx kill-port 3000"
   },
   "dependencies": {
