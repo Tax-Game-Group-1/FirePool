@@ -17,6 +17,9 @@ import { useAnimate } from 'framer-motion';
 import LoadingScreen from '@/components/LoadingScreen/LoadingScreen';
 import { useRemoveLoadingScreen } from '@/components/LoadingScreen/LoadingScreenUtil';
 
+import dynamic from 'next/dynamic';
+import { Suspense } from 'react';
+
 let showPass = signal(false);
 let active = signal(false);
 
@@ -96,6 +99,8 @@ export default function Page() {
 	})
 
 	useEffect(()=>{
+		if(!scope?.current) return;
+
 		let anim = animate(scope?.current, {
 			opacity: [0,1],
 			scaleX: [0,1],
@@ -118,50 +123,49 @@ export default function Page() {
 
 	return (
 		<>
-			<LoadingScreen/>
-			<main className={`${""} ${theme} ${t.background} ${t.solidText} min-w-screen min-h-screen flex flex-col p-8 justify-evenly items-center`}>
-				
-				<form ref={scope} className={`opacity-0 rounded-md ${t.solidElement} w-2/3 md:w-1/2 flex flex-col gap-4 p-4 lg:p-8 py-12 justify-center items-center`}>
-					<div className={`flex flex-col gap-2 w-full sm:w-4/5 lg:w-2/3`}>
-						<label htmlFor="username" className={`flex`}>Username</label>
-						<input ref={usernameRef} name="username" className={`text-sm flex rounded-md p-2 ${t.inputBox} ${t.buttonText}`}/>
-					</div>
-					<div className={`flex flex-col gap-2 w-full sm:w-4/5 lg:w-2/3`}>
-						<label htmlFor="email" className={`flex`}>Email</label>
-						<input ref={emailRef} name="email" type="email" className={`text-sm flex rounded-md p-2 ${t.inputBox} ${t.buttonText}`}/>
-					</div>
-					<div className={`flex flex-col gap-2`}>
-						<div className={`flex flex-col lg:flex-row gap-4 md:gap-2 justify-center items-center`}>
-							<div className={`flex flex-col gap-2 `}>
-								<label htmlFor="password" className={`flex`}>Password</label>
-								<input ref={passRef}  name="password" type={showPass.value ? `text` : `password`} className={`text-sm flex rounded-md p-2 ${t.inputBox} ${t.buttonText}`}/>
+				<main className={`${""} ${theme} ${t.background} ${t.solidText} min-w-screen min-h-screen flex flex-col p-8 justify-evenly items-center`}>
+					
+					<form ref={scope} className={`opacity-0 rounded-md ${t.solidElement} w-2/3 md:w-1/2 flex flex-col gap-4 p-4 lg:p-8 py-12 justify-center items-center`}>
+						<div className={`flex flex-col gap-2 w-full sm:w-4/5 lg:w-2/3`}>
+							<label htmlFor="username" className={`flex`}>Username</label>
+							<input ref={usernameRef} name="username" className={`text-sm flex rounded-md p-2 ${t.inputBox} ${t.buttonText}`}/>
+						</div>
+						<div className={`flex flex-col gap-2 w-full sm:w-4/5 lg:w-2/3`}>
+							<label htmlFor="email" className={`flex`}>Email</label>
+							<input ref={emailRef} name="email" type="email" className={`text-sm flex rounded-md p-2 ${t.inputBox} ${t.buttonText}`}/>
+						</div>
+						<div className={`flex flex-col gap-2`}>
+							<div className={`flex flex-col lg:flex-row gap-4 md:gap-2 justify-center items-center`}>
+								<div className={`flex flex-col gap-2 `}>
+									<label htmlFor="password" className={`flex`}>Password</label>
+									<input ref={passRef}  name="password" type={showPass.value ? `text` : `password`} className={`text-sm flex rounded-md p-2 ${t.inputBox} ${t.buttonText}`}/>
+								</div>
+								<div className={`flex flex-col gap-2 `}>
+									<label htmlFor="confirm-password" className={`flex`}>Confirm Password</label>
+									<input ref={confirmPassRef} name="confirm-password" type={showPass.value ? `text` : `password`} className={`text-sm flex rounded-md p-2 ${t.inputBox} ${t.buttonText}`}/>
+								</div>
 							</div>
-							<div className={`flex flex-col gap-2 `}>
-								<label htmlFor="confirm-password" className={`flex`}>Confirm Password</label>
-								<input ref={confirmPassRef} name="confirm-password" type={showPass.value ? `text` : `password`} className={`text-sm flex rounded-md p-2 ${t.inputBox} ${t.buttonText}`}/>
+							<div className={`flex gap-2 text-xs self-start`}>
+								<input name="show-password" ref={checkBoxRef} onChange={onCheck} type="checkbox" className={`flex rounded-md p-2 ${t.inputBox} ${t.buttonText}`}/>
+								<label htmlFor="show-password" className={`flex`}>Show password</label>
 							</div>
 						</div>
-						<div className={`flex gap-2 text-xs self-start`}>
-							<input name="show-password" ref={checkBoxRef} onChange={onCheck} type="checkbox" className={`flex rounded-md p-2 ${t.inputBox} ${t.buttonText}`}/>
-							<label htmlFor="show-password" className={`flex`}>Show password</label>
-						</div>
-					</div>
-					<div>
-						<Btn onClick={()=>{
-							signUp();
+						<div>
+							<Btn onClick={()=>{
+								signUp();
 
-						}}>Sign up</Btn>
+							}}>Sign up</Btn>
+						</div>
+					</form>
+					<div className={`fixed z-100 pointer-events-none w-screen h-screen m-0 p-0`}>
+						<ContentLayer z={10}>
+							<NotifContainer></NotifContainer>
+						</ContentLayer>
+						<ContentLayer z={10}>
+							<PopUpContainer></PopUpContainer>
+						</ContentLayer>
 					</div>
-				</form>
-				<div className={`fixed z-100 pointer-events-none w-screen h-screen m-0 p-0`}>
-					<ContentLayer z={10}>
-						<NotifContainer></NotifContainer>
-					</ContentLayer>
-					<ContentLayer z={10}>
-						<PopUpContainer></PopUpContainer>
-					</ContentLayer>
-				</div>
-			</main>
+				</main>
 		</>
 	)
 }
