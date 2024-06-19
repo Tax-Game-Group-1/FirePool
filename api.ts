@@ -23,16 +23,6 @@ export function setUpServer(server:Express) {
             })
 			return;
         }
-
-		///check through if username and password match
-		if(false){
-
-			res.status(400).json({
-				success: false,
-				message: "Username or Password is incorrect",
-			});
-			return;
-		}
 		
 		//check the username and password for the admin
 		try {

@@ -6,6 +6,10 @@ import {Game, Citizen, Minister, ForeignWorker, LocalWorker, Universe, Player} f
 
 export const BCRYPT_SALT_ROUNDS = 10;
 
+//test admin users
+//username: admin
+//password: mypass123
+
 const createAdminUser = async (email: string, username: string, password: string) => {
     const hashedPassword = await bcrypt.hash(password, BCRYPT_SALT_ROUNDS);
 
