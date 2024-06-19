@@ -11,6 +11,7 @@ import { AddIcon } from "@/assets/svg/svg";
 import SignalEventBus from "@catsums/signal-event-bus";
 
 import t from "../../elements.module.scss";
+import { useEffect, useState } from "react";
 
 export let gameCode = computed(()=>{
 	let code = GameGlobal.roomData.value?.id || "";
@@ -52,7 +53,21 @@ export let games = computed(()=>{
 export function GameCardsContainer(){
 	useSignals();
 
-	let rooms:IRoomData[] = games.value;
+	let [hostGames, setHostGames] = useState([]);
+
+	async function getGames(){
+		//fetch function here
+	}
+
+	useEffect(()=>{
+
+		getGames();
+
+		return () => {};
+
+	},[]);
+
+	let rooms:IRoomData[] = hostGames;
 
 	let gameCards = rooms.map((game, i) => {
 		games.value;
