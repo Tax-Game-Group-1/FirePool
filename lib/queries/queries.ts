@@ -21,6 +21,7 @@ const createAdminUser = async (email: string, username: string, password: string
     }).returning({id: tblAdmin.id});
 }
 
+
 const getAdminIdByUserName = async (username: string, password: string) => {
     const result = await db.select({
         id: tblAdmin.id,

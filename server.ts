@@ -5,6 +5,9 @@ import express, {Express} from "express"
 import {setUpServer} from "./api";
 import exp from "node:constants";
 import * as http from "node:http";
+import bodyParser from "body-parser"
+
+import { randomID } from "@catsums/my";
 
 const dev = process.env.NODE_ENV !== "production";
 const hostname = "localhost";
@@ -22,21 +25,35 @@ export function setGameInstance(newGame: Game) {
   game = newGame;
 }
 
-function randomID(length = 8, prefix = '', suffix = '') {
-    let characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-    let result = '';
-    for (let i = 0; i < length; i++) {
-        let index = Math.floor(Math.random() * characters.length)
-        result += characters.charAt(index);
-    }
-    return `${prefix}${result}${suffix}`;
-}
 
 console.log(`Trying to listen on ${port} (kill port if failing)`);
 app.prepare().then(() => {
     const expressServer: Express = express();
     const server = http.createServer(expressServer);
     const io = new Server(server);
+
+	expressServer.use(bodyParser.json())
+    expressServer.use(bodyParser.urlencoded({ extended: true }))
+
+	//next will route and serve the frontend pages here
+	expressServer.get('*', (req, res) => {
+		return handler(req, res)
+	})
+
+	//----------------------------- server stuff ------------------------//
+
+	///got accidentally removed on one of the changes
+	expressServer.on("error", (err) => {
+		console.error("Server error:", err);
+		process.exit(1);
+	});
+
+	expressServer.listen(port, () => {
+		console.log(`> Ready on http://${hostname}:${port}`);
+	});
+
+	//set up all the API routes for the server, even though the server still lives here
+	setUpServer(expressServer);
 
     //--------------------------- socket stuff -------------------------//
     /**
@@ -56,7 +73,7 @@ app.prepare().then(() => {
 
 
 
-            let id = randomID(8);
+            let id = randomID();
 
             socket.emit("joinedGame", {
                 id: id,
@@ -64,10 +81,6 @@ app.prepare().then(() => {
         });
     });
 
-    //----------------------------- server stuff ------------------------//
-
-    //set up all the API routes for the server, even though the server still lives here
-    setUpServer(expressServer);
 
 }).catch((err) => {
     console.error("Next.js app error:", err);
