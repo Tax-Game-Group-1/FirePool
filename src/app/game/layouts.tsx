@@ -40,7 +40,6 @@ enum GameScreen {
 
 const Layouts = forwardRef(function Layouts({}, ref:Ref<any>) {
 	useSignals();
-	let {theme} = useTheme();
 
 	let [gameScreen, setGameScreen] = useState(GameScreen.WaitingRoom);
 
@@ -136,7 +135,7 @@ const Layouts = forwardRef(function Layouts({}, ref:Ref<any>) {
 			<Suspense fallback={<span></span>}>
 				{isLoaded && (
 					
-					<div ref={ref} className={`${style.gameLayout} ${theme} ${t.background} ${t.mainText} hidden`}>
+					<div ref={ref} className={`${style.gameLayout} ${t.background} ${t.mainText} hidden`}>
 						<main className={``}>
 							{content}
 						</main>
