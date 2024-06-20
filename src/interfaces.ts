@@ -43,8 +43,8 @@ export interface IData {
 	name:string;
 }
 export interface IPlayerData extends IData {
-    id:string;
-    name:string;
+    playerId:string;
+    playerName:string;
     role:Role;
     funds:number;
     incomeFunds:number;
@@ -54,32 +54,28 @@ export interface IPlayerData extends IData {
 	worldID: string; //worldID
 }
 export interface IHostData extends IData  {
-	id:string;
-	key:string;
+	id: number;
 	name:string;
 	password?:string;
-	games: string[]; //gameIDs
 }
 
 export interface IWorldData extends IData  {
-    id: string;
-    name: string;
-    ownerID: string;	//player ID
-    citizens: string[] //player ID
-    taxRate:number;
-    taxFunds:number;
+    universeId: number;
+	gameId: number,
+    universeName: string;
+    ministerId: number;	//player ID
 }
 
 export interface IRoomData extends IData  {
-	id:string; //gameID
+	gameId:string; //gameID
 	name:string;
-	year: number;
-	host: string;	//hostID
+	roundNumber: number;
+	adminId: number;	//hostID
 	players: string[]; //playerID
 	worlds: string[]; //worldID
-	taxCoeff: number;
-	maxNumberOfPlayers:number;
-	penalty:number;
+	taxCoefficient: number;
+	maxPlayers:number;
+	finePercent:number;
 	kickPlayersOnBankruptcy:boolean;
 	auditProbability:number;
 	gameState?: GameState;

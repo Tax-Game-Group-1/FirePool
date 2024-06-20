@@ -6,6 +6,11 @@ import {Socket} from "socket.io-client";
   | id | penalty | roundNumber | taxCoefficient | maxPlayers | auditProbability | kickPlayersOnBankruptcy |
  */
 
+export interface PlayerInWaitingRoom {
+    waitingId: string,
+    roomCode: string,
+}
+
 export class Game {
     //manage the game id
     private _id: string;
@@ -28,7 +33,7 @@ export class Game {
     //should players be kicked from the game if their funds are 0?
     public kickPlayersOnBankruptcy: boolean;
     //array of either citizens or ministers
-    private _playersNotAssignedToUniverse: Player[];
+    private _playersNotAssignedToUniverse: PlayerInWaitingRoom[];
     //universes which players can switch to if they are not a slave
     private _universes: Universe[];
 
@@ -53,10 +58,10 @@ export class Game {
     }
 
     // waiting area for players who have joined a game, but are not assigned to a universe yet
-    public addPlayerToWaitingArea(player: Player): void {
+    public addPlayerToWaitingArea(waitingPlayer: PlayerInWaitingRoom): void {
         if (this._playersNotAssignedToUniverse.length >= this.maxPlayers)
             throw "waiting area full"
-        this._playersNotAssignedToUniverse.push(player);
+        this._playersNotAssignedToUniverse.push(waitingPlayer);
     }
 
     public set name(newValue: string) {
@@ -68,7 +73,7 @@ export class Game {
     public numPlayersNotAssigned = () => this._playersNotAssignedToUniverse.length;
 
     // take a plyer from the waiting are and put it in a universe object, universes are managed by players
-    public assignPlayerToUniverse(playerId: string, universeId: string, isLocalWorker: boolean) {
+    public assignPlayerToUniverse(playerId: number, watingId: string, playerName: string, universeId: string, isLocalWorker: boolean, socket: Socket) {
 
         //find universe
         let myUniverse: Universe = null;
@@ -83,14 +88,15 @@ export class Game {
         //then add it to the universe
 
         for (let i = 0; i < this._playersNotAssignedToUniverse.length; i++)
-            if (this._playersNotAssignedToUniverse[i].id == playerId) {
-                const p = this._playersNotAssignedToUniverse[i];
+            if (this._playersNotAssignedToUniverse[i].waitingId == watingId) {
+
+                const tempPlayer = this._playersNotAssignedToUniverse[i];
                 this._playersNotAssignedToUniverse.splice(i, 1);
 
                 if (isLocalWorker)
-                    myUniverse.addPlayer(p as LocalWorker);
+                    myUniverse.addPlayer(new LocalWorker(playerName, playerId, socket));
                 else
-                    myUniverse.addPlayer(p as ForeignWorker);
+                    myUniverse.addPlayer(new ForeignWorker(playerName, playerId, socket));
 
                 return;
             }
@@ -280,7 +286,7 @@ export class Universe {
         let index = 0;
         for (let cit of this._players) {
 
-            if (typeof a == "string")
+            if (typeof a == "number")
                 if (cit.id == a) {
                     this._players.splice(index, 1);
                     return;
@@ -317,12 +323,12 @@ export class Universe {
  */
 export abstract class Player {
     private _name: string;
-    private _id: string;
+    private _id: number;
     client: Socket;
     private _funds;
     private _hasBeenKicked;
 
-    constructor(id: string, name: string, client: Socket) {
+    constructor(id: number, name: string, client: Socket) {
         this._id = id;
         this._name = name;
         this.client = client;
@@ -374,7 +380,7 @@ export abstract class Player {
 }
 
 export class Minister extends Player {
-    constructor(name: string, id: string, client: Socket) {
+    constructor(name: string, id: number, client: Socket) {
         super(id, name, client);
     }
 
@@ -403,7 +409,7 @@ export abstract class Citizen extends Player {
     //player 
     private declaredArray: declareVsPaidTax[];
 
-    constructor(name: string, id: string, client: Socket) {
+    constructor(name: string, id: number, client: Socket) {
         super(id, name, client);
         this.declaredArray = Array();
     }

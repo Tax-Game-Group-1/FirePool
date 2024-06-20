@@ -62,17 +62,31 @@ const createGame = async (adminId: number, name: string, taxCoefficient: number,
     if (name == null)
         throw "Name cannot be null"
 
+    /*
+    gameId: serial('gameId').primaryKey(),
+    adminId: integer('adminId').references(() => tblAdmin.id),
+    name: text('name'),
+    taxCoefficient: doublePrecision("taxCoefficient"),
+    maxPlayers: integer("maxPlayers"),
+    finePercent: doublePrecision('finePercent'),
+    roundNumber: integer("roundNumber"),
+    auditProbability: doublePrecision("auditProbability"),
+    kickPlayersOnBank
+    */
+
     //if game created successfully, nothing will be thrown by this point, insert it into the database
+    
+    console.log("TRYING OT INSERT")
     return await db.insert(tblGameInstance).values({
-        adminId,  
-        name, 
-        taxCoefficient, 
-        maxPlayers, 
-        finePercent, 
-        roundNumber,
-        auditProbability,
-        kickPlayersOnBankruptcy
-    })
+        adminId: adminId,  
+        name: name, 
+        taxCoefficient: taxCoefficient, 
+        maxPlayers: maxPlayers, 
+        finePercent: finePercent, 
+        roundNumber: roundNumber,
+        auditProbability: auditProbability,
+        kickPlayersOnBankruptcy: kickPlayersOnBankruptcy
+    }).returning({gameId: tblGameInstance.gameId})
 }
 
 const getAdminGames = async (adminId: number) => {

@@ -1,6 +1,6 @@
 "use client"
 
-import { computed } from "@preact/signals-react";
+import { computed, signal } from "@preact/signals-react";
 import { useSignals } from "@preact/signals-react/runtime";
 import { GameGlobal } from "../global";
 import { getIconURL } from "@/utils/utils";
@@ -13,6 +13,9 @@ import SignalEventBus from "@catsums/signal-event-bus";
 import t from "../../elements.module.scss";
 import { useEffect, useState } from "react";
 import { currGame, goToSection, PageSection, setCurrentGame } from "./page";
+import { createPopUp } from "@/components/PopUp/PopUp";
+
+import {getGames, games} from "@/app/host/page"
 
 export let gameCode = computed(()=>{
 	let code = GameGlobal.roomData.value?.id || "";
@@ -39,26 +42,11 @@ export let iconURL = computed(()=>{
 
 export let gameCardsSignal = new SignalEventBus();
 
-export let games = computed(()=>{
-	//dependancies
-	GameGlobal.hostData.value;
-	GameGlobal.roomData.value;
-
-	let rooms = findData("rooms", {
-		host: hostID.value,
-	});
-
-	return rooms;
-})
-
 export function GameCardsContainer(){
 	useSignals();
 
 	let [hostGames, setHostGames] = useState([]);
 
-	async function getGames(){
-		//fetch function here
-	}
 
 	useEffect(()=>{
 

@@ -13,12 +13,11 @@ import { getData, setData } from '@/app/dummyData';
 import { randomID, sanitizeString } from '@catsums/my';
 import LoadingScreen from '@/components/LoadingScreen/LoadingScreen';
 import { useRemoveLoadingScreen } from '@/components/LoadingScreen/LoadingScreenUtil';
-import { GameGlobal, loadGameGlobal, updateGameGlobal } from '@/app/global';
+import { GameGlobal, loadGameGlobal, updateGameGlobal, saveGameGlobal } from '@/app/global';
 import { JoinSection, JoiningSection } from './_sections/JoinSection';
 import { LoginSection } from './_sections/LoginSection';
 import { SplashSection } from './_sections/SplashSection';
 import { StartSection } from './_sections/StartSection';
-import { IPlayerData, IRequestResult, Role } from '@/interfaces';
 import { findData } from '@/app/dummyData';
 import { useRouter } from 'next/navigation';
 
@@ -75,26 +74,26 @@ export async function tryLogin(username:string, password:string){
 
 	//test login
 
-	let query = {
-		name: username,
-		password: password,
-	}
+	// let query = {
+	// 	name: username,
+	// 	password: password,
+	// }
 
-	let host = findData("hosts",query);
-	if(!host?.length){
-		createNotif({
-			content: "Username or password is incorrect",
-		})
-		return;
-	}
+	// let host = findData("hosts",query);
+	// if(!host?.length){
+	// 	createNotif({
+	// 		content: "Username or password is incorrect",
+	// 	})
+	// 	return;
+	// }
 
-	GameGlobal.hostData.value = host[0];
-	updateGameGlobal();
+	// GameGlobal.hostData.value = host[0];
+	// updateGameGlobal();
 
-	// mainRouter.push("/host");
-	window.location.href = "/host";
+	// // mainRouter.push("/host");
+	// window.location.href = "/host";
 
-	return;
+	// return;
 
 	//actual login
 
@@ -121,7 +120,7 @@ export async function tryLogin(username:string, password:string){
 		body: JSON.stringify({
 			username, password,
 		}),
-	}).then(r => r.json()) as IRequestResult;
+	}).then(r => r.json());
 
 	if(!res.success){
 		createNotif({
@@ -131,6 +130,10 @@ export async function tryLogin(username:string, password:string){
 	}
 
 	if (res.data?.id != null) {
+		GameGlobal.hostData.value.id = res.data.id;
+		GameGlobal.hostData.value.username = username;
+
+		saveGameGlobal();
 		localStorage.setItem('admin_id', res.data.id);
 		createNotif({
 			content: "Successfully logged in!",
@@ -158,50 +161,31 @@ export async function tryJoin(code:string){
 		})
 		return;
 	}
-	
-	let roomData = getData("rooms", code);
-	if(!roomData){
+
+	let res = await fetch("/joinGame",{
+		method: "POST",
+		body: JSON.stringify({
+			gameCode: code,
+			waitingId: randomID(),
+		}),
+	}).then(r => r.json());
+
+	if(!res.success){
 		createNotif({
-			content: "Room does not exist",
+			content: `Error: ${res.message}`,
 		})
 		return;
 	}
 
-	let newPlayer:IPlayerData = {
-		id: randomID(),
-		name: "",
-		funds: 0,
-		role: Role.None,
-		incomeFunds: 0,
-		declaredFunds: 0,
-		isReady: false,
-		icon: ``, //iconURL
-		worldID: ``,
-	}
+	GameGlobal.roomData.value = {
+		gameId: code,
+	};
 
-	let x = setData("players", newPlayer);
-	if(!x) {
-		createNotif({
-			content: "Error joining the game! Player data could not be created."
-		})
-		return;
-	}
-	
-	roomData.players.push(newPlayer.id);
+	GameGlobal.playerData.value = {
+		waitingId: res.data.waitingId,
+	};
 
-	x = setData("rooms", {...roomData});
-	if(!x) {
-		createNotif({
-			content: "Error joining the game! Could not join room."
-		})
-		return;
-	}
-
-	GameGlobal.roomData.value = roomData;
-
-	GameGlobal.playerData.value = {...newPlayer};
-
-	updateGameGlobal();
+	saveGameGlobal();
 
 	goToSection(PageSection.Joining);
 	createTimer(1,()=>{

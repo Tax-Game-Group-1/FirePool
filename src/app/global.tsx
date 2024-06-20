@@ -8,7 +8,7 @@ import { getData } from "./dummyData";
 // 	name: "Dr. Fax Tax",
 // 	games: ["1A2B3C4D"],
 // })
-export const hostData = signal<IHostData>({} as any)
+export const hostData = signal({} as any)
 // export const playerData = signal<IPlayerData>({
 // 	id: "1234abcd",
 // 	name: "Mike Hunt",
@@ -20,7 +20,7 @@ export const hostData = signal<IHostData>({} as any)
 // 	icon: `https://api.dicebear.com/9.x/fun-emoji/svg?seed=1234abcd-abcdefg`, //iconURL
 // 	worldID: "",
 // })
-export const playerData = signal<IPlayerData>({} as any)
+export const playerData = signal({} as any)
 // export const worldData = signal<IWorldData>({
 // 	id: "1234abcd",
 // 	name: "Yiffie",
@@ -29,7 +29,7 @@ export const playerData = signal<IPlayerData>({} as any)
 // 	taxFunds: 0,
 // 	taxRate: 0,
 // })
-export const worldData = signal<IWorldData>({} as any)
+export const worldData = signal({} as any)
 // export const roomData = signal<IRoomData>({
 // 	id: "1A2B3C4D",
 // 	name: "Game 1",
@@ -44,7 +44,7 @@ export const worldData = signal<IWorldData>({} as any)
 // 	auditProbability: 0.1,
 // 	gameState: GameState.Waiting,
 // })
-export const roomData = signal<IRoomData>({} as any)
+export const roomData = signal({} as any)
 
 export const GameGlobal = {
 	roomData, worldData, playerData, hostData

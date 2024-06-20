@@ -24,10 +24,14 @@ let game: Game;
 export function setGameInstance(newGame: Game) {
   game = newGame;
 }
+export function getNameInstance() {
+    return game;
+}
 
 
 console.log(`Trying to listen on ${port} (kill port if failing)`);
 app.prepare().then(() => {
+
     const expressServer: Express = express();
     const server = http.createServer(expressServer);
     const io = new Server(server);
@@ -54,6 +58,7 @@ app.prepare().then(() => {
 
 	//set up all the API routes for the server, even though the server still lives here
 	setUpServer(expressServer);
+
 
     //--------------------------- socket stuff -------------------------//
     /**

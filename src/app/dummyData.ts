@@ -255,14 +255,14 @@ export function findData<T=IData>(table:string, query:any){
 
 	let found = Object.values(obj).filter((val)=>{
 		for(let key of Object.keys(query)){
-			console.log({key, val,qV: query[key], vV: val[key] })
+			// console.log({key, val,qV: query[key], vV: val[key] })
 			if(val[key] !== query[key]){
 				return false;
 			}
 		}
 		return true;
 	});
-	console.log({found})
+	// console.log({found})
 
 	return found as T[];
 }

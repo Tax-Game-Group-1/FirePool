@@ -15,7 +15,6 @@ import { useTheme } from '@/components/ThemeContext/themecontext'
 import { BinIcon, ExitDoor, PlayIcon, UserIcon } from '@/assets/svg/svg'
 import SVGIcon from '@/components/SVGIcon/SVGIcon'
 import { GameCardsContainer } from './GameCards'
-import { IHostData, IRoomData } from '@/interfaces'
 import { getIconURL } from '@/utils/utils'
 import { EditTextIcon } from '../../assets/svg/svg';
 import { GameGlobal, updateGameGlobal, roomData, loadGameGlobal } from '../global';
@@ -32,11 +31,36 @@ export let hostID = computed(()=>{
 	return id;
 });
 export let hostName = computed(()=>{
-	let name = GameGlobal.hostData.value?.name || "";
+	let name = GameGlobal.hostData.value?.username || "";
 	return name;
 });
 
-export let currGame = signal<IRoomData|null>(null);
+export let currGame = signal(null);
+
+
+export let games = signal([]);
+
+export async function getGames(){
+	//fetch function here
+	
+	//server.get("/listGames/:adminId", async (req, res) => {
+	console.log("HOST ID: " + hostID);
+
+	//let res = await fetch(`/listGames/${hostID}`).then(r => r.json());
+	let res = await fetch('/openGame',{
+		method: "POST",
+	}).then(r => r.json());
+
+	if(!res.success){
+		//error
+		createPopUp({
+			content: "Error trying to grab the games",
+		});
+	}
+
+	games.value = res.data.games;
+
+}
 
 export enum PageSection {
 	Main,
@@ -63,7 +87,7 @@ export async function setCurrentGame(id: string){
 	currGame.value = {...roomData};
 }
 
-export async function tryCreate(data: IRoomData){
+export async function tryCreate(data){
 	if(!data.name){
 		createNotif({
 			content: "Game name is missing!",
@@ -71,21 +95,39 @@ export async function tryCreate(data: IRoomData){
 		return;
 	}
 
-	let success = setData("rooms", data);
+	let res = await fetch('/createGame',{
+		method: "POST",
+		body: JSON.stringify({...data})
+	}).then(r => r.json());
 
-	if(!success){
-		createNotif({
-			content: "An error occured. Data might be invalid",
-		})
-		return;
-	}
+	if(!res.success){
+        createPopUp({
+            content: `Error trying to create the game. ${res.message}`,
+        });
+        return;
+    }
 
-	updateGameGlobal();
+	createPopUp({
+		content: `Successfully created game!`,
+	});
+
+	// let success = setData("rooms", data);
+
+	// if(!success){
+	// 	createNotif({
+	// 		content: "An error occured. Data might be invalid",
+	// 	})
+	// 	return;
+	// }
+
+	// updateGameGlobal();
+
+	getGames();
 	
 	goToSection(PageSection.Main);
 	
 }
-export async function tryEdit(data: IRoomData){
+export async function tryEdit(data){
 	if(!data.name){
 		createNotif({
 			content: "Game name is missing!",
@@ -165,7 +207,7 @@ export function PageHeader({username}:{
 			content: `Are you sure you want to exit? This will log you out`,
 			buttons:{
 				"Yes": () => {
-					GameGlobal.hostData.value = {} as IHostData;
+					GameGlobal.hostData.value = {};
 					updateGameGlobal();
 					window.location.href = "/home";
 					// router.push("/home");

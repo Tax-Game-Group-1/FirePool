@@ -1,7 +1,8 @@
 import express, {Express} from "express";
-import { setGameInstance } from "./server";
+import { setGameInstance, getGameInstance } from "./server";
 import { createAdminUser, getAdminIdByUserName, createGame, getAdminGames} from "&/queries/queries"
 import _ from "lodash"
+import { Citizen, PlayerInWaitingRoom } from "&/gameManager/gameManager";
 
 export function setUpServer(server:Express) {
     server.post("/adminLogin", async (req, res) => {
@@ -29,7 +30,7 @@ export function setUpServer(server:Express) {
 			res.status(200).json({
 				success:true,
 				data: {
-					id: result
+					id: result[0].id
 				} 
 			})
 		} catch (errormessage) {
@@ -96,36 +97,85 @@ export function setUpServer(server:Express) {
 	//create a new game and post it to the database
 	server.post("/createGame", async(req,res) => {
 		
-		try {
-			createGame(req.body.adminId, req.body.name, req.body.taxCoefficient, req.body.maxPlayers, req.body.finePercent, req.body.roundNumber, req.body.auditProbability, req.body.kickPlayersOnBankruptcy);
-		} catch (e) {
-			res.status(500).json({
-				success: false,
-				message: e
+		createGame(req.body.adminId, req.body.name, req.body.taxCoefficient, req.body.maxPlayers, req.body.finePercent, req.body.roundNumber, req.body.auditProbability, req.body.kickPlayersOnBankruptcy)
+		.then(result => {
+			res.status(200).json({
+				success: true, 
+				data: result
 			})
-			return ;
+
+		})
+		.catch(error => {
+			res.status(200).json({
+				success: false,
+				message: error
+			})	
+		})
+
+		// res.status(200).json({
+		// 	success: true,
+		// 	message: "successfullly created game"
+		// })	
+
+	})
+
+// {
+// 	name
+// 	gameCode
+// }
+
+	server.post('/joinGame', async (req, res) => {
+		console.log("player attempting to join a game...");
+
+		console.log('Game code: ')
+		console.log(req.body.gameCode);
+
+		console.log("Creating player");
+
+		// body: JSON.stringify({
+		// 	gameCode: code,
+		// 	waitingId: randomID(),
+		// }),
+
+		try{
+			getGameInstance().addPlayerToWaitingArea({
+				roomCode: req.body.gameCode, 
+				waitingId: req.body.waitingId
+			})
+		}catch(e){
+			res.status(200).json({
+				success: false,
+				message: `${e}`,
+			})
 		}
 
 		res.status(200).json({
 			success: true,
-			message: "successfullly created game"
-		})	
+			message: "",
+		})
 
-	})
+	});
 
 	//sets the game instance on the server when the admin starts the game
-	server.get("/openGame", async() => {
+	server.post("/openGame", async() => {
 
 		console.log("open game request recieved...");
+		console.log("set game instance")
 
 	})
 
-	//retrieves the list of games from the server
-	server.get("/listGames/:adminId", async (req, res) => {
+    //retrieves the list of games from the server
+	server.post("/listGames/:adminId", async (req, res) => {
 		console.log("list games")
-		const adminGames = await getAdminGames(Number(req.query.adminId));
+		const adminGames = await getAdminGames(Number(req.params.adminId));
 		console.log("admin games: ");
 		console.log(adminGames);
+		res.status(200).json({
+			success: true,
+			data: {
+				games: adminGames,
+			}
+		});
 	})
 }
 
