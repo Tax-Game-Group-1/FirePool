@@ -57,6 +57,7 @@ export interface IHostData extends IData  {
 	id:string;
 	key:string;
 	name:string;
+	password?:string;
 	games: string[]; //gameIDs
 }
 
@@ -70,16 +71,37 @@ export interface IWorldData extends IData  {
 }
 
 export interface IRoomData extends IData  {
-  id:string; //gameID
-  name:string;
-  year: number;
-  host: string;	//hostID
-  players: string[]; //playerID
-  worlds: string[]; //worldID
-  taxCoeff: number;
-  maxNumberOfPlayers:number;
-  penalty:number;
-  kickPlayersOnBackruptcy:boolean;
-  auditProbability:number;
-  gameState?: GameState;
+	id:string; //gameID
+	name:string;
+	year: number;
+	host: string;	//hostID
+	players: string[]; //playerID
+	worlds: string[]; //worldID
+	taxCoeff: number;
+	maxNumberOfPlayers:number;
+	penalty:number;
+	kickPlayersOnBankruptcy:boolean;
+	auditProbability:number;
+	gameState?: GameState;
+	icon?: string;
+}
+
+export interface IWorldRound {
+	id: string,
+	worldID: string,
+	funds: number,
+	distributedFunds: number,
+	taxRate: number,
+	year: number,
+}
+
+export interface IPlayerRound {
+	id: string,
+	playerID: string,
+	income: number,
+	isFined: boolean,
+	isAudited: boolean,
+	funds: number,
+	declaredTax: number,
+	actualTax: number,
 }

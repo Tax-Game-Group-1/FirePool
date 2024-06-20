@@ -16,9 +16,9 @@ import { GameGlobal, updateGameGlobal } from '@/app/global';
 import { getIconURL } from '@/utils/utils';
 import { useSignals } from '@preact/signals-react/runtime';
 import { animate, useAnimate } from 'framer-motion';
-import { sanitizeString } from '@catsums/my';
+import { randomID, sanitizeString } from '@catsums/my';
 import SignalEventBus, { useSignalEvent } from '@catsums/signal-event-bus';
-import { findData, getData, IPlayerData, setData } from '@/app/dummyData';
+import { findData, setData } from '@/app/dummyData';
 import { createNotif } from '@/components/Notification/Notification';
 
 export let iconURL = computed(()=>{
@@ -134,39 +134,45 @@ export default function NameRoom() {
 
 	},[])
 
-	function onEnter(){
+	async function onEnter(){
 
 		let inputBox = inputTextRef.current as HTMLInputElement;
-		if(inputBox){
-			let textValue = inputBox.value;
-			textValue = sanitizeString(textValue.trim());
-			textValue = textValue.substring(0, nameLimit);
+		if(!inputBox) return;
+		let textValue = inputBox.value;
+		textValue = sanitizeString(textValue.trim());
+		textValue = textValue.substring(0, nameLimit);
 
-			if(!textValue.length){
-				createNotif({
-					content: "Your name cannot be blank!"
-				})
-				return;
-			}
-
-			let playerdata = GameGlobal.playerData.value;
-			let existing = findData("players",{
-				name: textValue,
-			});
-			if(existing.length && existing.find(p => p.id != playerdata.id)){
-				createNotif({
-					content: "A player already has that name! Pick something else!"
-				})
-				return;
-			}
-
-			playerdata.name = textValue;
-
-			GameGlobal.playerData.value = {...playerdata};
-
-			setData("players", {...playerdata});
-			updateGameGlobal("players");
+		if(!textValue.length){
+			createNotif({
+				content: "Your name cannot be blank!"
+			})
+			return;
 		}
+
+		let playerdata = GameGlobal.playerData.value;
+		let existing = findData("players",{
+			name: textValue,
+		});
+		if(existing.length && existing.find(p => p.id != playerdata.id)){
+			createNotif({
+				content: "A player already has that name! Pick something else!"
+			})
+			return;
+		}
+
+		playerdata.name = textValue;
+
+		GameGlobal.playerData.value = {...playerdata};
+
+		let success = setData("players", {...playerdata});
+		if(!success){
+			createNotif({
+				content: "Error creating player",
+			})
+			return;
+		}
+
+		updateGameGlobal();
 
 		changeWaitingRoomPage(Page.StartRoom);
 	}

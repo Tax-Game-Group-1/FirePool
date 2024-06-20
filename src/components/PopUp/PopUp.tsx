@@ -176,7 +176,7 @@ export const PopUp = forwardRef(function PopUp({
 	})
 
 	return (
-		<div data-popup-id={id} ref={mergeRefs(ref,scope) as any} className={`${style.popUp} ${t.solidWindow}`}>
+		<div data-popup-id={id} ref={mergeRefs(ref,scope) as any} className={`${style.popUp} ${t.solidText} ${t.solidWindow}`}>
 			<div className={`${style.popUpClose} ${t.fillSolidText}`}>
 				<Btn onClick={(e)=>{
 					close?.(e);

@@ -47,7 +47,7 @@ export let players = computed(()=>{
 
 	let code = gameCode.value.split("-").join("");
 	let roomData = getData("rooms", code);
-	let playerIDs = roomData.players;
+	let playerIDs = roomData?.players || [];
 	let players = playerIDs.map((id) => {
 		let player = getData("players", id);
 		return player;
@@ -63,7 +63,8 @@ export let maxNumOfPlayers = computed(()=>{
 
 	let code = gameCode.value.split("-").join("");
 	let roomData = getData("rooms", code);
-	return roomData.maxNumberOfPlayers;
+	let max = roomData?.maxNumberOfPlayers || 0;
+	return max;
 });
 
 

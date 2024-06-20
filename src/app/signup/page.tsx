@@ -19,6 +19,9 @@ import { useRemoveLoadingScreen } from '@/components/LoadingScreen/LoadingScreen
 
 import dynamic from 'next/dynamic';
 import { Suspense } from 'react';
+import { loadGameGlobal, GameGlobal, saveGameGlobal } from '../global';
+
+import { IHostData } from '@/interfaces';
 
 let showPass = signal(false);
 let active = signal(false);
@@ -88,14 +91,29 @@ export default function Page() {
 			return;
 		}
 
-		createNotif({content: "Success! Automatically logging you in..."});
-		return;
+		//context
+		GameGlobal.hostData.value = {
+			name: res.data.username,
+			id: res.data.id,
+		} as IHostData;
+		//localstorage
+		saveGameGlobal();
 
+		createNotif({
+			content: "Success! Automatically logging you in...",
+			time: 1,
+		});
+		setTimeout(()=>{
+			window.location.href = "/host";
+		}, 1000);
+
+		return;
 
 	}
 	
 	useRemoveLoadingScreen(()=>{
 		active.value = true;
+		loadGameGlobal();
 	})
 
 	useEffect(()=>{

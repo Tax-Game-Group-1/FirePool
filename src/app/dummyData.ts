@@ -1,83 +1,13 @@
+import { IHostData, IPlayerData, Role, IRoomData, IWorldData, IData, IObject } from "@/interfaces";
 
 export const imageAPI = "https://api.dicebear.com/9.x/";
-
-export interface IObject<T=any> {
-	[key:string] : T,
-}
-
-export enum Role {
-	None = "No Role",
-	A = "Minister",
-	B = "LocalCitizen",
-	C = "ForeignCitizen"
-}
-
-export enum GameState {
-	Waiting,
-	Starting,
-	RolePicking,
-	UniverseSetup,
-	YearStart,
-	TaxRateSet, SalarySet,
-	TaxDeclare,
-	Audit,
-	Redistribution,
-	YearEnd,
-	Migration,
-	Processing,
-}
-
-export interface IData {
-	id: string;
-	name:string;
-}
-export interface IPlayerData extends IData {
-    id:string;
-    name:string;
-    role:Role;
-    funds:number;
-    incomeFunds:number;
-    declaredFunds:number;
-    isReady: boolean;
-    icon: string; //iconURL
-	worldID: string; //worldID
-}
-export interface IHostData extends IData  {
-	id:string;
-	key:string;
-	name:string;
-	games: string[]; //gameIDs
-}
-
-export interface IWorldData extends IData  {
-    id: string;
-    name: string;
-    ownerID: string;	//player ID
-    citizens: string[] //player ID
-    taxRate:number;
-    taxFunds:number;
-}
-
-export interface IRoomData extends IData  {
-  id:string; //gameID
-  name:string;
-  year: number;
-  host: string;	//hostID
-  players: string[]; //playerID
-  worlds: string[]; //worldID
-  taxCoeff: number;
-  maxNumberOfPlayers:number;
-  penalty:number;
-  kickPlayersOnBackruptcy:boolean;
-  auditProbability:number;
-  gameState?: GameState;
-}
 
 const hosts:IObject<IHostData> = {
 	"1234abcd": {
 		id: "1234abcd",
 		key: "1234abcd",
-		name: "Dr. Fax Tax",
+		name: "drfaxtax",
+		password: "drfaxtax",
 		games: [
 			"1A2B3C4D"
 		],
@@ -158,9 +88,10 @@ const rooms:IObject<IRoomData> = {
 		],
 		taxCoeff: 1.5,
 		maxNumberOfPlayers: 20,
-		penalty: 0.3,
-		kickPlayersOnBackruptcy: true,
-		auditProbability: 0.1,
+		penalty: 30,
+		kickPlayersOnBankruptcy: true,
+		auditProbability: 10,
+		icon: `${imageAPI}fun-emoji/svg?seed=7fg8f73gf`, //iconURL
 	},
 	"1234ABCD" : {
 		id: "1234ABCD",
@@ -168,7 +99,7 @@ const rooms:IObject<IRoomData> = {
 		year: 1,
 		host:  "1234abcd",
 		players: [
-			// "1234abcd",
+			"1234abcd",
 			"01235you",
 			"12443ghy",
 			"abcd3456",
@@ -179,9 +110,32 @@ const rooms:IObject<IRoomData> = {
 		],
 		taxCoeff: 1.5,
 		maxNumberOfPlayers: 15,
-		penalty: 0.3,
-		kickPlayersOnBackruptcy: true,
-		auditProbability: 0.2,
+		penalty: 30,
+		kickPlayersOnBankruptcy: true,
+		auditProbability: 20,
+		icon: `${imageAPI}fun-emoji/svg?seed=eu8dhb3u8e`, //iconURL
+	},
+	"1234580D" : {
+		id: "1234ABCD",
+		name: "Game 3",
+		year: 1,
+		host:  "1234abce",
+		players: [
+			// "1234abcd",
+			"01235you",
+			"12443ghy",
+			"abcd3456",
+			"1234abce",
+		],
+		worlds: [
+			"1234abc2"
+		],
+		taxCoeff: 1.7,
+		maxNumberOfPlayers: 15,
+		penalty: 30,
+		kickPlayersOnBankruptcy: true,
+		auditProbability: 20,
+		icon: `${imageAPI}fun-emoji/svg?seed=1234tyou`, //iconURL
 	},
 };
 const worlds:IObject<IWorldData> = {
@@ -221,6 +175,35 @@ export function setData(table:string, data:IData){
 			return false;
 	}
 	obj[data.id] = {...data};
+
+	return true;
+}
+
+export function deleteData(table:"players", id:string) : boolean;
+export function deleteData(table:"rooms", id:string) : boolean;
+export function deleteData(table:"hosts", id:string) : boolean;
+export function deleteData(table:"worlds", id:string) : boolean;
+
+export function deleteData(table:"worlds", id:string) : boolean;
+
+export function deleteData(table:string, id:string){
+	let obj:IObject<IData>;
+	switch(table){
+		case "players":
+			obj = players; break;
+		case "rooms":
+			obj = rooms; break;
+		case "hosts":
+			obj = hosts; break;
+		case "worlds":
+			obj = worlds; break;
+		default:
+			return false;
+	}
+	if(!obj[id]){
+		return false;
+	}
+	delete obj[id];
 	return true;
 }
 
@@ -272,12 +255,14 @@ export function findData<T=IData>(table:string, query:any){
 
 	let found = Object.values(obj).filter((val)=>{
 		for(let key of Object.keys(query)){
+			console.log({key, val,qV: query[key], vV: val[key] })
 			if(val[key] !== query[key]){
 				return false;
 			}
 		}
 		return true;
 	});
+	console.log({found})
 
 	return found as T[];
 }

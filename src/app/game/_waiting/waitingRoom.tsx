@@ -11,17 +11,20 @@ import SignalEventBus, { useSignalEvent } from '@catsums/signal-event-bus';
 import QRCode from 'react-qr-code';
 import Btn from '@/components/Button/Btn';
 import { useAnimate } from 'framer-motion';
-import StartRoom from './startRoom';
+import StartRoom, { DisplayMode, displayMode } from './startRoom';
 import NotifContainer, { closeNotif, createNotif, Notif } from '@/components/Notification/Notification';
 import { PopUpContainer } from '@/components/PopUp/PopUp';
 import NameRoom from './namingRoom';
 import { useSignals } from '@preact/signals-react/runtime';
+import { signal } from '@preact/signals-react';
+import { GameGlobal } from '@/app/global';
 
 export enum Page {
 	NameRoom,
-	WaitingRoom,
 	StartRoom,
 }
+
+export let pageState = signal(Page.NameRoom);
 
 export const roomSignal = new SignalEventBus();
 
@@ -63,13 +66,17 @@ export function changeWaitingRoomPage(page:Page){
 export function WaitingRoom() {
 	useSignals();
 
-	let [pageState, setPageState] = useState(Page.NameRoom);
-
 	useSignalEvent("page",(newState:Page)=>{
-		setPageState(newState);
+		pageState.value = newState;
 	}, roomSignal);
 
 	useEffect(() => {
+
+		if(GameGlobal.hostData.value?.id){
+			pageState.value = Page.StartRoom;
+			displayMode.value = DisplayMode.Host;
+		}
+
 		let k = requestAnimationFrame(()=>{
 			let x = createNotif({
 				content: (<p>Joined Game</p>),
@@ -84,7 +91,7 @@ export function WaitingRoom() {
 
 	let other = (<></>)
 
-	switch(pageState){
+	switch(pageState.value){
 		case Page.NameRoom:
 			other = (<NameRoom/>)
 			break;

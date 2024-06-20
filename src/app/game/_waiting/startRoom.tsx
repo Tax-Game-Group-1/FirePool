@@ -21,8 +21,13 @@ import btnStyle from "../../../components/Button/Btn.module.scss"
 
 import { GameGlobal, playerData, roomData, updateGameGlobal } from '@/app/global';
 import NameRoom, { AvatarIcon } from './namingRoom';
-import { getData, IPlayerData, setData } from '@/app/dummyData';
+import { getData, setData } from '@/app/dummyData';
+import { IPlayerData, IRoomData } from '@/interfaces';
 import SignalEventBus, { useSignalEvent } from '@catsums/signal-event-bus';
+import { createPopUp } from '@/components/PopUp/PopUp';
+import { useRouter } from 'next/navigation';
+import { Game } from '&/gameManager/gameManager';
+import { GameScreen, setGameScreen, startGame } from '../layouts';
 
 export let gameCode = computed(()=>{
 	let code = GameGlobal.roomData.value?.id || "";
@@ -64,7 +69,7 @@ export let players = computed(()=>{
 
 	let code = gameCode.value.split("-").join("");
 	let roomData = getData("rooms", code);
-	let playerIDs = roomData.players;
+	let playerIDs = roomData?.players || [];
 	let players = playerIDs.map((id) => {
 		let player = getData("players", id);
 		return player;
@@ -149,6 +154,9 @@ export function readyPlayer(){
 	setData("players", {...playerdata});
 	updateGameGlobal("players")
 	// playerCardsSignal.emit("update");
+
+	//for testing
+	startGame();
 }
 
 export function AsideCardPlayer(){
@@ -256,6 +264,22 @@ export function AsideCard(){
 export function RoomHeader() {
 	useSignals();
 
+	let router = useRouter();
+
+	function onExitClick(){
+		createPopUp({
+			content: "Leave the room? This will close the game",
+			buttons: {
+				"Yes": () => {
+					GameGlobal.roomData.value = {} as IRoomData;
+					updateGameGlobal();
+					router.push("/home");
+				},
+				"No": () => {}
+			}
+		})
+	}
+
 	return (
 		<div className={`relative p-2 col-span-12 lg:col-span-9 gap-4 rounded-md ${t.solidElement} flex flex-row justify-start items-center`}>
 			<div className={`h-full aspect-square border ${t.fillSolidText} ${t.solidBorder} p-4 m-2 rounded-full`}>
@@ -305,7 +329,10 @@ export function RoomHeader() {
 				)
 			}
 
-			<div className={`flex flex-row items-center absolute right-0 text-xs md:text-sm h-full p-4`}>
+			<div 
+				className={`flex flex-row items-center absolute right-0 text-xs md:text-sm h-full p-4`}
+				onClick={onExitClick}
+			>
 				<div>Exit</div>
 				<div className={`aspect-square h-full m-0 p-2 md:p-1 ${t.fillSolidText}`}>
 					<ExitDoor/>

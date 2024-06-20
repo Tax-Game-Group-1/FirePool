@@ -9,16 +9,20 @@ import { animate, DOMKeyframesDefinition } from 'framer-motion';
 import SignalEventBus from '@catsums/signal-event-bus';
 import { useSignals } from '@preact/signals-react/runtime';
 import { closeAllNotifs, createNotif } from '@/components/Notification/Notification';
-import { getData, IPlayerData, Role, setData } from '@/app/dummyData';
+import { getData, setData } from '@/app/dummyData';
 import { randomID, sanitizeString } from '@catsums/my';
 import LoadingScreen from '@/components/LoadingScreen/LoadingScreen';
 import { useRemoveLoadingScreen } from '@/components/LoadingScreen/LoadingScreenUtil';
-import { GameGlobal, updateGameGlobal } from '@/app/global';
+import { GameGlobal, loadGameGlobal, updateGameGlobal } from '@/app/global';
 import { JoinSection, JoiningSection } from './_sections/JoinSection';
 import { LoginSection } from './_sections/LoginSection';
 import { SplashSection } from './_sections/SplashSection';
 import { StartSection } from './_sections/StartSection';
-import { IRequestResult } from '@/interfaces';
+import { IPlayerData, IRequestResult, Role } from '@/interfaces';
+import { findData } from '@/app/dummyData';
+import { useRouter } from 'next/navigation';
+
+let mainRouter = null;
 
 //possible sections
 export enum PageSection {
@@ -69,6 +73,31 @@ export async function tryLogin(username:string, password:string){
 	username = sanitizeString(username.trim());
 	password = sanitizeString(password.trim());
 
+	//test login
+
+	let query = {
+		name: username,
+		password: password,
+	}
+
+	let host = findData("hosts",query);
+	if(!host?.length){
+		createNotif({
+			content: "Username or password is incorrect",
+		})
+		return;
+	}
+
+	GameGlobal.hostData.value = host[0];
+	updateGameGlobal();
+
+	// mainRouter.push("/host");
+	window.location.href = "/host";
+
+	return;
+
+	//actual login
+
 	if(!username){
 		createNotif({
 			content: "Username is empty!",
@@ -107,7 +136,8 @@ export async function tryLogin(username:string, password:string){
 			content: "Successfully logged in!",
 		})
 		setTimeout(() => {
-			window.location.href = `/host`;	
+			// mainRouter("/host");
+			window.location.href = "/host";
 		}, 3500)
 	}
 
@@ -168,10 +198,13 @@ export async function tryJoin(code:string){
 	}
 
 	GameGlobal.roomData.value = roomData;
+
+	GameGlobal.playerData.value = {...newPlayer};
+
 	updateGameGlobal();
 
 	goToSection(PageSection.Joining);
-	createTimer(2,()=>{
+	createTimer(1,()=>{
 		// router.push(`/game?c=${code}`)
 		window.location.href = `/game?c=${code}`;
 	});
@@ -185,8 +218,10 @@ export default function Home() {
 
 	const { theme  } = useTheme();
 
-	useRemoveLoadingScreen(()=>{
+	mainRouter = useRouter();
 
+	useRemoveLoadingScreen(()=>{
+		loadGameGlobal();
 	});
 
 	useEffect(()=>{

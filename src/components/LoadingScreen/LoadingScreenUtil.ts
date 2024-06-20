@@ -9,7 +9,6 @@ import { useSignals } from "@preact/signals-react/runtime";
 export function useRemoveLoadingScreen(callback:()=>void, onLoad?:()=>void, time:number = 0.5){
 	useSignals();
 	useEffect(()=>{
-		updateGameGlobal();
 		let anim:AnimationPlaybackControls;
 		function onPageLoad(){
 

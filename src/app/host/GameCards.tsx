@@ -12,6 +12,7 @@ import SignalEventBus from "@catsums/signal-event-bus";
 
 import t from "../../elements.module.scss";
 import { useEffect, useState } from "react";
+import { currGame, goToSection, PageSection, setCurrentGame } from "./page";
 
 export let gameCode = computed(()=>{
 	let code = GameGlobal.roomData.value?.id || "";
@@ -44,7 +45,7 @@ export let games = computed(()=>{
 	GameGlobal.roomData.value;
 
 	let rooms = findData("rooms", {
-		host: hostID,
+		host: hostID.value,
 	});
 
 	return rooms;
@@ -67,23 +68,26 @@ export function GameCardsContainer(){
 
 	},[]);
 
-	let rooms:IRoomData[] = hostGames;
+	let rooms:IRoomData[] = games.value;
 
 	let gameCards = rooms.map((game, i) => {
 		games.value;
 		return (
-			<GameCard key={game.id} name={game.name}>
-				<img className={`rounded-md`} src={getIconURL(game.id).href} alt={`${game.name} icon`}/>
+			<GameCard key={game.id} name={game.name} onClick={()=>{
+				setCurrentGame(game.id);
+			}}>
+				<img className={`rounded-md`} src={game.icon || getIconURL(game.id).href} alt={`${game.name} icon`}/>
 			</GameCard>
 		)
 	})
-	if(!gameCards.length){
-		gameCards.push(
-			<GameCard key={-1} name={"Create Game"}>
-				<AddIcon className={`${t.fillAccent} p-6`}/>
-			</GameCard>
-		)
-	}
+	gameCards.unshift(
+		<GameCard onClick={()=>{
+			currGame.value = null;
+			goToSection(PageSection.Create);
+		}} key={-1} name={"Create Game"}>
+			<AddIcon className={`${t.fillAccent} p-6`}/>
+		</GameCard>
+	)
 
 	return (
 		<div className={`grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-3 md:gap-4 p-1 lg:p-4 overflow-auto h-auto`}>

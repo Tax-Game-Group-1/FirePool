@@ -11,13 +11,9 @@ import t from '../../elements.module.scss';
 import style from "./layouts.module.scss"
 
 const GameFooter = lazy(() => import('@/components/Game/GameFooter'));
-import LoadingStatus from '@/components/Loading/Loading';
 import InGame from './_content/InGame';
-import { createContent } from '@/components/Game/GameContentContainer';
-import TestContent1 from './_content/test1';
 import { signal, computed } from '@preact/signals-react';
 import { WaitingRoom } from './_waiting/waitingRoom';
-import { animate } from 'framer-motion';
 import { GameGlobal, loadGameGlobal, updateGameGlobal } from '@/app/global';
 import LoadingScreen from '@/components/LoadingScreen/LoadingScreen';
 import { useRemoveLoadingScreen } from '@/components/LoadingScreen/LoadingScreenUtil';
@@ -31,31 +27,42 @@ export let playerID = computed(()=>{
 	let id = GameGlobal.playerData.value?.id || "";
 	return id;
 });
+export let hostID = computed(()=>{
+	let id = GameGlobal.hostData.value?.id || "";
+	return id;
+});
 
-enum GameScreen {
+export enum GameScreen {
 	WaitingRoom,
 	InGame,
 	Spectate,
 }
 
+export let gameScreen = signal(GameScreen.WaitingRoom);
+
+export function setGameScreen(screen: GameScreen) {
+
+
+	gameScreen.value = screen;
+}
+
+export function startGame(){
+	if(playerID){
+		setGameScreen(GameScreen.InGame);
+	}else if(hostID){
+		setGameScreen(GameScreen.Spectate);
+	}
+}
+
 const Layouts = forwardRef(function Layouts({}, ref:Ref<any>) {
 	useSignals();
-
-	let [gameScreen, setGameScreen] = useState(GameScreen.WaitingRoom);
 
 	useEffect(()=>{
 		window.scrollTo(0,0);
 		if(!isLoaded.value) return;
-		return;
 
-		// let x = setTimeout(()=>{
-		// 	createContent({
-		// 		content: (<TestContent1/>),
-		// 		id: "0001",
-		// 		className: "absolute m-2",
-		// 		useWrapper:false,
-		// 	})
-		// }, 1000)
+		console.log("LOADED")
+
 		function redirect(){
 			window.location.href = "/";
 		}
@@ -85,6 +92,7 @@ const Layouts = forwardRef(function Layouts({}, ref:Ref<any>) {
 				timer.end();
 			}
 		}
+		console.log({roomData,playerID:playerID.value})
 		if(!roomData.players.includes(playerID.value)){
 			let {timer} = createPopUp({
 				content: "You can't join this room because you did not join it properly. Redirecting you back...",
@@ -120,7 +128,7 @@ const Layouts = forwardRef(function Layouts({}, ref:Ref<any>) {
 	
 	let content = (<></>)
 
-	switch(gameScreen){
+	switch(gameScreen.value){
 		case GameScreen.InGame:
 			content = (<InGame/>);
 			break;
