@@ -14,6 +14,7 @@ export default function RootLayout({
 		<html lang="en">
 		<head>
 			<link rel="icon" href="/images/icons/icon.ico" sizes="any"/>
+			<link rel="manifest" href="/manifest.json"/>
 			<meta name="wow"/>
 		</head>
 			<body>

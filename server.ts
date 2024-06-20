@@ -24,7 +24,7 @@ let game: Game;
 export function setGameInstance(newGame: Game) {
   game = newGame;
 }
-export function getNameInstance() {
+export function getGameInstance() {
     return game;
 }
 
