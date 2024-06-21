@@ -38,66 +38,61 @@ export enum GameState {
 	Processing,
 }
 
-export interface IData {
-	id: string;
-	name:string;
-}
-export interface IPlayerData extends IData {
-    playerId:string;
+export interface IPlayerData {
+    playerId:number;
+    gameId:number;
     playerName:string;
-    role:Role;
-    funds:number;
-    incomeFunds:number;
-    declaredFunds:number;
-    isReady: boolean;
-    icon: string; //iconURL
-	worldID: string; //worldID
+    role?:Role;
+    funds?:number;
+    incomeFunds?:number;
+    declaredFunds?:number;
+    isReady?: boolean;
+    icon?: string; //iconURL
+	worldID?: string; //worldID
 }
-export interface IHostData extends IData  {
+export interface IHostData  {
 	id: number;
 	name:string;
+	email:string;
 	password?:string;
 }
 
-export interface IWorldData extends IData  {
+export interface IUniverseData  {
     universeId: number;
 	gameId: number,
     universeName: string;
     ministerId: number;	//player ID
 }
 
-export interface IRoomData extends IData  {
-	gameId:string; //gameID
-	name:string;
-	roundNumber: number;
+export interface IGameData  {
+	gameId:number; //gameID
 	adminId: number;	//hostID
-	players: string[]; //playerID
-	worlds: string[]; //worldID
+	name:string;
+	roundNumber?: number;
 	taxCoefficient: number;
+	auditProbability:number;
 	maxPlayers:number;
 	finePercent:number;
 	kickPlayersOnBankruptcy:boolean;
-	auditProbability:number;
 	gameState?: GameState;
 	icon?: string;
 }
 
-export interface IWorldRound {
-	id: string,
-	worldID: string,
-	funds: number,
-	distributedFunds: number,
+export interface IUniverseRound {
+	roundId: number,
+	universeId: string,
 	taxRate: number,
-	year: number,
+	moneyPool: number,
+	distributedFTaxReturns: number,
 }
 
 export interface IPlayerRound {
-	id: string,
-	playerID: string,
+	roundId: number,
+	universeId: number,
+	playerId: number,
 	income: number,
-	isFined: boolean,
 	isAudited: boolean,
-	funds: number,
-	declaredTax: number,
-	actualTax: number,
+	isFined: boolean,
+	declaredIncome: number,
+	totalAssets: number,
 }
