@@ -12,7 +12,7 @@ import style from "./waitingRoom.module.scss"
 import { changeWaitingRoomPage, Page } from './waitingRoom';
 
 import { computed } from '@preact/signals-react';
-import { GameGlobal, updateGameGlobal } from '@/app/global';
+import { GameGlobal, saveGameGlobal } from '@/app/global';
 import { getIconURL } from '@/utils/utils';
 import { useSignals } from '@preact/signals-react/runtime';
 import { animate, useAnimate } from 'framer-motion';
@@ -22,12 +22,12 @@ import { findData, setData } from '@/app/dummyData';
 import { createNotif } from '@/components/Notification/Notification';
 
 export let iconURL = computed(()=>{
-	let url = GameGlobal.playerData.value?.icon || getIconURL().href;
+	let url = GameGlobal.player.value?.icon || getIconURL().href;
 
 	return url;
 })
 export let playerName = computed(()=>{
-	let n = GameGlobal.playerData.value?.name || "";
+	let n = GameGlobal.player.value?.name || "";
 
 	return n;
 })
@@ -50,12 +50,11 @@ export function AvatarIcon({url}){
 		animate(scope.current,{
 			opacity: [1,0]
 		}, {duration: 0.1}).then(()=>{
-			let playerdata = GameGlobal.playerData.value;
+			let playerdata = GameGlobal.player.value;
 			playerdata.icon = url.href;
-			GameGlobal.playerData.value = {...playerdata};
+			GameGlobal.player.value = {...playerdata};
 
-			setData("players", {...playerdata});
-			updateGameGlobal("players");
+			saveGameGlobal();
 		})
 	}, avatarSignal);
 
@@ -149,30 +148,25 @@ export default function NameRoom() {
 			return;
 		}
 
-		let playerdata = GameGlobal.playerData.value;
-		let existing = findData("players",{
-			name: textValue,
-		});
-		if(existing.length && existing.find(p => p.id != playerdata.id)){
+		let playerdata = GameGlobal.player.value;
+
+		let res = await fetch("/", {
+			method: "POST",
+			body: JSON.stringify({
+
+			})
+		}).then(r => r.json());
+
+		if(res.success && res.data){
 			createNotif({
 				content: "A player already has that name! Pick something else!"
 			})
 			return;
 		}
-
 		playerdata.name = textValue;
 
-		GameGlobal.playerData.value = {...playerdata};
-
-		let success = setData("players", {...playerdata});
-		if(!success){
-			createNotif({
-				content: "Error creating player",
-			})
-			return;
-		}
-
-		updateGameGlobal();
+		GameGlobal.player.value = {...playerdata};
+		saveGameGlobal();
 
 		changeWaitingRoomPage(Page.StartRoom);
 	}

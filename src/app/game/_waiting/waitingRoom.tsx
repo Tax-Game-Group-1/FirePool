@@ -72,7 +72,7 @@ export function WaitingRoom() {
 
 	useEffect(() => {
 
-		if(GameGlobal.hostData.value?.id){
+		if(GameGlobal.user.value?.id){
 			pageState.value = Page.StartRoom;
 			displayMode.value = DisplayMode.Host;
 		}

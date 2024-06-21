@@ -23,6 +23,8 @@ import { loadGameGlobal, GameGlobal, saveGameGlobal } from '../global';
 
 import { IHostData } from '@/interfaces';
 
+import { useRouter } from 'next/navigation';
+
 let showPass = signal(false);
 let active = signal(false);
 
@@ -36,6 +38,8 @@ export default function Page() {
 	let emailRef = useRef(null);
 	let passRef = useRef(null);
 	let confirmPassRef = useRef(null);
+
+	let router = useRouter();
 
 	async function signUp(){
 
@@ -92,7 +96,7 @@ export default function Page() {
 		}
 
 		//context
-		GameGlobal.hostData.value = {
+		GameGlobal.user.value = {
 			name: res.data.username,
 			id: res.data.id,
 		} as IHostData;
@@ -104,7 +108,8 @@ export default function Page() {
 			time: 1,
 		});
 		setTimeout(()=>{
-			window.location.href = "/host";
+			// window.location.href = "/host";
+			router.push("/host");
 		}, 1000);
 
 		return;

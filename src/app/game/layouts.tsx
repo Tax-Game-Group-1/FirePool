@@ -14,7 +14,7 @@ const GameFooter = lazy(() => import('@/components/Game/GameFooter'));
 import InGame from './_content/InGame';
 import { signal, computed } from '@preact/signals-react';
 import { WaitingRoom } from './_waiting/waitingRoom';
-import { GameGlobal, loadGameGlobal, updateGameGlobal } from '@/app/global';
+import { GameGlobal, hostID, loadGameGlobal, playerID, saveGameGlobal } from '@/app/global';
 import LoadingScreen from '@/components/LoadingScreen/LoadingScreen';
 import { useRemoveLoadingScreen } from '@/components/LoadingScreen/LoadingScreenUtil';
 import { getData } from '../dummyData';
@@ -22,15 +22,6 @@ import { createPopUp, popUpSignalBus } from '@/components/PopUp/PopUp';
 import { createNotif, notifSignalBus } from '@/components/Notification/Notification';
 
 let isLoaded = signal(false);
-
-export let playerID = computed(()=>{
-	let id = GameGlobal.playerData.value?.id || "";
-	return id;
-});
-export let hostID = computed(()=>{
-	let id = GameGlobal.hostData.value?.id || "";
-	return id;
-});
 
 export enum GameScreen {
 	WaitingRoom,
@@ -47,9 +38,9 @@ export function setGameScreen(screen: GameScreen) {
 }
 
 export function startGame(){
-	if(playerID){
+	if(playerID.value > -1){
 		setGameScreen(GameScreen.InGame);
-	}else if(hostID){
+	}else if(hostID.value > -1){
 		setGameScreen(GameScreen.Spectate);
 	}
 }
@@ -57,29 +48,44 @@ export function startGame(){
 const Layouts = forwardRef(function Layouts({}, ref:Ref<any>) {
 	useSignals();
 
-	useEffect(()=>{
-		window.scrollTo(0,0);
-		if(!isLoaded.value) return;
-
-		console.log("LOADED")
+	async function fetchRoomData(){
 
 		function redirect(){
 			window.location.href = "/";
 		}
-
+	
 		let url = new URL(window.location.href);
 		let params = url.searchParams;
-
+	
 		let code = "";
-
+	
 		if(params.has("c")){
 			code = params.get("c");
 		}
 		if(params.has("code")){
 			code = params.get("code");
 		}
+	
+		let res = await fetch("/getGame",{
+			method: "POST",
+			body: JSON.stringify({
+
+			})
+		}).then(r => r.json());
+
+		if(!res.success){
+			createPopUp({
+				content: "This is an invalid room code. Redirecting you back...",
+				buttons:{
+					"okay": redirect,
+				},
+				onClose: redirect,
+			});
+			return;
+		}
+
+		let roomData = res.data;
 		
-		let roomData = getData("rooms", code);
 		if(!roomData){
 			let {timer} = createPopUp({
 				content: "This is an invalid room code. Redirecting you back...",
@@ -92,7 +98,6 @@ const Layouts = forwardRef(function Layouts({}, ref:Ref<any>) {
 				timer.end();
 			}
 		}
-		console.log({roomData,playerID:playerID.value})
 		if(!roomData.players.includes(playerID.value)){
 			let {timer} = createPopUp({
 				content: "You can't join this room because you did not join it properly. Redirecting you back...",
@@ -105,9 +110,17 @@ const Layouts = forwardRef(function Layouts({}, ref:Ref<any>) {
 				timer.end();
 			}
 		}
+	
+		GameGlobal.room.value = roomData;
+		saveGameGlobal();
+	}
 
-		GameGlobal.roomData.value = roomData;
-		updateGameGlobal();
+	useEffect(()=>{
+		window.scrollTo(0,0);
+		if(!isLoaded.value) return;
+
+		console.log("LOADED")
+		fetchRoomData();
 
 		let {timer,id} = createNotif({
 			content: "Joined game!",
@@ -139,18 +152,15 @@ const Layouts = forwardRef(function Layouts({}, ref:Ref<any>) {
 
 	return (
 		<>
-			<LoadingScreen/>
-			<Suspense fallback={<span></span>}>
-				{isLoaded && (
-					
-					<div ref={ref} className={`${style.gameLayout} ${t.background} ${t.mainText} hidden`}>
-						<main className={``}>
-							{content}
-						</main>
-						<GameFooter/>
-					</div>
-				)}
-			</Suspense>
+			{isLoaded && (
+				
+				<div ref={ref} className={`${style.gameLayout} ${t.background} ${t.mainText} hidden`}>
+					<main className={``}>
+						{content}
+					</main>
+					<GameFooter/>
+				</div>
+			)}
 		</>
 	);
 });

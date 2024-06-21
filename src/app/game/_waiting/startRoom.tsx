@@ -19,71 +19,53 @@ import { useSignals } from '@preact/signals-react/runtime';
 
 import btnStyle from "../../../components/Button/Btn.module.scss"
 
-import { GameGlobal, playerData, roomData, updateGameGlobal } from '@/app/global';
+import { gameCode, GameGlobal, hostName, playerIconURL, playerName, saveGameGlobal } from '@/app/global';
 import NameRoom, { AvatarIcon } from './namingRoom';
-import { getData, setData } from '@/app/dummyData';
-import { IPlayerData, IRoomData } from '@/interfaces';
 import SignalEventBus, { useSignalEvent } from '@catsums/signal-event-bus';
 import { createPopUp } from '@/components/PopUp/PopUp';
 import { useRouter } from 'next/navigation';
 import { Game } from '&/gameManager/gameManager';
 import { GameScreen, setGameScreen, startGame } from '../layouts';
 
-export let gameCode = computed(()=>{
-	let code = GameGlobal.roomData.value?.id || "";
-	let mid = Math.trunc(code.length/2);
-	code = [code.slice(0, mid), code.slice(mid)].join("-");
-
-	return code;
-});
-export let hostName = computed(()=>{
-	let name = GameGlobal.hostData.value?.name || "";
-	return name;
-});
-export let playerName = computed(()=>{
-	let name = GameGlobal.playerData.value?.name || "";
-	return name;
-});
-export let ready = computed(()=>{
-	let isReady = GameGlobal.playerData.value?.isReady || false;
-	return isReady;
-});
-
-export let iconURL = computed(()=>{
-	let url = GameGlobal.playerData.value?.icon || getIconURL();
-
-	return url;
-})
 
 export enum DisplayMode {
 	Player,
 	Host,
 }
 
-export let displayMode = signal(DisplayMode.Player);
-
-export let players = computed(()=>{
-	//dependancies
-	GameGlobal.playerData.value;
-	GameGlobal.roomData.value;
-
-	let code = gameCode.value.split("-").join("");
-	let roomData = getData("rooms", code);
-	let playerIDs = roomData?.players || [];
-	let players = playerIDs.map((id) => {
-		let player = getData("players", id);
-		return player;
-	});
-
-	return players;
+export let ready = computed(()=>{
+	let r = GameGlobal.player.value?.isReady;
+	return r;
 })
 
+export let displayMode = signal(DisplayMode.Player);
+
+export let players = signal([]);
+
 export let playerCardsSignal = new SignalEventBus();
+
+
+
+async function getPlayers(){
+	let res = await fetch("/",{
+		method: "POST",
+		body: JSON.stringify({
+
+		}),
+	}).then(r => r.json())
+
+	if(!res.success){
+		//handle fail
+	}
+
+	players.value = res.data;
+
+}
 
 export function PlayerCards(){
 	useSignals();
 
-	let users:IPlayerData[] = players.value;
+	let users = players.value;
 
 	let playerCards = users.map((user, i) => {
 		players.value;
@@ -147,12 +129,11 @@ export function PlayerCards(){
 }
 
 export function readyPlayer(){
-	let playerdata = GameGlobal.playerData.value;
+	let playerdata = GameGlobal.player.value;
 	playerdata.isReady = !playerdata.isReady;
-	GameGlobal.playerData.value = {...playerdata};
+	GameGlobal.player.value = {...playerdata};
 
-	setData("players", {...playerdata});
-	updateGameGlobal("players")
+	saveGameGlobal("players")
 	// playerCardsSignal.emit("update");
 
 	//for testing
@@ -164,7 +145,7 @@ export function AsideCardPlayer(){
 
 	return (
 		<div className={`${t.solidElement} ${t.solidText} ${style.formCard} hidden md:flex`}>
-			<AvatarIcon url={iconURL.value}/>
+			<AvatarIcon url={playerIconURL.value}/>
 			<div className={`${style.nameInputContainer} `}>
 				<div className={`flex flex-row justify-between h-10 w-full`}>
 					<div className={`${t.solidText} flex justify-center items-center rounded-md p-2 w-full break-all text-2xl`}>
@@ -183,7 +164,7 @@ export function AsideCardPlayer(){
 				</div>
 			</div>
 			<div className={`${t.fillSolidText} lg:max-h-full text-xs lg:text-base`}>
-				<Btn invert={ready.value} onClick={()=>{
+				<Btn invert={GameGlobal.player.value?.isReady} onClick={()=>{
 					readyPlayer();
 				}}>
 					<div className={`flex flex-row justify-center items-center m-0 p-0 h-full gap-1`}>
@@ -271,8 +252,8 @@ export function RoomHeader() {
 			content: "Leave the room? This will close the game",
 			buttons: {
 				"Yes": () => {
-					GameGlobal.roomData.value = {} as IRoomData;
-					updateGameGlobal();
+					GameGlobal.room.value = {};
+					saveGameGlobal();
 					router.push("/home");
 				},
 				"No": () => {}
@@ -347,7 +328,7 @@ export default function StartRoom() {
 	useSignals();
 
 	useEffect(() => {
-		updateGameGlobal("players")
+		saveGameGlobal();
 	},[])
 
 	return (

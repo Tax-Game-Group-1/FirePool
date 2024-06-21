@@ -1,114 +1,147 @@
-import { signal } from "@preact/signals-react";
-import { Role, GameState, IRoomData, IWorldData, IPlayerData, IHostData, IData, IObject } from '@/interfaces';
-import { getData } from "./dummyData";
-
-// export const hostData = signal<IHostData>({
-// 	id: "1234abcd",
-// 	key: "1234abcd",
-// 	name: "Dr. Fax Tax",
-// 	games: ["1A2B3C4D"],
-// })
-export const hostData = signal({} as any)
-// export const playerData = signal<IPlayerData>({
-// 	id: "1234abcd",
-// 	name: "Mike Hunt",
-// 	funds: 0,
-// 	role: Role.None,
-// 	incomeFunds: 0,
-// 	declaredFunds: 0,
-// 	isReady: false,
-// 	icon: `https://api.dicebear.com/9.x/fun-emoji/svg?seed=1234abcd-abcdefg`, //iconURL
-// 	worldID: "",
-// })
-export const playerData = signal({} as any)
-// export const worldData = signal<IWorldData>({
-// 	id: "1234abcd",
-// 	name: "Yiffie",
-// 	ownerID: "7890wxyz",
-// 	citizens: [],
-// 	taxFunds: 0,
-// 	taxRate: 0,
-// })
-export const worldData = signal({} as any)
-// export const roomData = signal<IRoomData>({
-// 	id: "1A2B3C4D",
-// 	name: "Game 1",
-// 	year: 0,
-// 	host:  "1234abcd",
-// 	players: [],
-// 	worlds: [],
-// 	taxCoeff: 1.5,
-// 	maxNumberOfPlayers: 20,
-// 	penalty: 0.3,
-// 	kickPlayersOnBankruptcy: true,
-// 	auditProbability: 0.1,
-// 	gameState: GameState.Waiting,
-// })
-export const roomData = signal({} as any)
+import { computed, signal } from "@preact/signals-react";
+import {} from '@/interfaces';
+import { getIconURL } from "@/utils/utils";
 
 export const GameGlobal = {
-	roomData, worldData, playerData, hostData
+	room: signal<any>({}),
+	universe:  signal<any>({}),
+	player:  signal<any>({}),
+	user:  signal<any>({}),
+	playerRound:  signal<any>({}),
+	universeRound:  signal<any>({}),
 }
 
-export function updateGameGlobal(table?:string){
-	let {
-		roomData, worldData, playerData, hostData,
-	} = GameGlobal;
-
-	let datas = {
-		rooms: roomData,
-		players: playerData,
-		hosts: hostData,
-		worlds: worldData,
-	}
-
-	if(table){
-		let val = datas[table];
-		let obj = val.value;
-
-		let newObj = getData(table as any, obj.id);
-		if(newObj){
-			val.value = {...newObj};
-			saveGameGlobal();
-			return true;
-		}
-
-		return false;
-	}else{
-		for(let key of Object.keys(datas)){
-			let val = datas[key];
-			let obj = val.value;
-			
-			let newObj = getData(key as any, obj.id) as any;
-			if(newObj){
-				val.value = {...newObj};
-			}
-		}
-		saveGameGlobal();
-		return true;
-	}
-	
-}
-
-export function saveGameGlobal(){
-	for(let [k, v] of Object.entries(GameGlobal)){
-		let obj = v.value as IData;
+export function saveGameGlobal(key?:string){
+	if(GameGlobal[key]){
+		let obj = GameGlobal[key].value;
 		let jsonStr = JSON.stringify(obj);
 	
-		localStorage.setItem(k, jsonStr);
-		console.log(`${k} saved in storage`)
+		localStorage.setItem(key, jsonStr);
+		console.log(`${key} saved in storage`)
 		console.log(obj);
+	}else{
+		for(let [k, v] of Object.entries(GameGlobal)){
+			let obj = v.value;
+			let jsonStr = JSON.stringify(obj);
+		
+			localStorage.setItem(k, jsonStr);
+			console.log(`${k} saved in storage`)
+			console.log(obj);
+		}
 	}
 }
-export function loadGameGlobal(){
-	for(let [k, v] of Object.entries(GameGlobal)){
-		let str = localStorage.getItem(k);
+
+export function loadGameGlobal(key?:string){
+	if(GameGlobal[key]){
+		let str = localStorage.getItem(key);
 		if(!str) return;
 		
-		let obj = JSON.parse(str) as IData;
-		
-		v.value = {...obj} as any;
-		console.log(`${k} loaded from storage`)
+		let obj = JSON.parse(str);
+	
+		GameGlobal[key].value = {...obj} as any;
+		console.log(`${key} loaded from storage`)
 		console.log(obj);
+	}else{
+		for(let [k, v] of Object.entries(GameGlobal)){
+			let str = localStorage.getItem(k);
+			if(!str) return;
+			
+			let obj = JSON.parse(str);
+			
+			v.value = {...obj} as any;
+			console.log(`${k} loaded from storage`)
+			console.log(obj);
+		}
 	}
 }
+
+export function deleteGameGlobal(key?:string){
+	if(GameGlobal[key]){
+		GameGlobal[key].value = {};
+		let obj = GameGlobal[key].value;
+		let jsonStr = JSON.stringify(obj);
+	
+		localStorage.setItem(key, jsonStr);
+		console.log(`${key} deleted in storage`)
+		console.log(obj);
+	}else{
+		for(let [k, v] of Object.entries(GameGlobal)){
+			v.value = {};
+			let obj = v.value;
+			let jsonStr = JSON.stringify(obj);
+		
+			localStorage.setItem(k, jsonStr);
+			console.log(`${k} saved in storage`)
+			console.log(obj);
+		}
+	}
+}
+
+//computed
+
+export let gameCode = computed(function(){
+	let code = GameGlobal.room.value?.id || "";
+	let mid = Math.trunc(code.length/2);
+	code = [code.slice(0, mid), code.slice(mid)].join("-");
+
+	return code;
+})
+export let gameName = computed(()=>{
+	let name = GameGlobal.room.value?.name || "";
+	return name;
+});
+export let hostName = computed(()=>{
+	let name = GameGlobal.user.value?.name || "";
+	return name;
+});
+export let hostID = computed(()=>{
+	let id = GameGlobal.user.value?.id || "";
+	return id;
+});
+export let playerName = computed(()=>{
+	let name = GameGlobal.player.value?.name || "";
+	return name;
+});
+export let numOfPlayers = signal(0);
+export let maxNumOfPlayers = signal(0);
+
+export let gamePlayers = signal([]);
+
+export let playerID = computed(()=>{
+	let id = GameGlobal.player.value?.playerId || -1;
+	return id;
+})
+export let playerIconURL = computed(()=>{
+	let url = GameGlobal.player.value?.icon || getIconURL().href;
+	return url;
+})
+export let playerFunds = computed(()=>{
+	let funds = GameGlobal.player.value?.funds || 0;
+	return funds.toFixed(2);
+})
+export let playerRole = computed(()=>{
+	let role = GameGlobal.player.value?.role || "";
+	return role;
+})
+
+export let universeName = computed(()=>{
+	let name = GameGlobal.universe.value?.name || "";
+	return name;
+});
+export let taxRate = computed(()=>{
+	let t = GameGlobal.universe.value?.taxRate || 0;
+	return t * 100;
+});
+export let round = computed(()=>{
+	let y = GameGlobal.room.value?.round || 0;
+	return y;
+});
+export let universeTaxFunds = computed(()=>{
+	let f = GameGlobal.universe.value?.taxFunds || 0;
+	return f;
+});
+export let universeTaxRate = computed(()=>{
+	let f = GameGlobal.universe.value?.taxRate || 0;
+	return f;
+});
+export let universeFunds = signal(0);

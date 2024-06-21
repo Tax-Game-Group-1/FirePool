@@ -13,7 +13,7 @@ import { getData, setData } from '@/app/dummyData';
 import { randomID, sanitizeString } from '@catsums/my';
 import LoadingScreen from '@/components/LoadingScreen/LoadingScreen';
 import { useRemoveLoadingScreen } from '@/components/LoadingScreen/LoadingScreenUtil';
-import { GameGlobal, loadGameGlobal, updateGameGlobal, saveGameGlobal } from '@/app/global';
+import { GameGlobal, loadGameGlobal, saveGameGlobal } from '@/app/global';
 import { JoinSection, JoiningSection } from './_sections/JoinSection';
 import { LoginSection } from './_sections/LoginSection';
 import { SplashSection } from './_sections/SplashSection';
@@ -71,30 +71,6 @@ export function goToSection(section: PageSection){
 export async function tryLogin(username:string, password:string){
 	username = sanitizeString(username.trim());
 	password = sanitizeString(password.trim());
-
-	//test login
-
-	// let query = {
-	// 	name: username,
-	// 	password: password,
-	// }
-
-	// let host = findData("hosts",query);
-	// if(!host?.length){
-	// 	createNotif({
-	// 		content: "Username or password is incorrect",
-	// 	})
-	// 	return;
-	// }
-
-	// GameGlobal.hostData.value = host[0];
-	// updateGameGlobal();
-
-	// // mainRouter.push("/host");
-	// window.location.href = "/host";
-
-	// return;
-
 	//actual login
 
 	if(!username){
@@ -130,17 +106,16 @@ export async function tryLogin(username:string, password:string){
 	}
 
 	if (res.data?.id != null) {
-		GameGlobal.hostData.value.id = res.data.id;
-		GameGlobal.hostData.value.username = username;
+		GameGlobal.user.value.id = res.data.id;
+		GameGlobal.user.value.name = username;
 
 		saveGameGlobal();
-		localStorage.setItem('admin_id', res.data.id);
 		createNotif({
 			content: "Successfully logged in!",
 		})
 		setTimeout(() => {
-			// mainRouter("/host");
-			window.location.href = "/host";
+			mainRouter.push("/host");
+			// window.location.href = "/host";
 		}, 3500)
 	}
 
@@ -177,11 +152,11 @@ export async function tryJoin(code:string){
 		return;
 	}
 
-	GameGlobal.roomData.value = {
+	GameGlobal.room.value = {
 		gameId: code,
 	};
 
-	GameGlobal.playerData.value = {
+	GameGlobal.player.value = {
 		waitingId: res.data.waitingId,
 	};
 
@@ -189,8 +164,8 @@ export async function tryJoin(code:string){
 
 	goToSection(PageSection.Joining);
 	createTimer(1,()=>{
-		// router.push(`/game?c=${code}`)
-		window.location.href = `/game?c=${code}`;
+		mainRouter.push(`/game?c=${code}`)
+		// window.location.href = `/game?c=${code}`;
 	});
 	
 	return;

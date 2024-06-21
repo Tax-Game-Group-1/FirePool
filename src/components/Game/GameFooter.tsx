@@ -18,54 +18,9 @@ import { createPopUp } from '../PopUp/PopUp';
 
 import { computed } from '@preact/signals-react';
 
-import { GameGlobal } from '@/app/global';
-import { getData } from '@/app/dummyData';
+import { gameCode, GameGlobal, gameName, hostName, maxNumOfPlayers, numOfPlayers } from '@/app/global';
 
-export let gameCode = computed(()=>{
-	let code = GameGlobal.roomData.value?.id || "";
-	let mid = Math.trunc(code.length/2);
-	code = [code.slice(0, mid), code.slice(mid)].join("-");
-
-	return code;
-});
-export let gameName = computed(()=>{
-	let name = GameGlobal.roomData.value?.name || "";
-	return name;
-});
-export let hostName = computed(()=>{
-	let name = GameGlobal.hostData.value?.name || "";
-	return name;
-});
-export let playerName = computed(()=>{
-	let name = GameGlobal.playerData.value?.name || "";
-	return name;
-});
-export let players = computed(()=>{
-	//dependancies
-	GameGlobal.playerData.value;
-	GameGlobal.roomData.value;
-
-	let code = gameCode.value.split("-").join("");
-	let roomData = getData("rooms", code);
-	let playerIDs = roomData?.players || [];
-	let players = playerIDs.map((id) => {
-		let player = getData("players", id);
-		return player;
-	});
-
-	return players;
-})
-export let numOfPlayers = computed(()=>{
-	return players.value.length;
-});
-export let maxNumOfPlayers = computed(()=>{
-	GameGlobal.roomData.value;
-
-	let code = gameCode.value.split("-").join("");
-	let roomData = getData("rooms", code);
-	let max = roomData?.maxNumberOfPlayers || 0;
-	return max;
-});
+///Computed global data
 
 
 
@@ -75,8 +30,6 @@ const MatchMedia = dynamic(async() => {
 }, { ssr: false })
 
 const GameFooter = forwardRef(function GameFooter(props,ref:Ref<any>) {
-
-	//temporary states, gonna be replaced with useContext later
 	
 	let router = useRouter();
 

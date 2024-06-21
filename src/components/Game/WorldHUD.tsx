@@ -8,32 +8,9 @@ import style from "./WorldHUD.module.scss";
 
 import { computed } from '@preact/signals-react';
 
-import { GameGlobal } from '@/app/global';
+import { GameGlobal, round, universeFunds, universeName, universeTaxRate } from '@/app/global';
 import { getData } from '@/app/dummyData';
 
-export let worldName = computed(()=>{
-	let name = GameGlobal.worldData.value?.name || "";
-	return name;
-});
-export let taxRate = computed(()=>{
-	let t = GameGlobal.worldData.value?.taxRate || 0;
-	return t * 100;
-});
-export let year = computed(()=>{
-	let y = GameGlobal.roomData.value?.year || 0;
-	return y;
-});
-export let worldTaxFunds = computed(()=>{
-	let f = GameGlobal.worldData.value?.taxFunds || 0;
-	return f;
-});
-export let worldFunds = computed(()=>{
-	let worldData = GameGlobal.worldData.value;
-	let ownerData = getData("players", worldData.ownerID);
-
-	let funds = ownerData?.funds || 0;
-	return funds.toFixed(2);
-});
 
 export const WorldHUD = forwardRef(function WorldHUD({}, ref:Ref<any>){
 	
@@ -44,7 +21,7 @@ export const WorldHUD = forwardRef(function WorldHUD({}, ref:Ref<any>){
 					<span>World name</span>
 				</div>
 				<div className="flex font-bold">
-					<span>{worldName}</span>
+					<span>{universeName}</span>
 				</div>
 			</div>
 			<div className={`${style.row} gap-2`}>
@@ -53,7 +30,7 @@ export const WorldHUD = forwardRef(function WorldHUD({}, ref:Ref<any>){
 						<span>Tax Rate</span>
 					</div>
 					<div className={`${t.inputBox} ${style.displayBox} ${t.fillSolidText} min-w-24`}>
-						<span className="world-taxrate-value">{taxRate}</span>
+						<span className="world-taxrate-value">{universeTaxRate}</span>
 						<span className="percent-icon px-0 w-5">
 							<SVGIcon>
 								<PercentageIcon fill=""/>
@@ -66,7 +43,7 @@ export const WorldHUD = forwardRef(function WorldHUD({}, ref:Ref<any>){
 						<span>Year</span>
 					</div>
 					<div className={`${t.inputBox} ${t.mainText} ${style.displayBox}`}>
-						<span className="world-year-value">{year}</span>
+						<span className="world-year-value">{round}</span>
 					</div>
 				</div>
 			</div>
@@ -82,7 +59,7 @@ export const WorldHUD = forwardRef(function WorldHUD({}, ref:Ref<any>){
 							</SVGIcon>
 						</div>
 						<div className="world-funds-amount mx-1 ml-8">
-							<span className="world-funds-value">{worldFunds}</span>
+							<span className="world-funds-value">{universeFunds}</span>
 						</div>
 					</div>
 				</div>
