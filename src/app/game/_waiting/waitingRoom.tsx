@@ -24,7 +24,7 @@ export enum Page {
 	StartRoom,
 }
 
-export let pageState = signal(Page.NameRoom);
+export let pageState = signal(Page.StartRoom);
 
 export const roomSignal = new SignalEventBus();
 

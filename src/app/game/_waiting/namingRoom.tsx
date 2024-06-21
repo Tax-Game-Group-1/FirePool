@@ -18,7 +18,6 @@ import { useSignals } from '@preact/signals-react/runtime';
 import { animate, useAnimate } from 'framer-motion';
 import { randomID, sanitizeString } from '@catsums/my';
 import SignalEventBus, { useSignalEvent } from '@catsums/signal-event-bus';
-import { findData, setData } from '@/app/dummyData';
 import { createNotif } from '@/components/Notification/Notification';
 
 export let iconURL = computed(()=>{

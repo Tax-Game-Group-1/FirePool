@@ -111,9 +111,16 @@ export const GameContent = forwardRef(function GameContent(
 		let ctns = activeContents.value;
 		delete ctns[id];
 	}
+	function onMount(){
+		let ctns = activeContents.value;
+		if(!ctns[id]){
+			contentSignalBus.emit("add", {id, node: children});
+		}
+	}
 	
 	useEffect(()=>{
 		console.log(`mounting ${id}`)
+		onMount();
 		return () => {
 			console.log(`unmounting ${id}`)
 			// let ctns = activeContents.value;

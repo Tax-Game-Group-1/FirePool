@@ -20,6 +20,7 @@ import { useRemoveLoadingScreen } from '@/components/LoadingScreen/LoadingScreen
 import { getData } from '../dummyData';
 import { createPopUp, popUpSignalBus } from '@/components/PopUp/PopUp';
 import { createNotif, notifSignalBus } from '@/components/Notification/Notification';
+import Spectate from './_content/Spectate';
 
 let isLoaded = signal(false);
 
@@ -29,7 +30,7 @@ export enum GameScreen {
 	Spectate,
 }
 
-export let gameScreen = signal(GameScreen.WaitingRoom);
+export let gameScreen = signal(GameScreen.Spectate);
 
 export function setGameScreen(screen: GameScreen) {
 
@@ -147,6 +148,9 @@ const Layouts = forwardRef(function Layouts({}, ref:Ref<any>) {
 			break;
 		case GameScreen.WaitingRoom:
 			content = (<WaitingRoom/>);
+			break;
+		case GameScreen.Spectate:
+			content = (<Spectate/>);
 			break;
 	}
 
