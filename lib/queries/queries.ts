@@ -93,6 +93,11 @@ const getAdminGames = async (adminId: number) => {
     return await db.select().from(tblGameInstance).where(eq(tblGameInstance.adminId, adminId))
 }
 
+const editAdminGame = async (game: Game) => {
+    return await db.update(tblGameInstance)
+    .set({name : game.name, auditProbability: game.auditProbability, finePercent: game.penalty, kickPlayersOnBankruptcy: game.kickPlayersOnBankruptcy, maxPlayers: game.maxPlayers, roundNumber: game.roundNumber, taxCoefficient: game.taxCoefficient })
+    .where(eq(tblGameInstance.gameId, parseInt(game.id)));
+}
 
 /*
  get the game manager object

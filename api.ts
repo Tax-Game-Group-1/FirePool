@@ -2,7 +2,7 @@ import express, {Express} from "express";
 import { setGameInstance, getGameInstance } from "server";
 import { createAdminUser, getAdminIdByUserName, createGame, getAdminGames} from "&/queries/queries"
 import _ from "lodash"
-import { Citizen, PlayerInWaitingRoom } from "&/gameManager/gameManager";
+import { Citizen, Game, PlayerInWaitingRoom } from "&/gameManager/gameManager";
 
 export function setUpServer(server:Express) {
     server.post("/adminLogin", async (req, res) => {
@@ -186,6 +186,25 @@ export function setUpServer(server:Express) {
 			});
 			return;
 		}
+	})
+
+	server.post("editGame/:gameId", async (req, res) => {
+
+		try {
+			const game = new Game(req.body.id, req.body.name, req.body.taxCoefficient, req.body.maxPlayers, req.body.penalty, req.body.roundNumber, req.body.auditProbability, req.body.kickPlayersOnBankruptcy);
+		} catch (e) {
+			console.error(e); 
+			res.status(400).json({
+				success:false, 
+				message: `${e.toString()}`
+			})
+		}
+
+
+	})
+
+	server.delete("deleteGame/:gameId", async (req, res) => {
+
 	})
 }
 

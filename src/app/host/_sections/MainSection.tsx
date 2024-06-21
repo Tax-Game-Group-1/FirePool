@@ -64,7 +64,7 @@ export default function MainSection() {
 							<div className={`${t.solidBorder} border p-2 w-5/6 lg:w-3/4 relative aspect-square flex justify-center items-center rounded-md`}>
 								<div className={`${t.accent} w-full relative aspect-square flex justify-center items-center rounded-md`}>
 									<span className={`absolute z-10 flex justify-center items-center text-center`}>Loading image...</span>
-									<img className={`w-full aspect-square relative z-20 rounded-md`} src={currGame.value.icon || getIconURL(currGame.value.id).href} alt="game icon"/>
+									<img className={`w-full aspect-square relative z-20 rounded-md`} src={getIconURL(currGame.value.gameId).href} alt="game icon"/>
 								</div>
 							</div>
 							<div className={` flex justify-center text-lg md:text-xl`}>

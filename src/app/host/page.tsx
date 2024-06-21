@@ -86,16 +86,21 @@ export function goToSection(section: PageSection) {
 	currSection.value = section;
 }
 
-export async function setCurrentGame(id: string){
-	let roomData = getData("rooms", id);
-	if(!roomData){
+export async function setCurrentGame(data){
+	console.log({data})
+	if(!data){
 		createNotif({
 			content: "Room does not exist!",
 		})
 		return;
 	}
 
-	currGame.value = {...roomData};
+	currGame.value = {...data};
+	// saveGameGlobal();
+}
+export async function unsetCurrentGame(data){
+	currGame.value = null;
+	// saveGameGlobal();
 }
 
 export async function tryCreate(data){
@@ -106,15 +111,13 @@ export async function tryCreate(data){
 		return;
 	}
 
-	console.log({data});
-
 	let res = await fetch('/createGame',{
 		method: "POST",
 		headers: {
 			'Accept': 'application/json',
 			'Content-Type': 'application/json'
 		},
-		body: "{ feed : true }"
+		body: JSON.stringify({...data})
 	}).then(r => r.json());
 
 	if(!res.success){
@@ -128,87 +131,86 @@ export async function tryCreate(data){
 		content: `Successfully created game!`,
 	});
 
-	console.log({res:res});
-
-	// let success = setData("rooms", data);
-
-	// if(!success){
-	// 	createNotif({
-	// 		content: "An error occured. Data might be invalid",
-	// 	})
-	// 	return;
-	// }
-
-	// updateGameGlobal();
-
 	getGames();
 	
 	goToSection(PageSection.Main);
 	
 }
 export async function tryEdit(data){
-	if(!data.name){
+	if(!data.gameId){
 		createNotif({
 			content: "Game name is missing!",
 		});
 		return;
 	}
 
-	let success = setData("rooms", data);
+	let res = await fetch(`/editGame/${data.gameId}`,{
+		method: "POST",
+		headers: {
+			'Accept': 'application/json',
+			'Content-Type': 'application/json'
+		},
+		body: JSON.stringify({...data})
+	}).then(r => r.json());
 
-	if(!success){
-		createNotif({
-			content: "An error occured. Data might be invalid",
-		})
-		return;
-	}
+	if(!res.success){
+        createPopUp({
+			content: `Error trying to edit the game. ${res.message}`,
+        });
+        return;
+    }
 
-	// updateGameGlobal();
-	saveGameGlobal();
+	createNotif({
+		content: `Successfully edited game!`,
+	});
+
+	getGames();
 	
 	goToSection(PageSection.Main);
 	
 }
-export async function tryDelete(id:string){
-	if(!id){
+export async function tryDelete(data){
+	if(!data.gameId){
 		createNotif({
 			content: "Game ID is missing!",
 		});
 		return;
 	}
 
-	let success = deleteData("rooms", id);
+	let res = await fetch(`/deleteGame/${data.gameId}`,{
+		method: "POST",
+		headers: {
+			'Accept': 'application/json',
+			'Content-Type': 'application/json'
+		},
+		body: JSON.stringify({...data})
+	}).then(r => r.json());
 
-	if(!success){
-		createNotif({
-			content: "An error occured. Data might be invalid",
-		})
-		return;
-	}
+	if(!res.success){
+        createPopUp({
+			content: `Error trying to edit the game. ${res.message}`,
+        });
+        return;
+    }
 
-	saveGameGlobal();
+	createNotif({
+		content: `Successfully edited game!`,
+	});
+
+	getGames();
 	
-	currGame.value = null;
 	goToSection(PageSection.Main);
 	
 }
-export async function tryStart(id:string){
-	if(!id){
+export async function tryStart(data){
+	if(!data.gameId){
 		createNotif({
 			content: "Game ID is missing!",
 		});
 		return;
 	}
-	
-	let roomData = getData("rooms", currGame.value?.id);
-	if(!roomData){
-		createNotif({
-			content: "Game does not exist!",
-		});
-		return;
-	}
 
-	GameGlobal.room.value = roomData;
+	GameGlobal.room.value = {...data};
 	saveGameGlobal();
 
 	// mainRouter.push("/game");

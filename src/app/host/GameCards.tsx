@@ -60,12 +60,11 @@ export function GameCardsContainer(){
 	let rooms = games.value;
 
 	let gameCards = rooms.map((game, i) => {
-		games.value;
 		return (
-			<GameCard key={game.id} name={game.name} onClick={()=>{
-				setCurrentGame(game.id);
+			<GameCard key={game.gameId} name={game.name} onClick={()=>{
+				setCurrentGame(game);
 			}}>
-				<img className={`rounded-md`} src={game.icon || getIconURL(game.id).href} alt={`${game.name} icon`}/>
+				<img className={`rounded-md`} src={getIconURL(game.gameId).href} alt={`${game.name} icon`}/>
 			</GameCard>
 		)
 	})

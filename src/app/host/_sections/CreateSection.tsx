@@ -62,6 +62,7 @@ export default function CreateSection() {
 
 		obj.host = hostID.value;
 		obj.adminId = hostID.value;
+		obj.roundNumber = 0;
 
 		if(currGame.value){
 			tryEdit(obj);
@@ -91,6 +92,7 @@ export default function CreateSection() {
 		}
 	}
 
+	//await createGame(req.body.adminId, req.body.name, req.body.taxCoefficient, req.body.maxPlayers, req.body.finePercent, req.body.roundNumber, req.body.auditProbability, req.body.kickPlayersOnBankruptcy)
 	return (
 		<div className={` rounded-md w-full h-full grid grid-rows-12 grid-cols-1 md:grid-cols-12 gap-2 p-2 ${t.solidText}`}>
 			<div className={`grid gap-1 grid-rows-12 grid-cols-12 row-span-8 md:row-span-12 col-span-12 md:col-span-6 lg:col-span-8`}>
@@ -104,16 +106,16 @@ export default function CreateSection() {
 							<input name="name" defaultValue={currGame.value?.name || ""} className={`${t.inputBox} ${t.solidText} p-2 rounded-md text-sm md:text-lg lg:text-xl`} />
 						</div>
 						<div className={`flex flex-row justify-between items-center w-full gap-4`}>
-							<label htmlFor="taxCoeff">Tax Coeffient</label>
-							<input name="taxCoeff" onBlur={onNumInput} type="number"  min="1" max="2" defaultValue={`${currGame.value?.taxCoeff || 1.5}`} step="0.01" className={` w-3/4 md:w-1/5 p-0 md:p-1 ${t.inputBox} ${t.solidText} text-right rounded-md text-sm md:text-base`} />
+							<label htmlFor="taxCoefficient">Tax Coeffient</label>
+							<input name="taxCoefficient" onBlur={onNumInput} type="number"  min="1" max="2" defaultValue={`${currGame.value?.taxCoefficient || 1.5}`} step="0.01" className={` w-3/4 md:w-1/5 p-0 md:p-1 ${t.inputBox} ${t.solidText} text-right rounded-md text-sm md:text-base`} />
 						</div>
 						<div className={`flex flex-row justify-between items-center w-full gap-4`}>
-							<label htmlFor="maxNumberOfPlayers">Max No. Of Players</label>
-							<input name="maxNumberOfPlayers" onBlur={onNumInput} type="number" min="6" max="100" defaultValue={`${currGame.value?.maxNumberOfPlayers || 15}`} step="1" className={` w-3/4 md:w-1/5 p-0 md:p-1 ${t.inputBox} ${t.solidText} text-right rounded-md text-sm md:text-base`} />
+							<label htmlFor="maxPlayers">Max No. Of Players</label>
+							<input name="maxPlayers" onBlur={onNumInput} type="number" min="6" max="100" defaultValue={`${currGame.value?.maxNumberOfPlayers || 15}`} step="1" className={` w-3/4 md:w-1/5 p-0 md:p-1 ${t.inputBox} ${t.solidText} text-right rounded-md text-sm md:text-base`} />
 						</div>
 						<div className={`flex flex-row justify-between items-center w-full gap-4`}>
-							<label htmlFor="penalty">Penalty %</label>
-							<input name="penalty" onBlur={onNumInput} type="number" min="0" max="100" defaultValue={`${currGame.value?.penalty || 30}`} step="1"  className={` w-3/4 md:w-1/5 p-0 md:p-1 ${t.inputBox} ${t.solidText}  text-right rounded-md text-sm md:text-base`} />
+							<label htmlFor="finePercent">Penalty %</label>
+							<input name="finePercent" onBlur={onNumInput} type="number" min="0" max="100" defaultValue={`${currGame.value?.penalty || 30}`} step="1"  className={` w-3/4 md:w-1/5 p-0 md:p-1 ${t.inputBox} ${t.solidText}  text-right rounded-md text-sm md:text-base`} />
 						</div>
 						<div className={`flex flex-row justify-between items-center w-full gap-4`}>
 							<label htmlFor="auditProbability">Audit Probability %</label>
@@ -135,7 +137,7 @@ export default function CreateSection() {
 					<div className={`${t.solidBorder} border p-2 w-5/6 lg:w-3/4 relative aspect-square flex justify-center items-center rounded-md`}>
 						<div className={`${t.accent} w-full relative aspect-square flex justify-center items-center rounded-md`}>
 							<span className={`absolute z-10 flex justify-center items-center text-center`}>Loading image...</span>
-							<img id="imgIcon" className={`w-full aspect-square relative z-20 rounded-md`} src={currGame.value?.icon || getIconURL().href} alt="game icon"/>
+							<img id="imgIcon" className={`w-full aspect-square relative z-20 rounded-md`} src={getIconURL(currGame.value.gameId).href} alt="game icon"/>
 						</div>
 					</div>
 				</div>

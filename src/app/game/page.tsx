@@ -21,13 +21,13 @@ export default function Layout() {
 	})
 
 	useEffect(()=>{
-		if(!socket.connected){
-			socket.connect();
-		}
+		// if(!socket.connected){
+		// 	socket.connect();
+		// }
 
-		return ()=>{
-			socket.disconnect();
-		}
+		// return ()=>{
+		// 	socket.disconnect();
+		// }
 	},[])
 
 	return (

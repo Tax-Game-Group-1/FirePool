@@ -8,6 +8,7 @@ import * as http from "node:http";
 import bodyParser from "body-parser"
 
 import { randomID } from "@catsums/my";
+import { isNullOrUndefined } from "node:util";
 
 const dev = process.env.NODE_ENV !== "production";
 const hostname = "localhost";
@@ -33,33 +34,33 @@ console.log(`Trying to listen on ${port} (kill port if failing)`);
 app.prepare().then(() => {
 
     const expressServer: Express = express();
-    const server = http.createServer(expressServer);
-    const io = new Server(server);
-
+    
 	expressServer.use(bodyParser.json())
     expressServer.use(bodyParser.urlencoded({ extended: true }))
-
+    
 	//next will route and serve the frontend pages here
 	expressServer.get('*', (req, res) => {
-		return handler(req, res)
+        return handler(req, res)
 	})
-
+    
 	//----------------------------- server stuff ------------------------//
-
+    
 	///got accidentally removed on one of the changes
 	expressServer.on("error", (err) => {
 		console.error("Server error:", err);
 		process.exit(1);
 	});
-
-	expressServer.listen(port, () => {
-		console.log(`> Ready on http://${hostname}:${port}`);
-	});
-
+    
 	//set up all the API routes for the server, even though the server still lives here
 	setUpServer(expressServer);
-
-
+    
+    const server = http.createServer(expressServer);
+    const io = new Server(server);
+    
+	server.listen(port, () => {
+        console.log(`> Ready on http://${hostname}:${port}`);
+	});
+    
     //--------------------------- socket stuff -------------------------//
     /**
      * Handles players request to join games in real time
@@ -75,8 +76,6 @@ app.prepare().then(() => {
         // we will maybe have to change this later if games need to be resumed
         socket.on("joinGame", ({code}) => {
             console.log(code);
-
-
 
             let id = randomID();
 

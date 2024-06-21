@@ -1,7 +1,6 @@
 import {describe} from "@jest/globals";
 import {clearTables, createAdminUser, getAdminIdByUserName} from "./queries";
 
-import {io} from "socket.io-client";
 
 describe("test queries", () => {
 
