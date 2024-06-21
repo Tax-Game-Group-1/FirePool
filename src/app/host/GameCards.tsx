@@ -6,7 +6,6 @@ import { GameGlobal } from "../global";
 import { getIconURL } from "@/utils/utils";
 import { findData, getData } from "../dummyData";
 import { GameCard } from './GameCard';
-import { IRoomData } from "@/interfaces";
 import { AddIcon } from "@/assets/svg/svg";
 import SignalEventBus from "@catsums/signal-event-bus";
 
@@ -18,23 +17,23 @@ import { createPopUp } from "@/components/PopUp/PopUp";
 import {getGames, games} from "@/app/host/page"
 
 export let gameCode = computed(()=>{
-	let code = GameGlobal.roomData.value?.id || "";
+	let code = GameGlobal.room.value?.id || "";
 	let mid = Math.trunc(code.length/2);
 	code = [code.slice(0, mid), code.slice(mid)].join("-");
 
 	return code;
 });
 export let hostID = computed(()=>{
-	let id = GameGlobal.hostData.value?.id || "";
+	let id = GameGlobal.user.value?.id || "";
 	return id;
 });
 export let hostName = computed(()=>{
-	let name = GameGlobal.hostData.value?.name || "";
+	let name = GameGlobal.user.value?.name || "";
 	return name;
 });
 
 export let iconURL = computed(()=>{
-	let url = GameGlobal.playerData.value?.icon || getIconURL();
+	let url = GameGlobal.player.value?.iconURL || getIconURL();
 
 	return url;
 })
@@ -50,13 +49,15 @@ export function GameCardsContainer(){
 
 	useEffect(()=>{
 
-		getGames();
+		if(hostID.value){
+			getGames();
+		}
 
 		return () => {};
 
 	},[]);
 
-	let rooms:IRoomData[] = games.value;
+	let rooms = games.value;
 
 	let gameCards = rooms.map((game, i) => {
 		games.value;

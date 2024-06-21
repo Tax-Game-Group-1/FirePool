@@ -98,9 +98,11 @@ export async function tryLogin(username:string, password:string){
 		}),
 	}).then(r => r.json());
 
+	console.log({res})
+
 	if(!res.success){
 		createNotif({
-			content: res?.message || "Server error. Check the server admin!",
+			content: `Error: ${res?.message}`,
 		})
 		return;
 	}
@@ -108,14 +110,16 @@ export async function tryLogin(username:string, password:string){
 	if (res.data?.id != null) {
 		GameGlobal.user.value.id = res.data.id;
 		GameGlobal.user.value.name = username;
+		GameGlobal.user.value.username = username;
+
+		console.log("routing....");
 
 		saveGameGlobal();
 		createNotif({
 			content: "Successfully logged in!",
 		})
 		setTimeout(() => {
-			mainRouter.push("/host");
-			// window.location.href = "/host";
+			window.location.href = "/host";
 		}, 3500)
 	}
 

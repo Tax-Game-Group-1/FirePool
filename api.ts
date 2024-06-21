@@ -30,13 +30,13 @@ export function setUpServer(server:Express) {
 			res.status(200).json({
 				success:true,
 				data: {
-					id: result[0].id
+					id: result
 				} 
 			})
 		} catch (errormessage) {
 			res.status(201).json({
 				success: false,
-				message: errormessage,
+				message: errormessage.toString(),
 			});
 		}
 		return;
@@ -89,33 +89,33 @@ export function setUpServer(server:Express) {
 			}
 			res.status(500).json({
 				success: false,
-				message: e
+				message: e.toString()
 			});
 		}
 	})
 
 	//create a new game and post it to the database
 	server.post("/createGame", async(req,res) => {
+
+		console.log("BODY:")
+		console.log(req.body);
+
+
 		
-		createGame(req.body.adminId, req.body.name, req.body.taxCoefficient, req.body.maxPlayers, req.body.finePercent, req.body.roundNumber, req.body.auditProbability, req.body.kickPlayersOnBankruptcy)
+		await createGame(req.body.adminId, req.body.name, req.body.taxCoefficient, req.body.maxPlayers, req.body.finePercent, req.body.roundNumber, req.body.auditProbability, req.body.kickPlayersOnBankruptcy)
 		.then(result => {
 			res.status(200).json({
 				success: true, 
-				data: result
+				data: result[0].gameId
 			})
 
 		})
 		.catch(error => {
 			res.status(200).json({
 				success: false,
-				message: error
+				message: error.toString()
 			})	
 		})
-
-		// res.status(200).json({
-		// 	success: true,
-		// 	message: "successfullly created game"
-		// })	
 
 	})
 
@@ -145,7 +145,7 @@ export function setUpServer(server:Express) {
 		}catch(e){
 			res.status(200).json({
 				success: false,
-				message: `${e}`,
+				message: e.toString()
 			})
 		}
 
@@ -167,6 +167,8 @@ export function setUpServer(server:Express) {
     //retrieves the list of games from the server
 	server.post("/listGames/:adminId", async (req, res) => {
 		console.log("list games")
+
+		try {
 		const adminGames = await getAdminGames(Number(req.params.adminId));
 		console.log("admin games: ");
 		console.log(adminGames);
@@ -176,6 +178,14 @@ export function setUpServer(server:Express) {
 				games: adminGames,
 			}
 		});
+		} catch (e) {
+			console.error(e);
+			res.status(400).json({
+				success: false,
+				message: `${e.toString()}`
+			});
+			return;
+		}
 	})
 }
 

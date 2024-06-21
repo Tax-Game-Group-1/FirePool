@@ -17,7 +17,7 @@ import SVGIcon from '@/components/SVGIcon/SVGIcon'
 import { GameCardsContainer } from './GameCards'
 import { getIconURL } from '@/utils/utils'
 import { EditTextIcon } from '../../assets/svg/svg';
-import { GameGlobal, updateGameGlobal, roomData, loadGameGlobal } from '../global';
+import { GameGlobal, loadGameGlobal, saveGameGlobal } from '../global';
 import MainSection from './_sections/MainSection'
 import CreateSection from './_sections/CreateSection'
 import { useSignals } from '@preact/signals-react/runtime'
@@ -27,11 +27,11 @@ import { useRemoveLoadingScreen } from '@/components/LoadingScreen/LoadingScreen
 import LoadingScreen from '@/components/LoadingScreen/LoadingScreen'
 
 export let hostID = computed(()=>{
-	let id = GameGlobal.hostData.value?.id || "";
+	let id = GameGlobal.user.value?.id || "";
 	return id;
 });
 export let hostName = computed(()=>{
-	let name = GameGlobal.hostData.value?.username || "";
+	let name = GameGlobal.user.value?.username || "";
 	return name;
 });
 
@@ -45,20 +45,31 @@ export async function getGames(){
 	
 	//server.get("/listGames/:adminId", async (req, res) => {
 	console.log("HOST ID: " + hostID);
+	console.log("Username:" + hostName);
+	console.log(`/listGames/${hostID}`)
 
-	//let res = await fetch(`/listGames/${hostID}`).then(r => r.json());
-	let res = await fetch('/openGame',{
-		method: "POST",
-	}).then(r => r.json());
+	if(!hostID.value) return;
 
-	if(!res.success){
-		//error
-		createPopUp({
-			content: "Error trying to grab the games",
-		});
+	try{
+
+		let res = await fetch(`/listGames/${hostID}`,{
+			method: "POST",
+		}).then(r => r.json());
+
+		console.log({res})
+	
+		if(!res.success){
+			//error
+			createPopUp({
+				content: "Error trying to grab the games",
+			});
+			return;
+		}
+		games.value = res.data.games;
+	}catch(err){
+		console.log(err)
 	}
-
-	games.value = res.data.games;
+	
 
 }
 
@@ -95,9 +106,15 @@ export async function tryCreate(data){
 		return;
 	}
 
+	console.log({data});
+
 	let res = await fetch('/createGame',{
 		method: "POST",
-		body: JSON.stringify({...data})
+		headers: {
+			'Accept': 'application/json',
+			'Content-Type': 'application/json'
+		},
+		body: "{ feed : true }"
 	}).then(r => r.json());
 
 	if(!res.success){
@@ -107,9 +124,11 @@ export async function tryCreate(data){
         return;
     }
 
-	createPopUp({
+	createNotif({
 		content: `Successfully created game!`,
 	});
+
+	console.log({res:res});
 
 	// let success = setData("rooms", data);
 
@@ -144,7 +163,8 @@ export async function tryEdit(data){
 		return;
 	}
 
-	updateGameGlobal();
+	// updateGameGlobal();
+	saveGameGlobal();
 	
 	goToSection(PageSection.Main);
 	
@@ -166,7 +186,7 @@ export async function tryDelete(id:string){
 		return;
 	}
 
-	updateGameGlobal();
+	saveGameGlobal();
 	
 	currGame.value = null;
 	goToSection(PageSection.Main);
@@ -188,8 +208,8 @@ export async function tryStart(id:string){
 		return;
 	}
 
-	GameGlobal.roomData.value = roomData;
-	updateGameGlobal();
+	GameGlobal.room.value = roomData;
+	saveGameGlobal();
 
 	// mainRouter.push("/game");
 	window.location.href = "/game";
@@ -207,8 +227,8 @@ export function PageHeader({username}:{
 			content: `Are you sure you want to exit? This will log you out`,
 			buttons:{
 				"Yes": () => {
-					GameGlobal.hostData.value = {};
-					updateGameGlobal();
+					GameGlobal.user.value = {};
+					saveGameGlobal();
 					window.location.href = "/home";
 					// router.push("/home");
 				},
@@ -242,8 +262,11 @@ export default function Page() {
 
 	// mainRouter = useRouter();
 
-	useRemoveLoadingScreen(()=>{
+	useEffect(()=>{
 		loadGameGlobal();
+	},[])
+
+	useRemoveLoadingScreen(()=>{
 	});
 
 	let section = <></>;
@@ -259,8 +282,9 @@ export default function Page() {
 	return (
 		<>
 			<LoadingScreen/>
-			<Suspense fallback={<p></p>}>
-				<main className={`${theme} h-screen w-screen flex flex-row p-8 justify-evenly items-center overflow-hidden`}>
+
+			<main className={`${theme}`}>
+				<div className={`${t.background} h-screen w-screen flex flex-row p-8 justify-evenly items-center overflow-hidden`}>
 					{section}
 					<div className={`h-screen w-screen absolute top-0 left-0 pointer-events-none`}>
 						<ContentLayer z={100}>
@@ -270,8 +294,8 @@ export default function Page() {
 							<PopUpContainer></PopUpContainer>
 						</ContentLayer>
 					</div>
-				</main>
-			</Suspense>
+				</div>
+			</main>
 		</>
 	)
 }

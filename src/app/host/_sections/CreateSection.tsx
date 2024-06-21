@@ -19,7 +19,6 @@ import { getIconURL } from '@/utils/utils'
 import _ from "lodash"
 import { formDataToJSON, randomID } from '@catsums/my'
 import { useSignals } from '@preact/signals-react/runtime'
-import { imageAPI, IRoomData } from '@/interfaces'
 
 
 
@@ -44,7 +43,7 @@ export default function CreateSection() {
 		let form = formRef.current as HTMLFormElement;
 
 		let formData = new FormData(form);
-		let obj = formDataToJSON(formData) as IRoomData;
+		let obj = formDataToJSON(formData);
 		
 		for(let key of Object.keys(obj)){
 			let elem = document.getElementsByName(key)[0];
@@ -55,13 +54,14 @@ export default function CreateSection() {
 			}
 		}
 
-		obj.id = currGame.value?.id || randomID();
+		// obj.id = currGame.value?.id || randomID();
 
 		let imgIcon = document.getElementById("imgIcon") as HTMLImageElement;
 
 		obj.icon = imgIcon.src;
 
 		obj.host = hostID.value;
+		obj.adminId = hostID.value;
 
 		if(currGame.value){
 			tryEdit(obj);

@@ -6,7 +6,8 @@ const withPWA = require('next-pwa')({
 	skipWaiting: true
 })
 
-module.exports = withPWA({
+// module.exports = withPWA({
+module.exports = ({
 	crossOrigin: 'anonymous',
 	// eslint: {
 	// 	// Warning: This allows production builds to successfully complete even if
