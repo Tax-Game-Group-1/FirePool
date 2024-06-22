@@ -167,7 +167,25 @@ export const setUpSocket = (io: Server) => {
             const gameInstance = removeWaitingPlayerFromAllGameInstancesBySocket(socket.id);
             doSocketAction(Action.DISCONNECT, {}, gameInstance.gameCode);
         } catch (e) {
-            console.error(e);
+            console.error("error disconnecting player with socket")
+            socket.emit("client-update-players", {
+                success: false, 
+                message: e.toString()
+            })
+        }
+    })
+
+    socket.on("start-game", ({ code }) => {
+        //assign the roles of the players in the waiting room
+        try {
+            const gameInstance = getGameInstanceByGameCode(code);
+            gameInstance.addUniversesAndDividePlayers();
+        } catch (e) {
+            console.error(e)
+            socket.emit("client-update-players", {
+                success: false, 
+                message: e.toString()
+            })
         }
     })
 

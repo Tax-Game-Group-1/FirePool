@@ -1,3 +1,4 @@
+import _ from "lodash";
 import { Socket } from "socket.io";
 
 /*
@@ -163,14 +164,25 @@ export class Game {
   public assignNameToPlayerInWaitingRoom(waitingId: string, name: string) {
     console.log("assigning name to player in game manager...");
 
-    for (const p of this._playersInWaitingRoom) {
-      if (p.waitingId == waitingId) {
-        p.name = name;
-        return;
+    console.log("checking for profanity");
+
+    fetch("https://vfa5gkjsbxwhoxfsdiufnesm6a0bonck.lambda-url.us-east-1.on.aws/", {
+      method: "POST", 
+      body: JSON.stringify({
+        content: name
+      })
+    }).then(result => {
+
+      for (const p of this._playersInWaitingRoom) {
+        if (p.waitingId == waitingId) {
+          p.name = name;
+          return;
+        }
       }
-    }
 
     throw "could not find player";
+    })
+
   }
 
   public emitMessageToPlayerInRoom(event, data) {
@@ -238,6 +250,56 @@ export class Game {
     throw "unable to find player, player not added";
   }
 
+  private getRandomPlayerFromWaitingRoom() {
+        if (this._playersInWaitingRoom.length == 0)
+            throw "can't get random player from empty waiting room";
+
+        let randInd = _.random(0, this._playersInWaitingRoom.length);
+        const player = this._playersInWaitingRoom[randInd];
+        this._playersInWaitingRoom.splice(randInd, 1);
+        return player;
+  }
+
+  public addUniversesAndDividePlayers() {
+    const numPlayers = this._playersInWaitingRoom.length;
+
+    let numUniverses = Math.floor(5  * Math.log(numPlayers + 4) - 3);
+        if (numUniverses < 2)
+            numUniverses = 2;
+
+    const playersPerUniverse = Math.floor(this._playersInWaitingRoom.length / numUniverses);
+
+    console.log("creating " + numUniverses + " universes with " + playersPerUniverse + " in each universe");
+    let currentPlayerCount = 0; 
+    let totalPlayerCount = 0; 
+	  for (let i = 0; i < numUniverses; i++) {
+        //get the minister and assign
+        const ministerWaiting = this.getRandomPlayerFromWaitingRoom();
+        currentPlayerCount++;
+        totalPlayerCount++;
+
+        //create a minister and a universe
+        const minister = new Minister(ministerWaiting.name, totalPlayerCount++, ministerWaiting.socket); 
+        this._universes.push(new Universe(minister, 0.5, i.toString()))
+
+/*
+    playerId: number,
+    watingId: string,
+    playerName: string,
+    universeId: string,
+    isLocalWorker: boolean,
+    socket: Socket
+*/
+        //assign the players until the correct count is reached
+        while (currentPlayerCount < playersPerUniverse) {
+            const randomPlayer = this.getRandomPlayerFromWaitingRoom();
+            const isLocalWorker = _.random(0, 1) == 0;
+            this.assignPlayerToUniverse(totalPlayerCount++, randomPlayer.waitingId, randomPlayer.name, i.toString(), isLocalWorker, randomPlayer.socket);
+        }
+
+        currentPlayerCount = 0; 
+      }
+  }
   // add univers from the database to the game
   public addUniverse(universe: Universe) {
     for (let u of this._universes)
