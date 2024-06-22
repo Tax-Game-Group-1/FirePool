@@ -26,7 +26,7 @@ export enum GameScreen {
 }
 
 //currently working on spectate, will change later
-export let gameScreen = signal(GameScreen.WaitingRoom);
+export let gameScreen = signal(GameScreen.Spectate);
 
 export function setGameScreen(screen: GameScreen) {
 
@@ -34,12 +34,39 @@ export function setGameScreen(screen: GameScreen) {
 	gameScreen.value = screen;
 }
 
-export function startGame(){
+export function onGameStart({success, message, data}){
+	if(!success){
+		createNotif({
+			content: `Error starting game: ${message}`,
+		})
+	}
+
+	///receive data of players, universe and game room
+	GameGlobal.player.value = {... data.player};
+	GameGlobal.room.value = {... data.room};
+	GameGlobal.universe.value = {... data.universe};
+
+	saveGameGlobal();
+
+	///
+
+
 	if(playerID.value > -1){
 		setGameScreen(GameScreen.InGame);
 	}else if(hostID.value > -1){
 		setGameScreen(GameScreen.Spectate);
 	}
+
+}
+
+export async function startGame(){
+
+	socket.emit("start-game",{
+		code: GameGlobal.room.value.gameCode,
+	});
+
+	socket.once("client-start-game", onGameStart);
+
 }
 
 function redirect(){
@@ -87,7 +114,7 @@ function onGetRoomData(res){
 
 	let roomData = data;
 
-	GameGlobal.room.value = {...roomData, gameCode: code};
+	GameGlobal.room.value = {...roomData, name: data.name, gameCode: code};
 	saveGameGlobal();
 }
 
@@ -96,6 +123,12 @@ const Layouts = forwardRef(function Layouts({}, ref:Ref<any>) {
 
 	
 	useEffect(()=>{
+		// socket.connect();
+		socket.once("disconnect",(reason)=>{
+			console.log("disconnected");
+			console.log(`reason: ${reason}`)
+		})
+
 		loadGameGlobal();
 		console.log("LOADING STUFF ABC")
 			let gameLayout = document.querySelector(`.${style.gameLayout}`);
@@ -127,15 +160,12 @@ const Layouts = forwardRef(function Layouts({}, ref:Ref<any>) {
 			waitingId: GameGlobal.player.value.waitingId || null,
 		})
 
-		let {timer,id} = createNotif({
-			content: "Joined game!",
-		});
 		return () => {
-			timer.end();
 			
 			socket.off("client-roomData", onGetRoomData);
 			socket.off("client-update-players", onUpdatePlayers);
 
+			socket.disconnect();
 		}
 	},[isLoaded.value])
 

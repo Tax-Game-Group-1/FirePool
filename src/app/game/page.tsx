@@ -16,11 +16,6 @@ export default function Layout() {
 
 	let {theme} = useTheme();
 	useEffect(()=>{
-		socket.connect();
-		socket.once("disconnect",(reason)=>{
-			console.log("disconnected");
-			console.log(`reason: ${reason}`)
-		})
 		loadGameGlobal();
 	},[])
 
