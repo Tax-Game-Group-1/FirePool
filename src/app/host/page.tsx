@@ -17,7 +17,7 @@ import SVGIcon from '@/components/SVGIcon/SVGIcon'
 import { GameCardsContainer } from './GameCards'
 import { getIconURL } from '@/utils/utils'
 import { EditTextIcon } from '../../assets/svg/svg';
-import { GameGlobal, loadGameGlobal, saveGameGlobal } from '../global';
+import { deleteGameGlobal, GameGlobal, loadGameGlobal, saveGameGlobal } from '../global';
 import MainSection from './_sections/MainSection'
 import CreateSection from './_sections/CreateSection'
 import { useSignals } from '@preact/signals-react/runtime'
@@ -252,8 +252,8 @@ export function PageHeader({username}:{
 			content: `Are you sure you want to exit? This will log you out`,
 			buttons:{
 				"Yes": () => {
-					GameGlobal.user.value = {};
-					saveGameGlobal();
+					//clear GameGlobal
+					deleteGameGlobal();
 					window.location.href = "/home";
 					// router.push("/home");
 				},

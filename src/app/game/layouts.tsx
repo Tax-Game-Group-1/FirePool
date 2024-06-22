@@ -120,7 +120,7 @@ const Layouts = forwardRef(function Layouts({}, ref:Ref<any>) {
 
 		socket.on("client-roomData", onGetRoomData);
 		socket.on("client-update-players", onUpdatePlayers);
-
+		
 		socket.emit("server-roomData", {
 			code: code,
 			hostID: hostID.value || null,
@@ -132,8 +132,9 @@ const Layouts = forwardRef(function Layouts({}, ref:Ref<any>) {
 		});
 		return () => {
 			timer.end();
-
+			
 			socket.off("client-roomData", onGetRoomData);
+			socket.off("client-update-players", onUpdatePlayers);
 
 		}
 	},[isLoaded.value])

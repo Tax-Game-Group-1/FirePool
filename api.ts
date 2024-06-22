@@ -1,5 +1,5 @@
 import express, {Express} from "express";
-import { destoryGameInstance, createGameInstance, getGameInstanceByGameCode } from "server";
+import { destroyGameInstance, createGameInstance, getGameInstanceByGameCode } from "server";
 import { createAdminUser, getAdminIdByUserName, createGame, getAdminGames, getGameById, getAdminById} from "&/queries/queries"
 import _ from "lodash"
 import { Citizen, Game, PlayerInWaitingRoom } from "&/gameManager/gameManager";

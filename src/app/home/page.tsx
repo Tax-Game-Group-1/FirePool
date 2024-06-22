@@ -13,7 +13,7 @@ import { getData, setData } from '@/app/dummyData';
 import { randomID, sanitizeString } from '@catsums/my';
 import LoadingScreen from '@/components/LoadingScreen/LoadingScreen';
 import { useRemoveLoadingScreen } from '@/components/LoadingScreen/LoadingScreenUtil';
-import { gameCodeLength, GameGlobal, loadGameGlobal, saveGameGlobal } from '@/app/global';
+import { deleteGameGlobal, gameCodeLength, GameGlobal, loadGameGlobal, saveGameGlobal } from '@/app/global';
 import { JoinSection, JoiningSection } from './_sections/JoinSection';
 import { LoginSection } from './_sections/LoginSection';
 import { SplashSection } from './_sections/SplashSection';
@@ -106,22 +106,23 @@ export async function tryLogin(username:string, password:string){
 		})
 		return;
 	}
+	//clear GameGlobal
+	deleteGameGlobal();
 
-	if (res.data?.id != null) {
-		GameGlobal.user.value.id = res.data.id;
-		GameGlobal.user.value.name = username;
-		GameGlobal.user.value.username = username;
+	GameGlobal.user.value.id = res.data.id;
+	GameGlobal.user.value.name = username;
+	GameGlobal.user.value.username = username;
 
-		console.log("routing....");
+	console.log("routing....");
 
-		saveGameGlobal();
-		createNotif({
-			content: "Successfully logged in!",
-		})
-		setTimeout(() => {
-			window.location.href = "/host";
-		}, 3500)
-	}
+
+	saveGameGlobal();
+	createNotif({
+		content: "Successfully logged in!",
+	})
+	setTimeout(() => {
+		window.location.href = "/host";
+	}, 3500)
 
 }
 
@@ -160,6 +161,9 @@ export async function tryJoin(code:string){
 		return;
 	}
 	console.log({res})
+
+	//clear GameGlobal
+	deleteGameGlobal();
 
 	GameGlobal.room.value = {
 		gameCode: code,

@@ -46,7 +46,7 @@ export interface IPlayerData {
     funds?:number;
     incomeFunds?:number;
     declaredFunds?:number;
-    isReady?: boolean;
+    ready?: boolean;
     icon?: string; //iconURL
 	worldID?: string; //worldID
 }

@@ -26,6 +26,7 @@ import { createPopUp } from '@/components/PopUp/PopUp';
 import { useRouter } from 'next/navigation';
 import { Game } from '&/gameManager/gameManager';
 import { GameScreen, setGameScreen, startGame } from '../layouts';
+import { socket } from '@/app/socket';
 
 
 export enum DisplayMode {
@@ -34,7 +35,7 @@ export enum DisplayMode {
 }
 
 export let ready = computed(()=>{
-	let r = GameGlobal.player.value?.isReady;
+	let r = GameGlobal.player.value?.ready;
 	return r;
 })
 
@@ -73,7 +74,7 @@ export function PlayerCards(){
 	let playerCards = users.map((user, i) => {
 		players.value;
 		return (
-			<PlayerCard key={i} name={user.name || "Player joining..."} isReady={user.isReady}>
+			<PlayerCard key={i} name={user.name || "Player joining..."} ready={user.ready}>
 				<img className={`rounded-md`} src={getIconURL(user.name).href} alt={`${user.name} icon`}/>
 			</PlayerCard>
 		)
@@ -131,16 +132,22 @@ export function PlayerCards(){
 
 }
 
-export function readyPlayer(){
+export async function readyPlayer(){
 	let playerdata = GameGlobal.player.value;
-	playerdata.isReady = !playerdata.isReady;
+	playerdata.ready = !playerdata.ready;
 	GameGlobal.player.value = {...playerdata};
 
 	saveGameGlobal("players")
 	// playerCardsSignal.emit("update");
 
 	//for testing
-	startGame();
+	// startGame();
+
+	socket.emit("update-ready", {
+		waitingId: playerdata.waitingId,
+		ready: playerdata.ready,
+		code: GameGlobal.room.value.gameCode,
+	})
 }
 
 export function AsideCardPlayer(){
@@ -167,7 +174,7 @@ export function AsideCardPlayer(){
 				</div>
 			</div>
 			<div className={`${t.fillSolidText} lg:max-h-full text-xs lg:text-base`}>
-				<Btn invert={GameGlobal.player.value?.isReady} onClick={()=>{
+				<Btn invert={GameGlobal.player.value?.ready} onClick={()=>{
 					readyPlayer();
 				}}>
 					<div className={`flex flex-row justify-center items-center m-0 p-0 h-full gap-1`}>

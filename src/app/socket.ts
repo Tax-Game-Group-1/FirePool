@@ -3,6 +3,6 @@
 import { io, Socket } from "socket.io-client";
 
 export const socket = io({
-	autoConnect: true,
+	autoConnect: false,
 });
 // export const socket:Socket = null

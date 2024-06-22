@@ -36,25 +36,38 @@ function generateRandomString(length) {
 //this will be the game code
 export function createGameInstance(newGame: Game) {
     let myString = generateRandomString(6);
-    while (gamesCurrentlyRunning[myString] != null)
+    while (gamesCurrentlyRunning.get(myString) != null)
         myString = generateRandomString(6);
 
-    gamesCurrentlyRunning[myString] = newGame;
+    gamesCurrentlyRunning.set(myString, newGame);
 	newGame.gameCode = myString;
     return myString;
 }
 
 export function getGameInstanceByGameCode(gameCode: string) : Game {
-    if (gamesCurrentlyRunning[gameCode] == null)
+    if (gamesCurrentlyRunning.get(gameCode) == null)
         throw "Cannot find game with game code"
 
-    return gamesCurrentlyRunning[gameCode]
+    return gamesCurrentlyRunning.get(gameCode);
 }
 
-export function destoryGameInstance(gameCode: string) {
+export function destroyGameInstance(gameCode: string) {
    gamesCurrentlyRunning.delete(gameCode);
 }
 
+export function removeWaitingPlayerFromAllGameInstancesBySocket(socketId: string) {
+	// let values = Array.from(map.values())
+	//for(let value of values)
+
+    const values = Array.from(gamesCurrentlyRunning.values());
+	console.log(`values: ${values.length}`)
+	console.log(gamesCurrentlyRunning)
+    for (const gameInstance of values) 
+        if (gameInstance.removePlayerWithSocket(socketId))
+            return gameInstance; 
+
+    throw "can't find game instance"
+}
 
 
 console.log(`Trying to listen on ${port} (kill port if failing)`);

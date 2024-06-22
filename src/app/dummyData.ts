@@ -21,7 +21,7 @@ const players:IObject<IPlayerData> = {
 		role: Role.None,
 		incomeFunds: 0,
 		declaredFunds: 0,
-		isReady: false,
+		ready: false,
 		icon: `${imageAPI}fun-emoji/svg?seed=1234abcd`, //iconURL
 		worldID: "",
 	},
@@ -32,7 +32,7 @@ const players:IObject<IPlayerData> = {
 		role: Role.None,
 		incomeFunds: 0,
 		declaredFunds: 0,
-		isReady: true,
+		ready: true,
 		icon: `${imageAPI}fun-emoji/svg?seed=d9sjeufb`, //iconURL
 		worldID: "",
 	},
@@ -43,7 +43,7 @@ const players:IObject<IPlayerData> = {
 		role: Role.None,
 		incomeFunds: 0,
 		declaredFunds: 0,
-		isReady: false,
+		ready: false,
 		icon: `${imageAPI}fun-emoji/svg?seed=25dj7vbc`, //iconURL
 		worldID: "",
 	},
@@ -54,7 +54,7 @@ const players:IObject<IPlayerData> = {
 		role: Role.None,
 		incomeFunds: 0,
 		declaredFunds: 0,
-		isReady: true,
+		ready: true,
 		icon: `${imageAPI}fun-emoji/svg?seed=89ag9a`, //iconURL
 		worldID: "",
 	},
@@ -65,7 +65,7 @@ const players:IObject<IPlayerData> = {
 		role: Role.None,
 		incomeFunds: 0,
 		declaredFunds: 0,
-		isReady: false,
+		ready: false,
 		icon: `${imageAPI}fun-emoji/svg?seed=45554334443`, //iconURL
 		worldID: "",
 	},
