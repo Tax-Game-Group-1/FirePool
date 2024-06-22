@@ -26,7 +26,7 @@ let hostName = computed(()=>{
 	return name;
 })
 let gameName = computed(()=>{
-	let name = GameGlobal.room.value.name || "";
+	let name = GameGlobal.room.value.name || GameGlobal.room.value.gameName || "";
 	return name;
 })
 
