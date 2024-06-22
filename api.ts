@@ -1,6 +1,6 @@
 import express, {Express} from "express";
 import { destoryGameInstance, createGameInstance, getGameInstanceByGameCode } from "server";
-import { createAdminUser, getAdminIdByUserName, createGame, getAdminGames, getGameById} from "&/queries/queries"
+import { createAdminUser, getAdminIdByUserName, createGame, getAdminGames, getGameById, getAdminById} from "&/queries/queries"
 import _ from "lodash"
 import { Citizen, Game, PlayerInWaitingRoom } from "&/gameManager/gameManager";
 
@@ -213,32 +213,43 @@ export function setUpServer(server:Express) {
 			return ;
 		}
 
-		//insert into the servher hashmap with the id as the key
-		const gameFromDatabase = await getGameById(req.body.id);
-		if (gameFromDatabase.length == 0) {
+		let gameFromDatabase;
+		//insert into the server hashmap with the id as the key
+		try {
+			gameFromDatabase = await getGameById(req.body.id);
+		} catch (e) {
 			res.status(400).json({
 				success: false, 
-				message: "Cannot find game instance in DB"
+				message: e.tostring()
 			})
 			return ;
 		}
 
 		console.log("FROM DB")
-		console.log(gameFromDatabase[0])
+		console.log(gameFromDatabase)
 
 		try {
+			const user = await getAdminById(req.body.adminId);
 			const gameInstance = new Game(
-				gameFromDatabase[0].gameId.toString(),
-				gameFromDatabase[0].name, 
-				gameFromDatabase[0].taxCoefficient, 
-				gameFromDatabase[0].maxPlayers, 
-				gameFromDatabase[0].finePercent,
-				gameFromDatabase[0].roundNumber, 
-				gameFromDatabase[0].auditProbability, 
-				gameFromDatabase[0].kickPlayersOnBankruptcy
+				gameFromDatabase.gameId.toString(),
+				gameFromDatabase.name, 
+				gameFromDatabase.taxCoefficient, 
+				gameFromDatabase.maxPlayers, 
+				gameFromDatabase.finePercent,
+				gameFromDatabase.roundNumber, 
+				gameFromDatabase.auditProbability, 
+				gameFromDatabase.kickPlayersOnBankruptcy
 			)
 
+			
 			const gameCode = createGameInstance(gameInstance);
+			gameInstance.assignHostData({
+				name: user.username,
+				waitingId: "",
+				roomCode: gameCode,
+				ready: false,
+				socket: null,
+			})
 
 			console.log("setting game instance")
 
