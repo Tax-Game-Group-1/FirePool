@@ -11,6 +11,7 @@ import { FixedContents } from "./FixedContents";
 
 import s from '../page.module.scss';
 import t from '../../../elements.module.scss'
+import { gameCodeLength } from "@/app/global";
 
 export function JoinSection(){
 
@@ -20,15 +21,15 @@ export function JoinSection(){
 
 	function onChange(e:Event){
 		let elem = e.currentTarget as HTMLInputElement;
-		let text = elem.value.replaceAll(/[^a-zA-Z0-9]/g,"").slice(0,8);
+		let text = elem.value.replaceAll(/[^a-zA-Z0-9]/g,"").slice(0, gameCodeLength);
 
 		let newCode = text;
-		if(newCode.length > 4){
-			let arr = new Array<string>(8);
+		if(newCode.length > (gameCodeLength/2)){
+			let arr = new Array<string>(gameCodeLength);
 			(text.split("")).forEach((v,i)=>{
 				arr[i] = v;
 			})
-			arr.splice(4,0,"-")
+			arr.splice( (gameCodeLength/2), 0, "-")
 			newCode = arr.join("");
 		}
 		

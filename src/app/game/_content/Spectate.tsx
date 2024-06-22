@@ -8,21 +8,19 @@ import React from 'react'
 
 function ContentStuff(){
 	return (
-		<div className={``}>
-			<GameContent id={``} className={`self-start`}>
-				<div className={`p-4 grid grid-cols-12`}>
-					<div className={`border col-span-5`}>
-
-					</div>
-					<div className={`border col-span-2`}>
-
-					</div>
-					<div className={`border col-span-4`}>
-
-					</div>
+		<GameContent id={``} className={`border border-green-500 w-full md:w-5/6 h-full`}>
+			<div className={`p-4 gap-2 grid grid-cols-12 border border-red-500 w-full`}>
+				<div className={`border col-span-5`}>
+					Mik
 				</div>
-			</GameContent>
-		</div>
+				<div className={`border col-span-2`}>
+					Milk
+				</div>
+				<div className={`border col-span-4`}>
+					Milk3
+				</div>
+			</div>
+		</GameContent>
 	)
 }
 

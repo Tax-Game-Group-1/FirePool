@@ -17,7 +17,9 @@ import { PopUpContainer } from '@/components/PopUp/PopUp';
 import NameRoom from './namingRoom';
 import { useSignals } from '@preact/signals-react/runtime';
 import { signal } from '@preact/signals-react';
-import { GameGlobal } from '@/app/global';
+import { GameGlobal, hostID } from '@/app/global';
+
+import { socket } from "@/app/socket"
 
 export enum Page {
 	NameRoom,
@@ -72,9 +74,12 @@ export function WaitingRoom() {
 
 	useEffect(() => {
 
-		if(GameGlobal.user.value?.id){
+		if(hostID.value){
 			pageState.value = Page.StartRoom;
 			displayMode.value = DisplayMode.Host;
+		}else{
+			pageState.value = Page.NameRoom;
+			displayMode.value = DisplayMode.Player;
 		}
 
 		let k = requestAnimationFrame(()=>{

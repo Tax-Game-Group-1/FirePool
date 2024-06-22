@@ -40,27 +40,30 @@ export let ready = computed(()=>{
 
 export let displayMode = signal(DisplayMode.Player);
 
-export let players = signal([]);
+export let players = computed(()=>{
+	let p = GameGlobal.room.value.playersInRoom || [];
+	return p;
+})
 
 export let playerCardsSignal = new SignalEventBus();
 
 
 
-async function getPlayers(){
-	let res = await fetch("/",{
-		method: "POST",
-		body: JSON.stringify({
+// async function getPlayers(){
+// 	let res = await fetch("/",{
+// 		method: "POST",
+// 		body: JSON.stringify({
 
-		}),
-	}).then(r => r.json())
+// 		}),
+// 	}).then(r => r.json())
 
-	if(!res.success){
-		//handle fail
-	}
+// 	if(!res.success){
+// 		//handle fail
+// 	}
 
-	players.value = res.data;
+// 	players.value = res.data;
 
-}
+// }
 
 export function PlayerCards(){
 	useSignals();
@@ -70,8 +73,8 @@ export function PlayerCards(){
 	let playerCards = users.map((user, i) => {
 		players.value;
 		return (
-			<PlayerCard key={user.id} name={user.name} isReady={user.isReady}>
-				<img className={`rounded-md`} src={user.icon} alt={`${user.name} icon`}/>
+			<PlayerCard key={i} name={user.name || "Player joining..."} isReady={user.isReady}>
+				<img className={`rounded-md`} src={getIconURL(user.name).href} alt={`${user.name} icon`}/>
 			</PlayerCard>
 		)
 	})
@@ -328,7 +331,7 @@ export default function StartRoom() {
 	useSignals();
 
 	useEffect(() => {
-		saveGameGlobal();
+		// saveGameGlobal();
 	},[])
 
 	return (

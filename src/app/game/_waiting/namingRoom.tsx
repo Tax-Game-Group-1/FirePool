@@ -19,6 +19,7 @@ import { animate, useAnimate } from 'framer-motion';
 import { randomID, sanitizeString } from '@catsums/my';
 import SignalEventBus, { useSignalEvent } from '@catsums/signal-event-bus';
 import { createNotif } from '@/components/Notification/Notification';
+import { socket } from '@/app/socket';
 
 export let iconURL = computed(()=>{
 	let url = GameGlobal.player.value?.icon || getIconURL().href;
@@ -117,6 +118,32 @@ function ImageGenerator(){
 	)
 }
 
+
+async function updateName(name:string){
+	
+	function onUpdateName({success, message, data}){
+		console.log("received update-name request")
+		if(!success){
+			createNotif({
+				content: `Error: ${message}`,
+			})
+			return;
+		}
+	
+		let playerData = GameGlobal.player.value;
+		GameGlobal.player.value = {...playerData, name:name};
+		saveGameGlobal();
+	
+		changeWaitingRoomPage(Page.StartRoom);
+	}
+	socket.emit("update-name",{
+		name: name,
+		waitingId: GameGlobal.player.value.waitingId,
+		code: GameGlobal.room.value.gameCode,
+	})
+	socket.once("client-update-name", onUpdateName);
+}
+
 let nameLimit = 16;
 
 export default function NameRoom() {
@@ -132,7 +159,7 @@ export default function NameRoom() {
 
 	},[])
 
-	async function onEnter(){
+	function onEnter(){
 
 		let inputBox = inputTextRef.current as HTMLInputElement;
 		if(!inputBox) return;
@@ -147,27 +174,9 @@ export default function NameRoom() {
 			return;
 		}
 
-		let playerdata = GameGlobal.player.value;
+		console.log({textValue})
 
-		let res = await fetch("/", {
-			method: "POST",
-			body: JSON.stringify({
-
-			})
-		}).then(r => r.json());
-
-		if(res.success && res.data){
-			createNotif({
-				content: "A player already has that name! Pick something else!"
-			})
-			return;
-		}
-		playerdata.name = textValue;
-
-		GameGlobal.player.value = {...playerdata};
-		saveGameGlobal();
-
-		changeWaitingRoomPage(Page.StartRoom);
+		updateName(textValue);
 	}
 
 	return (

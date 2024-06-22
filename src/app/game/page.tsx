@@ -8,31 +8,20 @@ import { useRemoveLoadingScreen } from '@/components/LoadingScreen/LoadingScreen
 import { loadGameGlobal } from '../global'
 import LoadingScreen from '@/components/LoadingScreen/LoadingScreen'
 
-import { socket } from '@/socket'
+import { socket } from '@/app/socket'
 
 const Layouts = dynamic(() => import("./layouts"), {ssr: false})
 
 export default function Layout() {
 
 	let {theme} = useTheme();
-
-	useRemoveLoadingScreen(()=>{
-		loadGameGlobal();
-	})
-
 	useEffect(()=>{
-		// if(!socket.connected){
-		// 	socket.connect();
-		// }
-
-		// return ()=>{
-		// 	socket.disconnect();
-		// }
+		loadGameGlobal();
 	},[])
 
 	return (
 		<div className={`${theme} w-full h-full flex justify-center items-center overflow-hidden`}>
-			<LoadingScreen/>
+			
 			<Suspense fallback={<p></p>}>
 				<Layouts/>
 			</Suspense>

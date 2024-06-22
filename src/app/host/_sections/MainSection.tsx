@@ -26,7 +26,7 @@ export default function MainSection() {
 			content: "Start the game? This will create a lobby for participants to join",
 			buttons:{
 				"Yes": ()=>{
-					tryStart(currGame.value.id);
+					tryStart(currGame.value);
 				},
 				"No": ()=>{},
 			}

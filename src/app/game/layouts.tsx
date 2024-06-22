@@ -1,36 +1,32 @@
 "use client"
 
-import dynamic from 'next/dynamic'
-import { useState, forwardRef, Ref, Suspense, lazy, useEffect } from 'react';
-
+import { forwardRef, Ref, lazy, useEffect } from 'react';
 import { useSignals } from '@preact/signals-react/runtime';
-import { useTheme } from '@/components/ThemeContext/themecontext';
-import Themes from '../../components/ThemeContext/themes.module.scss'
 import t from '../../elements.module.scss';
-
 import style from "./layouts.module.scss"
 
 const GameFooter = lazy(() => import('@/components/Game/GameFooter'));
 import InGame from './_content/InGame';
-import { signal, computed } from '@preact/signals-react';
+import { signal } from '@preact/signals-react';
 import { WaitingRoom } from './_waiting/waitingRoom';
-import { GameGlobal, hostID, loadGameGlobal, playerID, saveGameGlobal } from '@/app/global';
-import LoadingScreen from '@/components/LoadingScreen/LoadingScreen';
+import { GameGlobal, gameCodeLength, hostID, loadGameGlobal, playerID, saveGameGlobal } from '@/app/global';
 import { useRemoveLoadingScreen } from '@/components/LoadingScreen/LoadingScreenUtil';
-import { getData } from '../dummyData';
-import { createPopUp, popUpSignalBus } from '@/components/PopUp/PopUp';
-import { createNotif, notifSignalBus } from '@/components/Notification/Notification';
+import { createPopUp} from '@/components/PopUp/PopUp';
+import { createNotif} from '@/components/Notification/Notification';
 import Spectate from './_content/Spectate';
+import { socket } from '@/app/socket';
 
-let isLoaded = signal(false);
+let isLoaded = signal(true);
 
+let code = "";
 export enum GameScreen {
 	WaitingRoom,
 	InGame,
 	Spectate,
 }
 
-export let gameScreen = signal(GameScreen.Spectate);
+//currently working on spectate, will change later
+export let gameScreen = signal(GameScreen.WaitingRoom);
 
 export function setGameScreen(screen: GameScreen) {
 
@@ -46,19 +42,61 @@ export function startGame(){
 	}
 }
 
+function redirect(){
+	window.location.href = "/";
+}
+
+function onUpdatePlayers({data, message, success}){
+	console.log("Showing players on update")
+	if(!success){
+		createNotif({
+			content: `Error: ${message}. `,
+		});
+		return;
+	}
+	
+	let roomData = GameGlobal.room.value;
+
+	GameGlobal.room.value = {...roomData, playersInRoom: data.playersInRoom};
+	saveGameGlobal();
+	
+}
+
+function onGetRoomData({data, message, success}){
+	
+	console.log("gettting room data")
+	if(!success){
+		createPopUp({
+			content: `Error: ${message}. Redirecting you back.`,
+			buttons:{
+				"okay": redirect,
+			},
+			onClose: redirect,
+		});
+		return;
+	}
+
+	let roomData = data;
+
+	GameGlobal.room.value = {...roomData, gameCode: code};
+	saveGameGlobal();
+}
+
 const Layouts = forwardRef(function Layouts({}, ref:Ref<any>) {
 	useSignals();
 
-	async function fetchRoomData(){
-
-		function redirect(){
-			window.location.href = "/";
-		}
 	
+	useEffect(()=>{
+		loadGameGlobal();
+		console.log("LOADING STUFF ABC")
+			let gameLayout = document.querySelector(`.${style.gameLayout}`);
+		gameLayout?.classList.remove("hidden");
+		// if(!isLoaded.value) return;
+
 		let url = new URL(window.location.href);
 		let params = url.searchParams;
 	
-		let code = "";
+		code = "";
 	
 		if(params.has("c")){
 			code = params.get("c");
@@ -66,78 +104,37 @@ const Layouts = forwardRef(function Layouts({}, ref:Ref<any>) {
 		if(params.has("code")){
 			code = params.get("code");
 		}
-	
-		let res = await fetch("/getGame",{
-			method: "POST",
-			body: JSON.stringify({
 
-			})
-		}).then(r => r.json());
-
-		if(!res.success){
-			createPopUp({
-				content: "This is an invalid room code. Redirecting you back...",
-				buttons:{
-					"okay": redirect,
-				},
-				onClose: redirect,
-			});
-			return;
-		}
-
-		let roomData = res.data;
-		
-		if(!roomData){
-			let {timer} = createPopUp({
-				content: "This is an invalid room code. Redirecting you back...",
-				buttons:{
-					"okay": redirect,
-				},
-				onClose: redirect,
-			});
-			return () => {
-				timer.end();
-			}
-		}
-		if(!roomData.players.includes(playerID.value)){
-			let {timer} = createPopUp({
-				content: "You can't join this room because you did not join it properly. Redirecting you back...",
-				buttons:{
-					"okay": redirect,
-				},
-				onClose: redirect,
-			});
-			return () => {
-				timer.end();
-			}
-		}
-	
-		GameGlobal.room.value = roomData;
-		saveGameGlobal();
-	}
-
-	useEffect(()=>{
-		window.scrollTo(0,0);
-		if(!isLoaded.value) return;
+		code = code.replaceAll(/[^a-zA-Z0-9]/g,"").slice(0, gameCodeLength);
 
 		console.log("LOADED")
-		fetchRoomData();
+
+		socket.on("client-roomData", onGetRoomData);
+		socket.on("client-update-players", onUpdatePlayers);
+
+		socket.emit("server-roomData", {
+			code: code,
+			hostID: hostID.value || null,
+			waitingId: GameGlobal.player.value.waitingId || null,
+		})
 
 		let {timer,id} = createNotif({
 			content: "Joined game!",
 		});
 		return () => {
 			timer.end();
+
+			socket.off("client-roomData", onGetRoomData);
+
 		}
 	},[isLoaded.value])
 
-	useRemoveLoadingScreen(()=>{
-		isLoaded.value = true;
-		loadGameGlobal();
-	},()=>{
-		let gameLayout = document.querySelector(`.${style.gameLayout}`);
-		gameLayout?.classList.remove("hidden");
-	});
+	// useRemoveLoadingScreen(()=>{
+	// 	isLoaded.value = true;
+	// },()=>{
+	// 	let gameLayout = document.querySelector(`.${style.gameLayout}`);
+	// 	gameLayout?.classList.remove("hidden");
+	// });
 	
 	
 	let content = (<></>)
@@ -156,15 +153,12 @@ const Layouts = forwardRef(function Layouts({}, ref:Ref<any>) {
 
 	return (
 		<>
-			{isLoaded && (
-				
-				<div ref={ref} className={`${style.gameLayout} ${t.background} ${t.mainText} hidden`}>
+			<div ref={ref} className={`${style.gameLayout} ${t.background} ${t.mainText}`}>
 					<main className={``}>
 						{content}
 					</main>
 					<GameFooter/>
 				</div>
-			)}
 		</>
 	);
 });

@@ -66,6 +66,7 @@ export interface IUniverseData  {
 
 export interface IGameData  {
 	gameId:number; //gameID
+	gameCode?:string; //gameCode
 	adminId: number;	//hostID
 	name:string;
 	roundNumber?: number;

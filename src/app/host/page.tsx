@@ -203,6 +203,10 @@ export async function tryDelete(data){
 	
 }
 export async function tryStart(data){
+
+	console.log('TRY START DATA')
+	console.log(data);
+
 	if(!data.gameId){
 		createNotif({
 			content: "Game ID is missing!",
@@ -210,11 +214,30 @@ export async function tryStart(data){
 		return;
 	}
 
-	GameGlobal.room.value = {...data};
+	let res = await fetch(`/startGame`,{
+		method: "POST",
+		headers: {
+			'Accept': 'application/json',
+			'Content-Type': 'application/json'
+		},
+		body: JSON.stringify({...data, id: data.gameId})
+	}).then(r => r.json());
+
+	if(!res.success){
+        createPopUp({
+			content: `Error trying to start the game. ${res.message}`,
+        });
+        return;
+    }
+
+	let gameCode = res.data.gameCode;
+
+	GameGlobal.room.value = {...data, gameCode: gameCode};
 	saveGameGlobal();
 
-	// mainRouter.push("/game");
-	window.location.href = "/game";
+	
+	//REDIRECT
+	window.location.href = `/game?c=${gameCode}`;
 
 }
 

@@ -1,4 +1,4 @@
-import {Socket} from "socket.io-client";
+import {Socket} from "socket.io";
 
 
 /*
@@ -9,9 +9,13 @@ import {Socket} from "socket.io-client";
 export interface PlayerInWaitingRoom {
     waitingId: string,
     roomCode: string,
+    name: string,
+    ready: boolean
+    socket: Socket | null
 }
 
 export class Game {
+   
     //manage the game id
     private _id: string;
 
@@ -33,13 +37,15 @@ export class Game {
     //should players be kicked from the game if their funds are 0?
     public kickPlayersOnBankruptcy: boolean;
     //array of either citizens or ministers
-    private _playersNotAssignedToUniverse: PlayerInWaitingRoom[];
+    private _playersInWaitingRoom: PlayerInWaitingRoom[];
     //universes which players can switch to if they are not a slave
     private _universes: Universe[];
 
+    private _host: PlayerInWaitingRoom; 
+
     constructor(id: string, name: string, taxCoefficient: number, maxPlayers: number, penalty: number, roundNumber: number, auditProbability: number, kickPlayersOnBankruptcy: boolean) {
         this.setValues(id, name, taxCoefficient, maxPlayers, penalty, roundNumber, auditProbability, kickPlayersOnBankruptcy);
-        this._playersNotAssignedToUniverse = [];
+        this._playersInWaitingRoom = [];
         this._universes = [];
     }
 
@@ -55,13 +61,88 @@ export class Game {
 
         this._roundNumber = roundNumber;
         this.kickPlayersOnBankruptcy = kickPlayersOnBankruptcy;
+
+        this._host = {
+            name: "host", 
+            socket: null,
+            waitingId: "",
+            ready: true,
+            roomCode: ""
+        }
     }
 
     // waiting area for players who have joined a game, but are not assigned to a universe yet
-    public addPlayerToWaitingArea(waitingPlayer: PlayerInWaitingRoom): void {
-        if (this._playersNotAssignedToUniverse.length >= this.maxPlayers)
+    public addPlayerToWaitingRoom(waitingPlayer: PlayerInWaitingRoom): void {
+        if (this._playersInWaitingRoom.length >= this.maxPlayers)
             throw "waiting area full"
-        this._playersNotAssignedToUniverse.push(waitingPlayer);
+        this._playersInWaitingRoom.push(waitingPlayer);
+    }
+
+    public getPlayersInWaitingRoom() {
+        return this._playersInWaitingRoom;
+    }
+    //assigne socket to player in watiting room
+    //player joins with a post request, and doesn't have a socket yet
+    // getGameInstanceByGameCode(req.body.gameCode).addPlayerToWaitingArea({
+    // 		name: null, 
+    // 		socket: null, 
+    // 		roomCode: req.body.gameCode, 
+    // 		waitingId: req.body.waitingId
+    // 	})
+
+    public assigneSocketToPlayerInWaitingRoom(waitingId: string, socket: Socket) {
+        for (const p of this._playersInWaitingRoom) {
+            if (p.waitingId == waitingId) {
+                p.socket = socket;
+                return ;
+            }
+        }
+
+        throw "could not find player"
+    }
+
+    public assignSocketToHost(socket: Socket) {
+        this._host.socket = socket;
+    }
+
+    public assigneNameToPlayerInWaitingRoom(waitingId: string, name: string) {
+
+        console.log("assigning name to player in game manager...");
+
+        for (const p of this._playersInWaitingRoom) {
+            if (p.waitingId == waitingId) {
+                p.name = name;
+                return ;
+            }
+        }
+
+        console.log("done assigning name to player");
+
+        throw "could not find player"
+    }
+    
+    public emitMessageToPlayerInRoom(event, data) {
+        console.log("emitting message to other players to notify them")
+        for (const p of this._playersInWaitingRoom) {
+            p.socket.emit(event,data); 
+        }
+        console.log("emitting message to host")
+        //notify host
+        this._host.socket.emit(event, data);
+        console.log("done emmitting message")
+    }
+    
+    public updatePlayerNameInWaitingArea(waitingPlayer: PlayerInWaitingRoom) : void {
+        throw "unimplemented"
+    }
+    
+    public getPlayersInWatingRoom() {
+        return this._playersInWaitingRoom.map(e => {
+            return {
+                name: e.name, 
+                ready: e.ready
+            }
+        })
     }
 
     public set name(newValue: string) {
@@ -70,7 +151,7 @@ export class Game {
         this._name = newValue;
     }
 
-    public numPlayersNotAssigned = () => this._playersNotAssignedToUniverse.length;
+    public numPlayersNotAssigned = () => this._playersInWaitingRoom.length;
 
     // take a plyer from the waiting are and put it in a universe object, universes are managed by players
     public assignPlayerToUniverse(playerId: number, watingId: string, playerName: string, universeId: string, isLocalWorker: boolean, socket: Socket) {
@@ -87,11 +168,11 @@ export class Game {
         //find the player and splice it (remove it from the lobby)
         //then add it to the universe
 
-        for (let i = 0; i < this._playersNotAssignedToUniverse.length; i++)
-            if (this._playersNotAssignedToUniverse[i].waitingId == watingId) {
+        for (let i = 0; i < this._playersInWaitingRoom.length; i++)
+            if (this._playersInWaitingRoom[i].waitingId == watingId) {
 
-                const tempPlayer = this._playersNotAssignedToUniverse[i];
-                this._playersNotAssignedToUniverse.splice(i, 1);
+                const tempPlayer = this._playersInWaitingRoom[i];
+                this._playersInWaitingRoom.splice(i, 1);
 
                 if (isLocalWorker)
                     myUniverse.addPlayer(new LocalWorker(playerName, playerId, socket));
@@ -194,7 +275,7 @@ export class Game {
     public toString() {
         let str = "";
         str += "------------PLAYERS--------------\n";
-        for (let player in this._playersNotAssignedToUniverse) {
+        for (let player in this._playersInWaitingRoom) {
             str += player.toString();
             str += "\n"
         }

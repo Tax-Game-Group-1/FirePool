@@ -1,8 +1,26 @@
 import express, {Express} from "express";
-import { setGameInstance, getGameInstance } from "server";
-import { createAdminUser, getAdminIdByUserName, createGame, getAdminGames} from "&/queries/queries"
+import { destoryGameInstance, createGameInstance, getGameInstanceByGameCode } from "server";
+import { createAdminUser, getAdminIdByUserName, createGame, getAdminGames, getGameById} from "&/queries/queries"
 import _ from "lodash"
 import { Citizen, Game, PlayerInWaitingRoom } from "&/gameManager/gameManager";
+
+/*
+//here we will create the AI filter
+import { Filter } from "content-checker"
+
+export let AIFilter:Filter;
+let isUsingAIFilter = false;
+
+if(process.env.NODE_ENV === 'production'){
+	AIFilter = new Filter({
+		openModeratorAPIKey: (process.env.AI_TEXT_MOD)
+	})
+	isUsingAIFilter == true;
+}else{
+	AIFilter = new Filter()
+}
+
+*/
 
 export function setUpServer(server:Express) {
     server.post("/adminLogin", async (req, res) => {
@@ -71,6 +89,17 @@ export function setUpServer(server:Express) {
 			return;
         }
 
+		//// Enable this when you install content-checker
+		// if(isUsingAIFilter){
+		// 	let filterResponse = await AIFilter.isProfaneAI(username);
+		// 	if(filterResponse.profane){
+		// 		res.status(200).json({
+		// 			success: false,
+		// 			message: "Your username contains words that are not allowed",
+		// 		})
+		// 	}
+		// }
+
 		//check the username and password for the admin
 		try {
 			// const result = await getAdminIdByUserName(body.username, body.password);
@@ -100,7 +129,16 @@ export function setUpServer(server:Express) {
 		console.log("BODY:")
 		console.log(req.body);
 
-
+		//// Enable this when you install content-checker
+		// if(isUsingAIFilter){
+		// 	let filterResponse = await AIFilter.isProfaneAI(req.body.name);
+		// 	if(filterResponse.profane){
+		// 		res.status(200).json({
+		// 			success: false,
+		// 			message: "Your username contains words that are not allowed",
+		// 		})
+		// 	}
+		// }
 		
 		await createGame(req.body.adminId, req.body.name, req.body.taxCoefficient, req.body.maxPlayers, req.body.finePercent, req.body.roundNumber, req.body.auditProbability, req.body.kickPlayersOnBankruptcy)
 		.then(result => {
@@ -119,48 +157,105 @@ export function setUpServer(server:Express) {
 
 	})
 
-// {
-// 	name
-// 	gameCode
-// }
-
 	server.post('/joinGame', async (req, res) => {
-		console.log("player attempting to join a game...");
+		console.log("player attempting to join a game... (API.ts)");
 
 		console.log('Game code: ')
 		console.log(req.body.gameCode);
 
-		console.log("Creating player");
-
-		// body: JSON.stringify({
-		// 	gameCode: code,
-		// 	waitingId: randomID(),
-		// }),
+		console.log("Creating player with id:");
+		console.log(req.body.waitingId);
 
 		try{
-			getGameInstance().addPlayerToWaitingArea({
+			getGameInstanceByGameCode(req.body.gameCode).addPlayerToWaitingRoom({
+				name: null, 
+				socket: null, 
 				roomCode: req.body.gameCode, 
+				waitingId: req.body.waitingId,
+				ready: false
+			})
+
+			console.log("SENDING RESPONSE TO CLIENT");
+			console.log({
 				waitingId: req.body.waitingId
 			})
+
+			res.status(200).json({
+				success: true, 
+				data: {
+					waitingId: req.body.waitingId
+				}
+			})
 		}catch(e){
+			console.error("SERVER ERROR")
+			console.log(e);
 			res.status(200).json({
 				success: false,
 				message: e.toString()
 			})
 		}
 
-		res.status(200).json({
-			success: true,
-			message: "",
-		})
-
 	});
 
 	//sets the game instance on the server when the admin starts the game
-	server.post("/openGame", async() => {
+	server.post("/startGame", async(req, res) => {
 
 		console.log("open game request recieved...");
 		console.log("set game instance")
+
+		const id = req.body.id; 
+
+		if (id == null) {
+			res.status(400).json({
+				success: false, 
+				message: "No id is set"
+			})
+			return ;
+		}
+
+		//insert into the servher hashmap with the id as the key
+		const gameFromDatabase = await getGameById(req.body.id);
+		if (gameFromDatabase.length == 0) {
+			res.status(400).json({
+				success: false, 
+				message: "Cannot find game instance in DB"
+			})
+			return ;
+		}
+
+		console.log("FROM DB")
+		console.log(gameFromDatabase[0])
+
+		try {
+			const gameInstance = new Game(
+				gameFromDatabase[0].gameId.toString(),
+				gameFromDatabase[0].name, 
+				gameFromDatabase[0].taxCoefficient, 
+				gameFromDatabase[0].maxPlayers, 
+				gameFromDatabase[0].finePercent,
+				gameFromDatabase[0].roundNumber, 
+				gameFromDatabase[0].auditProbability, 
+				gameFromDatabase[0].kickPlayersOnBankruptcy
+			)
+
+			const gameCode = createGameInstance(gameInstance);
+
+			console.log("setting game instance")
+
+			res.status(200).json({
+				success: true, 
+				data: {
+					gameCode: gameCode
+				}
+			})
+
+		} catch (e) {
+			res.status(400).json({
+				success: false, 
+				message: e.toString()
+			})
+		}
+
 
 	})
 

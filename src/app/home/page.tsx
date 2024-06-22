@@ -13,7 +13,7 @@ import { getData, setData } from '@/app/dummyData';
 import { randomID, sanitizeString } from '@catsums/my';
 import LoadingScreen from '@/components/LoadingScreen/LoadingScreen';
 import { useRemoveLoadingScreen } from '@/components/LoadingScreen/LoadingScreenUtil';
-import { GameGlobal, loadGameGlobal, saveGameGlobal } from '@/app/global';
+import { gameCodeLength, GameGlobal, loadGameGlobal, saveGameGlobal } from '@/app/global';
 import { JoinSection, JoiningSection } from './_sections/JoinSection';
 import { LoginSection } from './_sections/LoginSection';
 import { SplashSection } from './_sections/SplashSection';
@@ -126,7 +126,7 @@ export async function tryLogin(username:string, password:string){
 }
 
 export async function tryJoin(code:string){
-	code = sanitizeString(code.trim().replaceAll(/[^a-zA-Z0-9]/g,"").slice(0,8));
+	code = sanitizeString(code.trim().replaceAll(/[^a-zA-Z0-9]/g,"").slice(0, gameCodeLength));
 
 	if(!code.length){
 		createNotif({
@@ -134,7 +134,7 @@ export async function tryJoin(code:string){
 		})
 		return;
 	}
-	if(code.length < 8){
+	if(code.length < gameCodeLength){
 		createNotif({
 			content: "Room code is too small",
 		})
@@ -143,6 +143,10 @@ export async function tryJoin(code:string){
 
 	let res = await fetch("/joinGame",{
 		method: "POST",
+		headers: {
+			'Accept': 'application/json',
+			'Content-Type': 'application/json'
+		},
 		body: JSON.stringify({
 			gameCode: code,
 			waitingId: randomID(),
@@ -155,9 +159,10 @@ export async function tryJoin(code:string){
 		})
 		return;
 	}
+	console.log({res})
 
 	GameGlobal.room.value = {
-		gameId: code,
+		gameCode: code,
 	};
 
 	GameGlobal.player.value = {
@@ -168,8 +173,8 @@ export async function tryJoin(code:string){
 
 	goToSection(PageSection.Joining);
 	createTimer(1,()=>{
-		mainRouter.push(`/game?c=${code}`)
-		// window.location.href = `/game?c=${code}`;
+		// mainRouter.push(`/game?c=${code}`)
+		window.location.href = `/game?c=${code}`;
 	});
 	
 	return;

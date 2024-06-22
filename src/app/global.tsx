@@ -2,6 +2,8 @@ import { computed, signal } from "@preact/signals-react";
 import {} from '@/interfaces';
 import { getIconURL } from "@/utils/utils";
 
+export const gameCodeLength = 6;
+
 export const GameGlobal = {
 	room: signal<any>({}),
 	universe:  signal<any>({}),
@@ -80,11 +82,14 @@ export function deleteGameGlobal(key?:string){
 //computed
 
 export let gameCode = computed(function(){
-	let code = GameGlobal.room.value?.id || "";
+	let code:string = GameGlobal.room.value?.gameCode || "";
 	let mid = Math.trunc(code.length/2);
 	code = [code.slice(0, mid), code.slice(mid)].join("-");
-
 	return code;
+})
+export let gameID = computed(function(){
+	let id = GameGlobal.room.value?.gameId || "";
+	return id;
 })
 export let gameName = computed(()=>{
 	let name = GameGlobal.room.value?.name || "";

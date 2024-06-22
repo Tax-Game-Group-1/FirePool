@@ -24,14 +24,14 @@ describe('test the game manager', () => {
     test('add players to waiting area', () => {
         const g = new Game("1", 1.3, 5, 0.4, 0, 0.1, false);
 
-        g.addPlayerToWaitingArea(new LocalWorker("John", "1", io()));
-        g.addPlayerToWaitingArea(new LocalWorker("Tracy", "2", io()));
-        g.addPlayerToWaitingArea(new LocalWorker("Max", "3", io()));
-        g.addPlayerToWaitingArea(new LocalWorker("Lucy", "4", io()));
-        g.addPlayerToWaitingArea(new LocalWorker("Justine", "6", io()));
+        g.addPlayerToWaitingRoom(new LocalWorker("John", "1", io()));
+        g.addPlayerToWaitingRoom(new LocalWorker("Tracy", "2", io()));
+        g.addPlayerToWaitingRoom(new LocalWorker("Max", "3", io()));
+        g.addPlayerToWaitingRoom(new LocalWorker("Lucy", "4", io()));
+        g.addPlayerToWaitingRoom(new LocalWorker("Justine", "6", io()));
 
         try {
-            expect(g.addPlayerToWaitingArea(new LocalWorker("Err", "2", io()))).toThrow("Can't add another player");
+            expect(g.addPlayerToWaitingRoom(new LocalWorker("Err", "2", io()))).toThrow("Can't add another player");
         } catch (msg) {
             console.log(msg);
         }
@@ -67,7 +67,7 @@ describe('test the game manager', () => {
 
         //add players to lobby
         for (const c of citizens)
-            g.addPlayerToWaitingArea(c);
+            g.addPlayerToWaitingRoom(c);
 
         expect(g.numPlayersNotAssigned()).toBe(6);
 
@@ -94,7 +94,7 @@ describe('test the game manager', () => {
         universeIdA = g.addUniverse(new Universe(new Minister("Frank", "7", io()), 0.5, "1"));
 
         for (let c of citizens) {
-            g.addPlayerToWaitingArea(c);
+            g.addPlayerToWaitingRoom(c);
             g.assignPlayerToUniverse(c.id, "1", true);
         }
 
@@ -123,7 +123,7 @@ describe('test the game manager', () => {
         ]
 
         for (let c of citizens) {
-            g.addPlayerToWaitingArea(c);
+            g.addPlayerToWaitingRoom(c);
             //all players are in universe with ID 1
             g.assignPlayerToUniverse(c.id, "1", true);
         }
