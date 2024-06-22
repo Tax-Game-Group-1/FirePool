@@ -60,7 +60,7 @@ export const setUpSocket = (io: Server) => {
             if (waitingId != null) {
 
                 try {
-                    game.assigneSocketToPlayerInWaitingRoom(waitingId, socket);
+                    game.assignSocketToPlayerInWaitingRoom(waitingId, socket);
                 } catch (e) {
                     socket.emit("client-roomData", {
                         success: false,
@@ -77,8 +77,9 @@ export const setUpSocket = (io: Server) => {
                         name: game.name,
                         roundNumber: game.roundNumber,
                         taxCoefficient: game.taxCoefficient,
+                        hostName: game.getHostData().name,
                         maxPlayers: game.maxPlayers,
-                        playersInRoom: game.getPlayersInWatingRoom()
+                        playersInRoom: game.getPlayersInWaitingRoomAsJSON()
                     }
                 })
                 
@@ -109,8 +110,9 @@ export const setUpSocket = (io: Server) => {
                     name: game.name,
                     roundNumber: game.roundNumber,
                     taxCoefficient: game.taxCoefficient,
+					hostName: game.getHostData().name,
                     maxPlayers: game.maxPlayers,
-                    playersInRoom: game.getPlayersInWatingRoom()
+                    playersInRoom: game.getPlayersInWaitingRoomAsJSON()
                 }
             })
             
@@ -124,11 +126,11 @@ export const setUpSocket = (io: Server) => {
 
             try {
                 const game = getGameInstanceByGameCode(code);
-                game.assigneNameToPlayerInWaitingRoom(waitingId, name);        
+                game.assignNameToPlayerInWaitingRoom(waitingId, name);        
                 game.emitMessageToPlayerInRoom("client-update-players", {
                     success: true, 
                     data: {
-                        playersInRoom: game.getPlayersInWaitingRoom()
+                        playersInRoom: game.getPlayersInWaitingRoomAsJSON()
                     }
                 })
             } catch (e) {

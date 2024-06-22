@@ -38,6 +38,12 @@ const getAdminIdByUserName = async (username: string, password: string) => {
     }
     throw "incorrect password";
 }
+const getAdminById = async (id: number) => {
+    const result = await db.select().from(tblAdmin).where(and(eq(tblAdmin.id, id)));
+    if (result.length == 0)
+        throw "user not found";
+    return result[0];
+}
 
 
 const createGame = async (adminId: number, name: string, taxCoefficient: number, maxPlayers: number, finePercent: number, roundNumber: number, auditProbability: number, kickPlayersOnBankruptcy: boolean) => {
@@ -93,8 +99,11 @@ const getAdminGames = async (adminId: number) => {
     return await db.select().from(tblGameInstance).where(eq(tblGameInstance.adminId, adminId))
 }
 
-const getGameInfoById = async(gameId) => {
-    return await db.select().from(tblGameInstance).where(eq(gameId, gameId))
+const getGameInfoById = async(gameId: number) => {
+    const result = await db.select().from(tblGameInstance).where(eq(tblGameInstance.gameId, gameId))
+    if (result.length == 0)
+        throw "Cannot find game with id " + gameId.toString();
+    return result[0];
 }
 
 const editAdminGame = async (game: Game) => {
@@ -126,5 +135,6 @@ export {
     clearTables, 
     createGame, 
     getAdminGames,
+	getAdminById,
     getGameInfoById as getGameById
 }

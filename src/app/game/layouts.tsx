@@ -57,14 +57,23 @@ function onUpdatePlayers({data, message, success}){
 	
 	let roomData = GameGlobal.room.value;
 
-	GameGlobal.room.value = {...roomData, playersInRoom: data.playersInRoom};
+	GameGlobal.room.value = {
+		...roomData, 
+		playersInRoom: data.playersInRoom,
+		hostName: data.hostName,
+		gameName: data.name,
+	};
 	saveGameGlobal();
 	
 }
 
-function onGetRoomData({data, message, success}){
+function onGetRoomData(res){
 	
 	console.log("gettting room data")
+	console.log(res);
+	console.log({res});
+
+	let {data, message, success} = res;
 	if(!success){
 		createPopUp({
 			content: `Error: ${message}. Redirecting you back.`,

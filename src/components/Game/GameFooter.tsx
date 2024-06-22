@@ -18,10 +18,17 @@ import { createPopUp } from '../PopUp/PopUp';
 
 import { computed } from '@preact/signals-react';
 
-import { gameCode, GameGlobal, gameName, hostName, maxNumOfPlayers, numOfPlayers } from '@/app/global';
+import { gameCode, GameGlobal, maxNumOfPlayers, numOfPlayers } from '@/app/global';
 
 ///Computed global data
-
+let hostName = computed(()=>{
+	let name = GameGlobal.room.value.hostName || GameGlobal.user.value.name || "";
+	return name;
+})
+let gameName = computed(()=>{
+	let name = GameGlobal.room.value.name || "";
+	return name;
+})
 
 
 const MatchMedia = dynamic(async() => {

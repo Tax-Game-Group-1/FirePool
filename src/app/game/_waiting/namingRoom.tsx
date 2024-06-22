@@ -141,7 +141,7 @@ async function updateName(name:string){
 		waitingId: GameGlobal.player.value.waitingId,
 		code: GameGlobal.room.value.gameCode,
 	})
-	socket.once("client-update-name", onUpdateName);
+	socket.once("client-update-players", onUpdateName);
 }
 
 let nameLimit = 16;

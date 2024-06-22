@@ -43,6 +43,8 @@ export class Game {
 
     private _host: PlayerInWaitingRoom; 
 
+	public gameCode: string;
+
     constructor(id: string, name: string, taxCoefficient: number, maxPlayers: number, penalty: number, roundNumber: number, auditProbability: number, kickPlayersOnBankruptcy: boolean) {
         this.setValues(id, name, taxCoefficient, maxPlayers, penalty, roundNumber, auditProbability, kickPlayersOnBankruptcy);
         this._playersInWaitingRoom = [];
@@ -78,9 +80,6 @@ export class Game {
         this._playersInWaitingRoom.push(waitingPlayer);
     }
 
-    public getPlayersInWaitingRoom() {
-        return this._playersInWaitingRoom;
-    }
     //assigne socket to player in watiting room
     //player joins with a post request, and doesn't have a socket yet
     // getGameInstanceByGameCode(req.body.gameCode).addPlayerToWaitingArea({
@@ -90,7 +89,7 @@ export class Game {
     // 		waitingId: req.body.waitingId
     // 	})
 
-    public assigneSocketToPlayerInWaitingRoom(waitingId: string, socket: Socket) {
+    public assignSocketToPlayerInWaitingRoom(waitingId: string, socket: Socket) {
         for (const p of this._playersInWaitingRoom) {
             if (p.waitingId == waitingId) {
                 p.socket = socket;
@@ -105,7 +104,14 @@ export class Game {
         this._host.socket = socket;
     }
 
-    public assigneNameToPlayerInWaitingRoom(waitingId: string, name: string) {
+	public assignHostData(host: PlayerInWaitingRoom){
+		this._host = host;
+	}
+	public getHostData(){
+		return this._host;
+	}
+
+    public assignNameToPlayerInWaitingRoom(waitingId: string, name: string) {
 
         console.log("assigning name to player in game manager...");
 
@@ -116,27 +122,30 @@ export class Game {
             }
         }
 
-        console.log("done assigning name to player");
-
         throw "could not find player"
     }
     
     public emitMessageToPlayerInRoom(event, data) {
         console.log("emitting message to other players to notify them")
+        console.log("player count: ") 
+        console.log(this._playersInWaitingRoom.length);
+
         for (const p of this._playersInWaitingRoom) {
-            p.socket.emit(event,data); 
+            if (p.socket != null)
+                p.socket.emit(event,data); 
         }
+
         console.log("emitting message to host")
         //notify host
         this._host.socket.emit(event, data);
-        console.log("done emmitting message")
+        console.log("done emitting message to host")
     }
     
     public updatePlayerNameInWaitingArea(waitingPlayer: PlayerInWaitingRoom) : void {
         throw "unimplemented"
     }
     
-    public getPlayersInWatingRoom() {
+    public getPlayersInWaitingRoomAsJSON() {
         return this._playersInWaitingRoom.map(e => {
             return {
                 name: e.name, 

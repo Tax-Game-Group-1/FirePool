@@ -40,6 +40,7 @@ export function createGameInstance(newGame: Game) {
         myString = generateRandomString(6);
 
     gamesCurrentlyRunning[myString] = newGame;
+	newGame.gameCode = myString;
     return myString;
 }
 
