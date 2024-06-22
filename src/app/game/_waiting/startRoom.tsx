@@ -132,6 +132,29 @@ export function PlayerCards(){
 
 }
 
+export async function onStart(){
+
+	let allPlayersReady = players.value.every((player)=>player.ready);
+
+	if(!allPlayersReady){
+		createNotif({
+			content: "Some players are not ready yet.",
+		})
+		return;
+	}
+
+	createPopUp({
+		content: "Do you want to start the game?",
+		buttons:{
+			"Yes": ()=>{
+				startGame();
+			},
+			"No": ()=>{}
+		}
+	});
+
+}
+
 export async function readyPlayer(){
 	let playerdata = GameGlobal.player.value;
 	playerdata.ready = !playerdata.ready;
@@ -237,7 +260,7 @@ export function AsideCard(){
 				</div>
 			</div>
 			<div className={`${t.fillSolidText} lg:max-h-full text-xs lg:text-base`}>
-				<Btn>
+				<Btn onClick={onStart}>
 					<div className={`flex flex-row m-0 p-0 h-full gap-1`}>
 						<div>Start Game</div>
 						<div className={`h-full aspect-square`}>
