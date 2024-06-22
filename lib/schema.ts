@@ -1,4 +1,4 @@
-import { pgTable, integer, serial, text, boolean, doublePrecision} from 'drizzle-orm/pg-core';
+import { pgTable, integer, serial, text, boolean, doublePrecision } from 'drizzle-orm/pg-core';
 
 /*
     NB: when you change this schema,
@@ -6,7 +6,7 @@ import { pgTable, integer, serial, text, boolean, doublePrecision} from 'drizzle
     npx drizzle-kit generate
     make sure all tables are created beforhand in pg admin
 */
-  
+
 export const tblAdmin = pgTable("users", {
     id: serial('id').primaryKey(),
     email: text('email'),
@@ -23,13 +23,15 @@ export const tblGameInstance = pgTable('gameInstance', {
     finePercent: doublePrecision('finePercent'),
     roundNumber: integer("roundNumber"),
     auditProbability: doublePrecision("auditProbability"),
-    kickPlayersOnBankruptcy: boolean("kickPlayersOnBankruptcy")
-}); 
+    kickPlayersOnBankruptcy: boolean("kickPlayersOnBankruptcy"),
+    isDeleted: boolean("isDeleted").default(false)
+});
 
 export const tblPlayer = pgTable('player', {
     playerId: serial('playerId').primaryKey(),
     gameId: integer('gameId').references(() => tblGameInstance.gameId),
-    playerName: text('playerName') 
+    playerName: text('playerName'),
+    consent: boolean("consent")
 });
 
 export const tblRoundInstance = pgTable('roundInstance', {
