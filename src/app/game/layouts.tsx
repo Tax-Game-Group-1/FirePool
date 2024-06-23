@@ -16,6 +16,8 @@ import { createNotif} from '@/components/Notification/Notification';
 import Spectate from './_content/Spectate';
 import { socket } from '@/app/socket';
 
+import { UniverseData, PlayerData, PlayerRole } from '&/gameManager/interfaces';
+
 let isLoaded = signal(true);
 
 let code = "";
@@ -26,11 +28,9 @@ export enum GameScreen {
 }
 
 //currently working on spectate, will change later
-export let gameScreen = signal(GameScreen.Spectate);
+export let gameScreen = signal(GameScreen.WaitingRoom);
 
 export function setGameScreen(screen: GameScreen) {
-
-
 	gameScreen.value = screen;
 }
 
@@ -40,16 +40,43 @@ export function onGameStart({success, message, data}){
 			content: `Error starting game: ${message}`,
 		})
 	}
+	
+	let universes = data.universeData as UniverseData[];
+	//if its hose, just save all universes
+	if(GameGlobal.user.value.id){
+		GameGlobal.room.value.universes = {...universes};
 
-	///receive data of players, universe and game room
-	GameGlobal.player.value = {... data.player};
-	GameGlobal.room.value = {... data.room};
-	GameGlobal.universe.value = {... data.universe};
+		console.log("universes for host")
+		console.log(GameGlobal.room.value.universes)
+
+	}else{
+		let waitingId = GameGlobal.player.value.waitingId;
+	
+		let currPlayer:PlayerData;
+		let currUniverse:UniverseData;
+	
+		for(let universe of universes){
+			if(currUniverse && currPlayer) break;
+	
+			let players = universe.players;
+			for(let player of players){
+				if(waitingId == player.waitingId){
+					currPlayer = player;
+					currUniverse = universe;
+					break;
+				}
+			}
+		}
+		///receive data of players, universe and game room
+		GameGlobal.player.value = {... currPlayer};
+		GameGlobal.universe.value = {... currUniverse};
+		console.log("player data")
+		console.log({
+			currPlayer, currUniverse
+		})
+	}
 
 	saveGameGlobal();
-
-	///
-
 
 	if(playerID.value > -1){
 		setGameScreen(GameScreen.InGame);
@@ -123,7 +150,7 @@ const Layouts = forwardRef(function Layouts({}, ref:Ref<any>) {
 
 	
 	useEffect(()=>{
-		// socket.connect();
+		socket.connect();
 		socket.once("disconnect",(reason)=>{
 			console.log("disconnected");
 			console.log(`reason: ${reason}`)

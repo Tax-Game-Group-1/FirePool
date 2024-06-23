@@ -1,7 +1,7 @@
 "use client"
 
-import React, { act, forwardRef, lazy, LegacyRef, Ref, Suspense, useEffect, useState } from 'react'
-import style from "./GameContentContainer.module.scss";
+import React, { act, CSSProperties, forwardRef, lazy, LegacyRef, Ref, Suspense, useEffect, useState } from 'react'
+import s from "./GameContentContainer.module.scss";
 
 import t from "../../elements.module.scss"
 import { SignalEventBus, useSignalEvent } from '@catsums/signal-event-bus';
@@ -47,24 +47,26 @@ export default function GameContentContainer({children}:{
 	let contents = Object.values(activeContents.value);
 	
 	return (
-		<div className={`${style.gameContentContainer}`}>
+		<div className={`${s.gameContentContainer}`}>
 			{contents}
 			{children}
 		</div>
 	)
 }
 
-export function createContent({content,className, id=randomID(), useWrapper=true}:{
+export function createContent({content,className, id=randomID(), useWrapper=true, style={}, time= 0.1,}:{
 	content: React.ReactNode,
 	className?: string,
 	id?: string,
+	style?: CSSProperties,
 	useWrapper?: boolean,
+	time?:number,
 }){
 
 	let node:React.ReactNode;
 	if(useWrapper){
 		node = (
-			<GameContent id={id} key={id} className={className}>
+			<GameContent id={id} key={id} className={className} style={style}>
 				{content}
 			</GameContent>
 		);
@@ -74,9 +76,7 @@ export function createContent({content,className, id=randomID(), useWrapper=true
 		);
 	}
 
-	let t = createTimer(0.240).onComplete(()=>{
-		console.log("ABC")
-		console.log({contentSignalBus})
+	let t = createTimer(0.240 + time).onComplete(()=>{
 		contentSignalBus.emit("add",{id, node});
 	});
 
@@ -97,10 +97,13 @@ export function closeContentAll(){
 }
 
 export const GameContent = forwardRef(function GameContent(
-	{children, className="", id=randomID()}:{
+	{children, className="", id=randomID(), isSub=false, style={}, isAbsolute=false}:{
 		children?:React.ReactNode,
 		className?:string,
 		id?:string,
+		isSub?:boolean,
+		isAbsolute?: boolean,
+		style?:CSSProperties,
 	}, ref:Ref<any>
 ){
 
@@ -113,7 +116,7 @@ export const GameContent = forwardRef(function GameContent(
 	}
 	function onMount(){
 		let ctns = activeContents.value;
-		if(!ctns[id]){
+		if(!ctns[id] && !isSub){
 			contentSignalBus.emit("add", {id, node: children});
 		}
 	}
@@ -145,8 +148,13 @@ export const GameContent = forwardRef(function GameContent(
 
 	return (
 		active &&
-		<div data-content-id={id} className={`${style.gameContent} ${t.solidElement} ${className}`} ref={mergeRefs(ref, scope) as any}>
-			<div className={`${style.gameContentInner}`}>
+		<div 
+			data-content-id={id} 
+			className={`${s.gameContent} ${t.solidElement} ${className} ${isAbsolute ? "absolute" : "relative"}`} 
+			ref={mergeRefs(ref, scope) as any} 
+			style={style}
+		>
+			<div className={`${s.gameContentInner}`}>
 				{children}
 			</div>
 		</div>

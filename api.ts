@@ -2,25 +2,8 @@ import express, {Express} from "express";
 import { destroyGameInstance, createGameInstance, getGameInstanceByGameCode } from "server";
 import { createAdminUser, getAdminIdByUserName, createGame, getAdminGames, getGameById, getAdminById} from "&/queries/queries"
 import _ from "lodash"
-import { Citizen, Game, PlayerInWaitingRoom } from "&/gameManager/gameManager";
+import { Citizen, Game } from "&/gameManager/gameManager";
 
-/*
-//here we will create the AI filter
-import { Filter } from "content-checker"
-
-export let AIFilter:Filter;
-let isUsingAIFilter = false;
-
-if(process.env.NODE_ENV === 'production'){
-	AIFilter = new Filter({
-		openModeratorAPIKey: (process.env.AI_TEXT_MOD)
-	})
-	isUsingAIFilter == true;
-}else{
-	AIFilter = new Filter()
-}
-
-*/
 
 export function setUpServer(server:Express) {
     server.post("/adminLogin", async (req, res) => {

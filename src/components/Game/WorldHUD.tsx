@@ -59,7 +59,7 @@ export const WorldHUD = forwardRef(function WorldHUD({}, ref:Ref<any>){
 							</SVGIcon>
 						</div>
 						<div className="world-funds-amount mx-1 ml-8">
-							<span className="world-funds-value">{universeFunds}</span>
+							<span className="world-funds-value">{universeFunds.value?.toFixed(2)}</span>
 						</div>
 					</div>
 				</div>

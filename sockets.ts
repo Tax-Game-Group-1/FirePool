@@ -1,6 +1,6 @@
 import { Server, Socket } from "socket.io";
 import { getGameInstanceByGameCode, removeWaitingPlayerFromAllGameInstancesBySocket } from "server";
-import { PlayerInWaitingRoom } from "&/gameManager/gameManager";
+import { PlayerInWaitingRoom } from "&/gameManager/interfaces";
 
 export const setUpSocket = (io: Server) => {
   //--------------------------- socket stuff -------------------------//
@@ -180,6 +180,16 @@ export const setUpSocket = (io: Server) => {
         try {
             const gameInstance = getGameInstanceByGameCode(code);
             gameInstance.addUniversesAndDividePlayers();
+            const universeData = gameInstance.getAllUniverses();
+
+            //send the universe data back to the client
+            socket.emit("client-start-game", {
+              success: true, 
+              data: {
+                universeData: universeData
+              }
+            })
+
         } catch (e) {
             console.error(e)
             socket.emit("client-update-players", {

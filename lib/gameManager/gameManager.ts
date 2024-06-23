@@ -1,18 +1,13 @@
 import _ from "lodash";
 import { Socket } from "socket.io";
+import { PlayerInWaitingRoom, PlayerRole, UniverseData, PlayerData, declareVsPaidTax } from "./interfaces";
 
 /*
  GAME:
   | id | penalty | roundNumber | taxCoefficient | maxPlayers | auditProbability | kickPlayersOnBankruptcy |
  */
 
-export interface PlayerInWaitingRoom {
-  waitingId: string;
-  roomCode: string;
-  name: string;
-  ready: boolean;
-  socket: Socket | null;
-}
+
 
 export class Game {
   //manage the game id
@@ -106,7 +101,7 @@ export class Game {
     this._playersInWaitingRoom.push(waitingPlayer);
   }
 
-  //assigne socket to player in watiting room
+  //assign socket to player in waiting room
   //player joins with a post request, and doesn't have a socket yet
   // getGameInstanceByGameCode(req.body.gameCode).addPlayerToWaitingArea({
   // 		name: null,
@@ -125,6 +120,7 @@ export class Game {
 
     throw "could not find player";
   }
+
 
   public removePlayerWithSocket(socketId: string): boolean {
     for (let i = 0; i < this._playersInWaitingRoom.length; i++) {
@@ -213,13 +209,16 @@ export class Game {
     if (newValue == "") throw "new value can't be null";
     this._name = newValue;
   }
+  public get name() {
+    return this._name;
+  }
 
   public numPlayersNotAssigned = () => this._playersInWaitingRoom.length;
 
   // take a plyer from the waiting are and put it in a universe object, universes are managed by players
   public assignPlayerToUniverse(
     playerId: number,
-    watingId: string,
+    waitingId: string,
     playerName: string,
     universeId: string,
     isLocalWorker: boolean,
@@ -235,19 +234,30 @@ export class Game {
     //then add it to the universe
 
     for (let i = 0; i < this._playersInWaitingRoom.length; i++)
-      if (this._playersInWaitingRoom[i].waitingId == watingId) {
+      if (this._playersInWaitingRoom[i].waitingId == waitingId) {
         const tempPlayer = this._playersInWaitingRoom[i];
         this._playersInWaitingRoom.splice(i, 1);
 
         if (isLocalWorker)
-          myUniverse.addPlayer(new LocalWorker(playerName, playerId, socket));
+          myUniverse.addPlayer(new LocalWorker(playerName, playerId, socket, waitingId, PlayerRole.LOCAL_WORKER));
         else
-          myUniverse.addPlayer(new ForeignWorker(playerName, playerId, socket));
+          myUniverse.addPlayer(new ForeignWorker(playerName, playerId, socket, waitingId, PlayerRole.FOREIGN_WORKER));
 
         return;
       }
 
     throw "unable to find player, player not added";
+  }
+
+
+  public getAllUniverses() : UniverseData[] {
+    let universeData: UniverseData[];
+
+    this._universes.forEach(u => {
+      universeData.push(u.getUniverseData());
+    });
+
+    return universeData;
   }
 
   private getRandomPlayerFromWaitingRoom() {
@@ -279,17 +289,10 @@ export class Game {
         totalPlayerCount++;
 
         //create a minister and a universe
-        const minister = new Minister(ministerWaiting.name, totalPlayerCount++, ministerWaiting.socket); 
+        const minister = new Minister(ministerWaiting.name, totalPlayerCount++, ministerWaiting.socket, ministerWaiting.waitingId, PlayerRole.MINISTER); 
         this._universes.push(new Universe(minister, 0.5, i.toString()))
 
-/*
-    playerId: number,
-    watingId: string,
-    playerName: string,
-    universeId: string,
-    isLocalWorker: boolean,
-    socket: Socket
-*/
+
         //assign the players until the correct count is reached
         while (currentPlayerCount < playersPerUniverse) {
             const randomPlayer = this.getRandomPlayerFromWaitingRoom();
@@ -399,10 +402,13 @@ export class Game {
   }
 }
 
+
 /*
  UNIVERSE:
  | id | gameID | ministerID | taxRate |
  */
+
+
 export class Universe {
   public readonly minister: Minister;
   public readonly taxRate: number;
@@ -452,13 +458,6 @@ export class Universe {
     }
   }
 
-  //todo: implement
-  //call the toJSON on the players, and add it to an array
-  //also add all the details for the universe
-  public toJSON() {
-    let players = [];
-  }
-
   //todo: test
   public removePlayer(player: Player): void;
   public removePlayer(id: string): void;
@@ -481,36 +480,49 @@ export class Universe {
     }
   }
 
-  //todo: test
-  toJson(): void {
-    let players = [];
-    for (const p of this._players) players.push(p.toJSON);
+  public getUniverseData() : UniverseData {
+    let playerData: PlayerData[] = [];
 
-    let json = {
+    for (const p of this._players) {
+      playerData.push(p.toJSON());
+    }
+
+    return {
       id: this._id,
       minister: this.minister.toJSON(),
-      taxRate: this.taxRate,
-      players: players,
-    };
+      taxRate: this.taxRate, 
+      players: playerData
+    }
+
   }
+
 }
 
 /*
  PLAYER
  | id | universeID (null if not defined) | name | type (minster | localWorker | foreignWorker) | currentFunds | hasBeenKicked |
  */
+
+
+
+
+
 export abstract class Player {
   private _name: string;
   private _id: number;
+  private _waitingId: string; 
   client: Socket;
   private _funds;
   private _hasBeenKicked;
+  private _role;
 
-  constructor(id: number, name: string, client: Socket) {
+  constructor(id: number, name: string, client: Socket, waitingId: string, role: PlayerRole) {
     this._id = id;
     this._name = name;
     this.client = client;
     this._funds = 0;
+    this._waitingId = waitingId;
+    this._role = role;
   }
 
   public get name() {
@@ -519,6 +531,10 @@ export abstract class Player {
 
   public get id() {
     return this._id;
+  }
+
+  public get waitingId() {
+    return this._waitingId;
   }
 
   public receiveFunds(toReceive: number) {
@@ -543,22 +559,24 @@ export abstract class Player {
     return this._hasBeenKicked;
   }
 
-  public abstract toJSON();
+  public abstract toJSON() : PlayerData;
 
-  protected getJSON(type: string) {
+  protected getJSON(role: PlayerRole) : PlayerData {
     return {
-      type: type,
+      role: role,
       id: this._id,
       name: this._name,
       funds: this._funds,
       hasBeenKicked: this._hasBeenKicked,
+      waitingId: this._waitingId,
+      socketId: this.client.id
     };
   }
 }
 
 export class Minister extends Player {
-  constructor(name: string, id: number, client: Socket) {
-    super(id, name, client);
+  constructor(name: string, id: number, client: Socket, waitingId: string, role: PlayerRole) {
+    super(id, name, client, waitingId, role);
   }
 
   public setTaxRate(game: Game, newTaxRate: number) {
@@ -570,22 +588,18 @@ export class Minister extends Player {
   }
 
   toJSON() {
-    return super.getJSON("Minister");
+    return super.getJSON(PlayerRole.MINISTER);
   }
 }
 
-interface declareVsPaidTax {
-  incomeReceived: number;
-  declared: number;
-  calculatedTax: number;
-}
+
 
 export abstract class Citizen extends Player {
   //player
   private declaredArray: declareVsPaidTax[];
 
-  constructor(name: string, id: number, client: Socket) {
-    super(id, name, client);
+  constructor(name: string, id: number, client: Socket, waitingId: string, playerRole: PlayerRole) {
+    super(id, name, client, waitingId, playerRole);
     this.declaredArray = Array();
   }
 
@@ -627,7 +641,7 @@ export abstract class Citizen extends Player {
 
 export class LocalWorker extends Citizen {
   toJSON() {
-    return super.getJSON("LocalWorker");
+    return super.getJSON(PlayerRole.LOCAL_WORKER);
   }
 }
 
@@ -638,35 +652,6 @@ export class ForeignWorker extends Citizen {
   }
 
   toJSON() {
-    return super.getJSON("ForeignWorker");
+    return super.getJSON(PlayerRole.FOREIGN_WORKER);
   }
 }
-
-/*
-    socket.on("joinGame", ({gameCode})=>{
-        if(!games.get(gameCode)){
-            socket.emit("joinedGame", {
-                err: "Game with code does not exist"
-            })
-        }
-        let id = createID();
-
-        let game = games.get(gameCode);
-        let player = {
-            socket: socket,
-            id:id,
-        }
-
-        game.addPlayer(player)
-        players.set(id, player);
-
-        socket.emit("joinedGame",{
-            id: id
-        })
-    }).on("enterName", ({username, id})=>{
-        let player = players.get(id);
-        player.name = username;
-
-
-    })
-*/

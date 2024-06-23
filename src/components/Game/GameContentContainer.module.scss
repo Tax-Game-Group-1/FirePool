@@ -5,7 +5,8 @@
 	pointer-events: none;
 	
 	.gameContent {
-		@apply rounded-md inline-flex mb-2 relative;
+		@apply rounded-md inline-flex mb-2;
+		//i cant remember if I should use relative positioning or absolute, but whatever works
 		background-color: var(--solidWindow);
 		color: var(--solidText);
 		user-select: none;

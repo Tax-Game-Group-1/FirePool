@@ -78,7 +78,7 @@ export function AvatarIcon({url}){
 
 	return (
 		<div className={`${style.iconContainer}`}>
-			<div className={`${t.accent} w-full h-full aspect-square flex justify-center items-center rounded-md`}>
+			<div className={`${t.accent} relative z-0 w-full h-full aspect-square flex justify-center items-center rounded-md`}>
 				<span className={`absolute z-10 flex justify-center items-center text-center`}>Loading image...</span>
 				<img ref={scope} className={` object-cover w-full relative z-20 opacity-0 rounded-md`} src={url} alt="player icon"/>
 			</div>

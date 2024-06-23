@@ -97,8 +97,7 @@ export function ContentStuff(){
 					<div className={` flex flex-col h-72`}>
 						<div className={`flex flex-col overflow-auto gap-2`}>
 							
-							{/* {playersData} */}
-							<PlayersData key={0} name={"Bingus"} index={1} funds={200} role="A"/>
+							{playersData}
 							
 						</div>
 					</div>
