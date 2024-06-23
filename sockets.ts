@@ -1,6 +1,7 @@
 import { Server, Socket } from "socket.io";
 import { getGameInstanceByGameCode, removeWaitingPlayerFromAllGameInstancesBySocket } from "server";
 import { PlayerInWaitingRoom } from "&/gameManager/interfaces";
+import { Game } from "&/gameManager/gameManager";
 
 export const setUpSocket = (io: Server) => {
   //--------------------------- socket stuff -------------------------//
@@ -11,6 +12,9 @@ export const setUpSocket = (io: Server) => {
    * each round will be posted to the database
    */
   //handle the connection of players
+
+  let purgePlayersInterval; 
+
   io.on("connection", (socket) => {
     console.log("Player connected to the socket...");
 
@@ -20,7 +24,10 @@ export const setUpSocket = (io: Server) => {
       console.log(hostID, " ", waitingId, " ", code);
 
       if (waitingId != null && hostID == null) console.log("Player joined");
-      else if (hostID != null) console.log("host joined");
+      else if (hostID != null)  {
+        // purgePlayersInterval = setInterval(() => doSocketAction(Action.PURGE_NULL_PLAYERS, null, code), 45000);
+        console.log("host joined");
+      }
       else {
         socket.emit("client-roomData", {
           success: false,
@@ -63,7 +70,7 @@ export const setUpSocket = (io: Server) => {
         }
 
         //player joined the room
-        game.emitMessageToPlayerInRoom("client-roomData", {
+        game.emitMessageToPlayers("client-roomData", {
           success: true,
           message: "player added to waiting room",
           data: {
@@ -77,26 +84,13 @@ export const setUpSocket = (io: Server) => {
           },
         });
 
-        // socket.emit("client-roomData", {
-        //     success: true,
-        //     message: "player added to waiting room",
-        //     data: {
-        //         gameId: game.id,
-        //         name: game.name,
-        //         roundNumber: game.roundNumber,
-        //         taxCoefficient: game.taxCoefficient,
-        //         maxPlayers: game.maxPlayers,
-        //         playersInRoom: game.getPlayersInWatingRoom()
-        //     }
-        // });
-
         return;
       }
 
       game.assignSocketToHost(socket);
 
       //host
-      game.emitMessageToPlayerInRoom("client-roomData", {
+      game.emitMessageToPlayers("client-roomData", {
         success: true,
         message: "player added to waiting room",
         data: {
@@ -114,33 +108,54 @@ export const setUpSocket = (io: Server) => {
     enum Action {
       ASSIGN_NAME,
       UPDATE_READY,
-	  DISCONNECT,
+      DISCONNECT,
+      CONSENT,
+      PURGE_NULL_PLAYERS
     }
 
-    const doSocketAction = (a: Action, params: any, code) => {
-        let game; 
-        if (code != null)
-            game = getGameInstanceByGameCode(code);
+    let mutex = Promise.resolve(); 
+
+    const doSocketAction = async (a: Action, params: any, code) => {
+
+      await mutex;
+
+      let game : Game;
+      if (code != null)
+        game = getGameInstanceByGameCode(code);
 
       try {
         switch (a) {
           case Action.ASSIGN_NAME:
             if (params.name == null) throw "name is  null";
-            game.assignNameToPlayerInWaitingRoom(params.waitingId, params.name);
+            const result = await game.assignNameToPlayerInWaitingRoom(params.waitingId, params.name);
+            if (result != true) {
+              game.emitMessageToPlayers("client-update-players", {
+                success: false,
+                message: "could not update name"
+              });
+              return;
+            }
             break;
           case Action.UPDATE_READY:
             if (params.ready == null) throw "ready is  null";
             game.updateReadyState(params.waitingId, params.ready);
             break;
-          case Action.DISCONNECT: 
+          case Action.CONSENT:
+            if (params.playerId == null || params.hasConsented == null)
+              throw "Cannot consent, parameters are null";
+              game.playerConsent(params.playerId, params.hasConsented);
+            break; 
+          case Action.DISCONNECT:
             console.log("player disconnected")
           default:
         }
 
-        game.emitMessageToPlayerInRoom("client-update-players", {
+        console.log("emmitting message")
+        game.emitMessageToPlayers("client-update-players", {
           success: true,
           data: {
             playersInRoom: game.getPlayersInWaitingRoomAsJSON(),
+            universeData: game.getAllUniversesAsJSON()
           },
         });
       } catch (e) {
@@ -148,55 +163,68 @@ export const setUpSocket = (io: Server) => {
           success: false,
           message: e.toString(),
         });
+      } finally {
+        mutex = Promise.resolve();
       }
     };
+
+    socket.on("sign-consent", ({playerId, hasConsented, code }) => {
+      // console.log("------------------sign consent socket-----------------");
+      // console.log(playerId);
+      // console.log(hasConsented);
+      // console.log(code);
+      // console.log("--------------------------------------------------------")
+
+      doSocketAction(Action.CONSENT, { playerId, hasConsented}, code);
+    })
 
     socket.on("update-name", ({ name, waitingId, code }) => {
       console.log("updating name");
       doSocketAction(Action.ASSIGN_NAME, { waitingId, name }, code);
     });
 
-    socket.on("update-ready", ({ waitingId, ready, code }) => {
+    socket.on("update-ready", ({ waitingId, ready, code}) => {
       console.log("notifying players of ready state on server");
       doSocketAction(Action.UPDATE_READY, { waitingId, ready }, code);
     });
 
     socket.on("disconnect", () => {
-        console.log("player disconnected")
-        try {
-            const gameInstance = removeWaitingPlayerFromAllGameInstancesBySocket(socket.id);
-            doSocketAction(Action.DISCONNECT, {}, gameInstance.gameCode);
-        } catch (e) {
-            console.error("error disconnecting player with socket")
-            socket.emit("client-update-players", {
-                success: false, 
-                message: e.toString()
-            })
-        }
+      console.log("player disconnected")
+      try {
+        const gameInstance = removeWaitingPlayerFromAllGameInstancesBySocket(socket.id);
+        doSocketAction(Action.DISCONNECT, {}, gameInstance.gameCode);
+      } catch (e) {
+        console.error("error disconnecting player with socket")
+        socket.emit("client-update-players", {
+          success: false,
+          message: e.toString()
+        })
+      }
     })
 
     socket.on("start-game", ({ code }) => {
-        //assign the roles of the players in the waiting room
-        try {
-            const gameInstance = getGameInstanceByGameCode(code);
-            gameInstance.addUniversesAndDividePlayers();
-            const universeData = gameInstance.getAllUniverses();
+      //assign the roles of the players in the waiting room
+      try {
+        const gameInstance = getGameInstanceByGameCode(code);
+        gameInstance.addUniversesAndDividePlayers();
+        const universeData = gameInstance.getAllUniversesAsJSON();
+        clearInterval(purgePlayersInterval);
 
-            //send the universe data back to the client
-            socket.emit("client-start-game", {
-              success: true, 
-              data: {
-                universeData: universeData
-              }
-            })
+        //start the game for all players
+        gameInstance.emitMessageToPlayers("client-start-game", {
+          success: true,
+          data: {
+            universeData: universeData
+          }
+        })
 
-        } catch (e) {
-            console.error(e)
-            socket.emit("client-update-players", {
-                success: false, 
-                message: e.toString()
-            })
-        }
+      } catch (e) {
+        console.error(e)
+        socket.emit("client-update-players", {
+          success: false,
+          message: e.toString()
+        })
+      }
     })
 
   });

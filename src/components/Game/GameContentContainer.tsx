@@ -38,9 +38,14 @@ export default function GameContentContainer({children}:{
 		}
 	}, contentSignalBus);
 	useSignalEvent("closeAll", ()=>{
-		let keys = Object.keys(activeContents.value); 
+		let keys = Object.keys(activeContents.value);
+		let newActiveContents = activeContents.value;  
 		for(let k of keys){
-			closeContent(k);
+			// closeContent(k);
+			if(newActiveContents[k]){
+				delete newActiveContents[k];
+				activeContents.value = {...newActiveContents};
+			}
 		}
 	}, contentSignalBus);
 

@@ -11,7 +11,7 @@ import SignalEventBus from "@catsums/signal-event-bus";
 
 import t from "../../elements.module.scss";
 import { useEffect, useState } from "react";
-import { currGame, goToSection, PageSection, setCurrentGame } from "./page";
+import { currGame, goToSection, PageSection, setCurrentGame, unsetCurrentGame } from "./page";
 import { createPopUp } from "@/components/PopUp/PopUp";
 
 import {getGames, games} from "@/app/host/page"
@@ -70,9 +70,9 @@ export function GameCardsContainer(){
 	})
 	gameCards.unshift(
 		<GameCard onClick={()=>{
-			currGame.value = null;
 			goToSection(PageSection.Create);
-		}} key={-1} name={"Create Game"}>
+			unsetCurrentGame();
+		}} key={0} name={"Create Game"}>
 			<AddIcon className={`${t.fillAccent} p-6`}/>
 		</GameCard>
 	)

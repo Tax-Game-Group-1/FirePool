@@ -83,6 +83,7 @@ export enum PageSection {
 let currSection = signal(PageSection.Main);
 
 export function goToSection(section: PageSection) {
+	console.log(section);
 	currSection.value = section;
 }
 
@@ -98,7 +99,7 @@ export async function setCurrentGame(data){
 	currGame.value = {...data};
 	// saveGameGlobal();
 }
-export async function unsetCurrentGame(data){
+export async function unsetCurrentGame(){
 	currGame.value = null;
 	// saveGameGlobal();
 }
@@ -288,6 +289,7 @@ export default function Page() {
 	// mainRouter = useRouter();
 
 	useEffect(()=>{
+		console.log("Lula")
 		loadGameGlobal();
 	},[])
 

@@ -6,15 +6,18 @@ import { CurrencyIcon, PercentageIcon } from "@/assets/svg/icons";
 import t from "../../elements.module.scss";
 import style from "./WorldHUD.module.scss";
 
-import { computed } from '@preact/signals-react';
+import { computed, signal } from '@preact/signals-react';
 
 import { GameGlobal, round, universeFunds, universeName, universeTaxRate } from '@/app/global';
 import { getData } from '@/app/dummyData';
 
 
+export const showWorldHUD = signal(true);
+
 export const WorldHUD = forwardRef(function WorldHUD({}, ref:Ref<any>){
 	
 	return (
+		showWorldHUD.value &&
 		<div ref={ref} className={`${style.worldHUD} ${t.solidElement} ${t.solidText}`}>
 			<div className={`${style.row} gap-2 justify-between`}>
 				<div className="world-year-label mx-1 text-sm">

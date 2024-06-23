@@ -10,13 +10,37 @@ import t from "../../../elements.module.scss"
 import Btn from '@/components/Button/Btn'
 import {forwardRef} from 'react';
 import { GameGlobal } from '@/app/global'
-import { signal } from '@preact/signals-react'
+import { computed, signal } from '@preact/signals-react'
 
+import { PlayerRole } from '&/gameManager/interfaces'
 
-export const universes = signal([]);
-export const players = signal([]);
+export function roleToString(role: PlayerRole){
+	switch(role){
+		case PlayerRole.MINISTER: return "Minister";
+		case PlayerRole.LOCAL_WORKER:  return "Local Worker";
+		case PlayerRole.FOREIGN_WORKER:  return "Foreign Worker";
+	}
+	return "No Role";
+}
 
-const UniverseData = forwardRef(function UniverseData({index=0, name="", funds=0}:{
+export const universes = computed(()=>{
+	let u = GameGlobal.room.value.universes || [];
+	return u;
+});
+export const players = computed(()=>{
+	let u = universes.value as Array<any>;
+	let p = [];
+	for(let universe of u){
+		let players = universe.players;
+		p.push(universe.minister);
+		for(let player of players){
+			p.push(player);
+		}
+	}
+	return p;
+});
+
+export const UniverseDataSlot = forwardRef(function UniverseDataSlot({index=0, name="", funds=0}:{
 	index?:number,
 	name?:string,
 	funds?:number
@@ -31,11 +55,12 @@ const UniverseData = forwardRef(function UniverseData({index=0, name="", funds=0
 		</div>
 	)
 })
-const PlayersData = forwardRef(function PlayersData({index=0, name="", role="A", funds=0}:{
+export const PlayerDataSlot = forwardRef(function PlayerDataSlot({index=0, name="", role="A", funds=0, showFunds=false}:{
 	index?:number,
 	name?:string,
 	role?:string,
 	funds?:number,
+	showFunds?:boolean,
 }, ref:Ref<any>){
 
 
@@ -51,16 +76,20 @@ const PlayersData = forwardRef(function PlayersData({index=0, name="", role="A",
 
 export function ContentStuff(){
 
-	let universesData = universes.value.map((uni, i)=>{
+	console.log({universes:universes.value, players:players.value})
+	console.log("universe type" + typeof universes.value);
+	console.log("player type" + typeof players.value);
+
+	let universesData = universes.value?.map((uni, i)=>{
 		return (
-			<UniverseData key={i} name={uni.name} index={i} funds={uni.funds}/>
+			<UniverseDataSlot key={i} name={uni.minister?.name} index={i} funds={uni.funds}/>
 		)
-	})
-	let playersData = universes.value.map((uni, i)=>{
+	}) || []
+	let playersData = players.value?.map((p, i)=>{
 		return (
-			<PlayersData key={i} name={uni.name} index={i} funds={uni.funds} role={uni.role}/>
+			<PlayerDataSlot showFunds key={i} name={p.name} index={i} funds={p.funds} role={roleToString(p.role)}/>
 		)
-	})
+	}) || [];
 
 
 	return (

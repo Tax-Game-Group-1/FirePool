@@ -137,7 +137,7 @@ export default function CreateSection() {
 					<div className={`${t.solidBorder} border p-2 w-5/6 lg:w-3/4 relative aspect-square flex justify-center items-center rounded-md`}>
 						<div className={`${t.accent} w-full relative aspect-square flex justify-center items-center rounded-md`}>
 							<span className={`absolute z-10 flex justify-center items-center text-center`}>Loading image...</span>
-							<img id="imgIcon" className={`w-full aspect-square relative z-20 rounded-md`} src={getIconURL(currGame.value.gameId).href} alt="game icon"/>
+							<img id="imgIcon" className={`w-full aspect-square relative z-20 rounded-md`} src={getIconURL(currGame.value?.gameId).href} alt="game icon"/>
 						</div>
 					</div>
 				</div>

@@ -13,6 +13,7 @@ export interface PlayerInWaitingRoom {
   name: string;
   ready: boolean;
   socket: Socket | null;
+  timeStamp: number;
 }
 
 export enum PlayerRole {
@@ -29,6 +30,7 @@ export interface PlayerData {
   funds: number;
   hasBeenKicked: boolean;
   role: PlayerRole;
+  hasConsented: boolean;
 }
 
 export interface declareVsPaidTax {

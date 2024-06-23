@@ -7,16 +7,25 @@ import { GameGlobal, playerID } from '@/app/global'
 import { getIconURL } from '@/utils/utils'
 
 import t from "../../../elements.module.scss"
-import { DiceIcon } from '@/assets/svg/svg'
+import { ConfirmTick, DiceIcon } from '@/assets/svg/svg'
 import { computed, signal } from '@preact/signals-react'
 import { useAnimate } from 'framer-motion'
+import { GameState } from '@/interfaces'
+import { switchGameState } from './InGame'
+import Btn from '@/components/Button/Btn'
+import { roleToString } from './Spectate'
 
-let role = computed(()=>{
-	let role = GameGlobal.player.value.type || GameGlobal.player.value.role || "No role";
-	return role;
+export let role = computed(()=>{
+	let role = GameGlobal.player.value.role;
+	return roleToString(role);
 })
 
 let revealed = signal(false);
+
+function onConfirmClick(){
+
+	switchGameState(GameState.UniverseSetup);
+}
 
 export function InfoPop({children, direction="left", isAbsolute=false}:{
 	children?:React.ReactNode,
@@ -133,19 +142,22 @@ export default function RevealCard() {
 	let roleCard = useRef(null);
 
 	async function onClickReveal(){
+		if(revealed.value) return;
+		
 		await animate(revealer.current, {
 			opacity: [1,0],
 			y: [0,100],
 		}, { duration: 0.1, ease: "easeOut" })
+		revealed.value = true;
 		await animate(roleCard.current, {
 			scale: [1,1.3],
 		}, { duration: 0.25, ease: "backInOut" })
-
 
 		revealSideEffects();
 
 	}
 
+	console.log(`role: ${GameGlobal.player.value.role}`);
 
 
 	return (
@@ -166,12 +178,23 @@ export default function RevealCard() {
 						<AvatarIcon url={getIconURL(playerID.value).href}/>
 					</div>
 					<div  className={`relative flex flex-col items-center justify-center w-full m-2`}>
-						<div ref={roleCard} className={`${t.toolBar} rounded-md p-2 absolute flex items-center flex-col w-3/5`}>
-							<div>
+						<div className={` absolute flex items-center justify-center gap-4 flex-col w-3/5`}>
+							<div ref={roleCard} className={`${t.toolBar} rounded-md p-2 w-full flex justify-center`}>
 								{role}
 							</div>
+							<div>
+								<Btn onClick={onConfirmClick}>
+									<div className={`flex flex-row justify-center items-center`}>
+										<div className={``}>
+											<ConfirmTick/>
+										</div>
+										<div>Confirm</div>
+									</div>
+								</Btn>
+							</div>
 						</div>
-						<div ref={revealer} onClick={onClickReveal} className={`${t.solidElement} border p-2 rounded-md absolute flex items-center flex-col w-3/5`}>
+						{
+						 !revealed.value && <div ref={revealer} onClick={onClickReveal} className={`${t.solidElement} border p-2 rounded-md absolute flex items-center flex-col w-3/5`}>
 							<div className={`${t.fillAccent} ${t.solidBG} p-1 rounded-full text-xs w-2/12 md:w-1/12 lg:w-3/12`}>
 								<DiceIcon/>
 							</div>
@@ -179,6 +202,7 @@ export default function RevealCard() {
 								Press to reveal your role
 							</div>
 						</div>
+						}
 					</div>
 				</div>
 			</GameContent>

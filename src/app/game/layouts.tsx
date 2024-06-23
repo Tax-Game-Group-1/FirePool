@@ -6,7 +6,7 @@ import t from '../../elements.module.scss';
 import style from "./layouts.module.scss"
 
 const GameFooter = lazy(() => import('@/components/Game/GameFooter'));
-import InGame from './_content/InGame';
+import InGame, { switchGameState } from './_content/InGame';
 import { signal } from '@preact/signals-react';
 import { WaitingRoom } from './_waiting/waitingRoom';
 import { GameGlobal, gameCodeLength, hostID, loadGameGlobal, playerID, saveGameGlobal } from '@/app/global';
@@ -17,6 +17,7 @@ import Spectate from './_content/Spectate';
 import { socket } from '@/app/socket';
 
 import { UniverseData, PlayerData, PlayerRole } from '&/gameManager/interfaces';
+import { GameState } from '@/interfaces';
 
 let isLoaded = signal(true);
 
@@ -27,10 +28,12 @@ export enum GameScreen {
 	Spectate,
 }
 
-//currently working on spectate, will change later
+// was currently working on reveal card, will change later
+//should be waiting room by default
 export let gameScreen = signal(GameScreen.WaitingRoom);
 
 export function setGameScreen(screen: GameScreen) {
+	console.log(`Screen: ${screen}`);
 	gameScreen.value = screen;
 }
 
@@ -44,7 +47,7 @@ export function onGameStart({success, message, data}){
 	let universes = data.universeData as UniverseData[];
 	//if its hose, just save all universes
 	if(GameGlobal.user.value.id){
-		GameGlobal.room.value.universes = {...universes};
+		GameGlobal.room.value.universes = [...universes];
 
 		console.log("universes for host")
 		console.log(GameGlobal.room.value.universes)
@@ -58,6 +61,11 @@ export function onGameStart({success, message, data}){
 		for(let universe of universes){
 			if(currUniverse && currPlayer) break;
 	
+			if(universe.minister.waitingId == waitingId){
+				currPlayer = universe.minister;
+				currUniverse = universe;
+				break;
+			}
 			let players = universe.players;
 			for(let player of players){
 				if(waitingId == player.waitingId){
@@ -78,11 +86,19 @@ export function onGameStart({success, message, data}){
 
 	saveGameGlobal();
 
-	if(playerID.value > -1){
+	if(GameGlobal.player.value.id !== undefined){
 		setGameScreen(GameScreen.InGame);
-	}else if(hostID.value > -1){
+	}else if(GameGlobal.user.value.id !== undefined){
 		setGameScreen(GameScreen.Spectate);
+	}else{
+		createNotif({
+			content: "Error! Invalid settings for player",
+		})
+		return;
 	}
+
+	console.log("STARTING GAME");
+	switchGameState(GameState.Starting);
 
 }
 
@@ -91,8 +107,6 @@ export async function startGame(){
 	socket.emit("start-game",{
 		code: GameGlobal.room.value.gameCode,
 	});
-
-	socket.once("client-start-game", onGameStart);
 
 }
 
@@ -151,9 +165,20 @@ const Layouts = forwardRef(function Layouts({}, ref:Ref<any>) {
 	
 	useEffect(()=>{
 		socket.connect();
+
 		socket.once("disconnect",(reason)=>{
 			console.log("disconnected");
 			console.log(`reason: ${reason}`)
+
+			// createPopUp({
+			// 	content: "Disconnected from server. Redirecting you back home.",
+			// 	buttons:{
+			// 		"Go back":()=>{
+			// 			window.location.href = "/"
+			// 		}
+			// 	}
+			// })
+			return;
 		})
 
 		loadGameGlobal();
@@ -180,6 +205,7 @@ const Layouts = forwardRef(function Layouts({}, ref:Ref<any>) {
 
 		socket.on("client-roomData", onGetRoomData);
 		socket.on("client-update-players", onUpdatePlayers);
+		socket.on("client-start-game", onGameStart);
 		
 		socket.emit("server-roomData", {
 			code: code,
@@ -191,6 +217,7 @@ const Layouts = forwardRef(function Layouts({}, ref:Ref<any>) {
 			
 			socket.off("client-roomData", onGetRoomData);
 			socket.off("client-update-players", onUpdatePlayers);
+			socket.off("client-start-game", onGameStart);
 
 			socket.disconnect();
 		}

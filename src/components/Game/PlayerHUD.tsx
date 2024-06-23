@@ -7,15 +7,18 @@ import { CurrencyIcon, SettingsIcon, StatsIcon } from "@/assets/svg/icons";
 import t from "../../elements.module.scss";
 import style from "./PlayerHUD.module.scss";
 
-import { computed } from '@preact/signals-react';
+import { computed, signal } from '@preact/signals-react';
 
 import { GameGlobal, playerFunds, playerIconURL, playerName, playerRole } from '@/app/global';
 import { getData } from '@/app/dummyData';
 import { getIconURL } from "@/utils/utils";
 
+export const showPlayerHUD = signal(true);
+
 export const PlayerHUD = forwardRef(function PlayerHUD({}, ref:Ref<any>){
 
 	return (
+		showPlayerHUD.value && 
 		<div ref={ref} className={`${style.playerHUD} ${t.solidElement} ${t.solidText}`}>
 			<div className={`${style.HUDIcon} ${t.toolBar}`}>
 				<div className={`${style.icon} ${t.solidWindow}`}>

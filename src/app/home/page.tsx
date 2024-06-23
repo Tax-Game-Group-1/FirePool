@@ -150,7 +150,7 @@ export async function tryJoin(code:string){
 		},
 		body: JSON.stringify({
 			gameCode: code,
-			waitingId: randomID(),
+			waitingId: randomID('',`${Date.now()}`),
 		}),
 	}).then(r => r.json());
 

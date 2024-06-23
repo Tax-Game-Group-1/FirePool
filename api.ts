@@ -155,7 +155,8 @@ export function setUpServer(server:Express) {
 				socket: null, 
 				roomCode: req.body.gameCode, 
 				waitingId: req.body.waitingId,
-				ready: false
+				ready: false,
+				timeStamp: Date.now()
 			})
 
 			console.log("SENDING RESPONSE TO CLIENT");
@@ -232,6 +233,7 @@ export function setUpServer(server:Express) {
 				roomCode: gameCode,
 				ready: false,
 				socket: null,
+				timeStamp: Date.now()
 			})
 
 			console.log("setting game instance")

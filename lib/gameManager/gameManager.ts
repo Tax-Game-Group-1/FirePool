@@ -8,6 +8,7 @@ import { PlayerInWaitingRoom, PlayerRole, UniverseData, PlayerData, declareVsPai
  */
 
 
+const MAX_WAIT_TIME = 15000;
 
 export class Game {
   //manage the game id
@@ -91,13 +92,16 @@ export class Game {
       waitingId: "",
       ready: true,
       roomCode: "",
+      timeStamp: Date.now()
     };
   }
 
   // waiting area for players who have joined a game, but are not assigned to a universe yet
   public addPlayerToWaitingRoom(waitingPlayer: PlayerInWaitingRoom): void {
+    console.log("adding player with waiting room: " + waitingPlayer.waitingId);
     if (this._playersInWaitingRoom.length >= this.maxPlayers)
       throw "waiting area full";
+
     this._playersInWaitingRoom.push(waitingPlayer);
   }
 
@@ -131,7 +135,7 @@ export class Game {
         return true;
       }
     }
-    console.log("could not find player")
+    console.log("could not find player [gameMamager.ts]")
     return false;
   }
 
@@ -157,48 +161,57 @@ export class Game {
     return this._host;
   }
 
-  public assignNameToPlayerInWaitingRoom(waitingId: string, name: string) {
-    console.log("assigning name to player in game manager...");
-
-    console.log("checking for profanity");
-
-    fetch("https://vfa5gkjsbxwhoxfsdiufnesm6a0bonck.lambda-url.us-east-1.on.aws/", {
-      method: "POST", 
+  public async assignNameToPlayerInWaitingRoom(waitingId: string, name: string): Promise<boolean> {
+    return await fetch("https://vfa5gkjsbxwhoxfsdiufnesm6a0bonck.lambda-url.us-east-1.on.aws/", {
+      method: "POST",
       body: JSON.stringify({
         content: name
       })
-    }).then(result => {
+    }).then(async result => {
+      const res = await result.json();
+      if (res.success) {
 
-      for (const p of this._playersInWaitingRoom) {
-        if (p.waitingId == waitingId) {
-          p.name = name;
-          return;
+        for (const p of this._playersInWaitingRoom) {
+          if (p.waitingId == waitingId) {
+            p.name = res.data.cleanName;
+            return true;
+          }
         }
+
+
+      } else {
+        throw "API call for clean name not successful"
       }
 
-    throw "could not find player";
+      //send a response here to say they could not finde name
+      throw "could not find player";
+    }).catch(e => {
+      console.log("error checking name")
+      console.error(e)
+      return false;
     })
 
   }
 
-  public emitMessageToPlayerInRoom(event, data) {
-    console.log("emitting message to other players to notify them");
-    console.log("player count: ");
-    console.log(this._playersInWaitingRoom.length);
-
+  public emitMessageToPlayers(event, data) {
+    console.log(`emitting [${event}] to players`);
     for (const p of this._playersInWaitingRoom) {
       if (p.socket != null) p.socket.emit(event, data);
     }
 
-    console.log("emitting message to host");
+    for (const u of this._universes) {
+      u.emitMessageToAllPlayersInUniverse(event, data); 
+    }
+
     //notify host
     this._host.socket.emit(event, data);
-    console.log("done emitting message to host");
   }
 
   public getPlayersInWaitingRoomAsJSON() {
     return this._playersInWaitingRoom.map((e) => {
       return {
+        roomCode: e.roomCode,
+        waitingId: e.waitingId,
         name: e.name,
         ready: e.ready,
       };
@@ -215,93 +228,88 @@ export class Game {
 
   public numPlayersNotAssigned = () => this._playersInWaitingRoom.length;
 
-  // take a plyer from the waiting are and put it in a universe object, universes are managed by players
-  public assignPlayerToUniverse(
-    playerId: number,
-    waitingId: string,
-    playerName: string,
-    universeId: string,
-    isLocalWorker: boolean,
-    socket: Socket
-  ) {
-    //find universe
-    let myUniverse: Universe = null;
-    for (let u of this._universes) if (u.id == universeId) myUniverse = u;
-
-    if (myUniverse == null) throw "cannot find universe";
-
-    //find the player and splice it (remove it from the lobby)
-    //then add it to the universe
-
-    for (let i = 0; i < this._playersInWaitingRoom.length; i++)
-      if (this._playersInWaitingRoom[i].waitingId == waitingId) {
-        const tempPlayer = this._playersInWaitingRoom[i];
-        this._playersInWaitingRoom.splice(i, 1);
-
-        if (isLocalWorker)
-          myUniverse.addPlayer(new LocalWorker(playerName, playerId, socket, waitingId, PlayerRole.LOCAL_WORKER));
-        else
-          myUniverse.addPlayer(new ForeignWorker(playerName, playerId, socket, waitingId, PlayerRole.FOREIGN_WORKER));
-
-        return;
-      }
-
-    throw "unable to find player, player not added";
+  public playerConsent(id: number, hasConsented: boolean) {
+    for (let u of this._universes) { 
+      if (u.playerConsent(id, hasConsented))
+        return ;
+    }
+    throw "Could not find player to consent"
   }
 
-
-  public getAllUniverses() : UniverseData[] {
-    let universeData: UniverseData[];
+  public getAllUniversesAsJSON(): UniverseData[] {
+    let universeData: UniverseData[] = [];
 
     this._universes.forEach(u => {
-      universeData.push(u.getUniverseData());
+      universeData.push(u.getUniverseDataAsJSON());
     });
 
     return universeData;
   }
 
-  private getRandomPlayerFromWaitingRoom() {
-        if (this._playersInWaitingRoom.length == 0)
-            throw "can't get random player from empty waiting room";
+  private getRandomPlayerFromWaitingRoom() : PlayerInWaitingRoom | null {
+    if (this._playersInWaitingRoom.length == 0)
+      return null;
 
-        let randInd = _.random(0, this._playersInWaitingRoom.length);
-        const player = this._playersInWaitingRoom[randInd];
-        this._playersInWaitingRoom.splice(randInd, 1);
-        return player;
+    let randInd = _.random(0, this._playersInWaitingRoom.length - 1);
+    const player = this._playersInWaitingRoom[randInd];
+    this._playersInWaitingRoom.splice(randInd, 1);
+    return player;
+  }
+
+
+  public purgeNullPlayers(checkTimestamp: boolean) {
+    for (let i = 0; i < this._playersInWaitingRoom.length; i++)
+      if (this._playersInWaitingRoom[i].name == null)
+        if (!checkTimestamp)
+          this._playersInWaitingRoom.splice(i, 1);
+        else {
+          let currTime = Date.now();
+          let timePassed = currTime - this._playersInWaitingRoom[i].timeStamp; 
+          if (timePassed > MAX_WAIT_TIME)
+            this._playersInWaitingRoom.splice(i, 1);
+        }
+
   }
 
   public addUniversesAndDividePlayers() {
+    this.purgeNullPlayers(false);
+    
     const numPlayers = this._playersInWaitingRoom.length;
 
-    let numUniverses = Math.floor(5  * Math.log(numPlayers + 4) - 3);
-        if (numUniverses < 2)
-            numUniverses = 2;
+    let numUniverses = Math.floor(5 * Math.log10(numPlayers + 4) - 3);
+    if (numUniverses < 2)
+      numUniverses = 2;
 
     const playersPerUniverse = Math.floor(this._playersInWaitingRoom.length / numUniverses);
-
     console.log("creating " + numUniverses + " universes with " + playersPerUniverse + " in each universe");
-    let currentPlayerCount = 0; 
-    let totalPlayerCount = 0; 
-	  for (let i = 0; i < numUniverses; i++) {
-        //get the minister and assign
-        const ministerWaiting = this.getRandomPlayerFromWaitingRoom();
-        currentPlayerCount++;
-        totalPlayerCount++;
+    let currPlayerId = 0; 
 
-        //create a minister and a universe
-        const minister = new Minister(ministerWaiting.name, totalPlayerCount++, ministerWaiting.socket, ministerWaiting.waitingId, PlayerRole.MINISTER); 
-        this._universes.push(new Universe(minister, 0.5, i.toString()))
+    for (let i = 0; i < numUniverses; i++) {
+      const ministerWaiting = this.getRandomPlayerFromWaitingRoom()
+      const minister = new Minister(ministerWaiting.name, currPlayerId++, ministerWaiting.socket, ministerWaiting.waitingId, PlayerRole.MINISTER);
+      this._universes.push(new Universe(minister, 0, i.toString()))
+    }
 
+    let player = this.getRandomPlayerFromWaitingRoom();
+    let count = 0; 
 
-        //assign the players until the correct count is reached
-        while (currentPlayerCount < playersPerUniverse) {
-            const randomPlayer = this.getRandomPlayerFromWaitingRoom();
-            const isLocalWorker = _.random(0, 1) == 0;
-            this.assignPlayerToUniverse(totalPlayerCount++, randomPlayer.waitingId, randomPlayer.name, i.toString(), isLocalWorker, randomPlayer.socket);
-        }
-
-        currentPlayerCount = 0; 
+    while (player != null) {
+      const universe = this._universes[count++ % numUniverses];
+      
+      if (_.random(0, 1) == 0) {
+        console.log("adding local worker to universe ")
+         universe.addPlayer(new LocalWorker(player.name, currPlayerId++, player.socket, player.waitingId, PlayerRole.LOCAL_WORKER))
       }
+      else  {
+        console.log("adding foreign worker to universe ")
+        universe.addPlayer(new ForeignWorker(player.name, currPlayerId++, player.socket, player.waitingId, PlayerRole.FOREIGN_WORKER))
+      }
+
+      player = this.getRandomPlayerFromWaitingRoom();
+    }
+
+    console.log("ADDED " + currPlayerId + " PLAYERS")
+
   }
   // add univers from the database to the game
   public addUniverse(universe: Universe) {
@@ -310,6 +318,15 @@ export class Game {
 
     this._universes.push(universe);
     return universe.id;
+  }
+
+  public getUniverseById(id: string) {
+    for (let u of this._universes)
+      if (u.id == id) 
+        return u;
+
+    throw "cannot find universe with id " + id;
+
   }
 
   //get the id of the game
@@ -410,6 +427,7 @@ export class Game {
 
 
 export class Universe {
+ 
   public readonly minister: Minister;
   public readonly taxRate: number;
   private _players: Citizen[];
@@ -438,6 +456,37 @@ export class Universe {
       const random = Math.random();
       if (random <= auditProbability) c.audit(finePercent);
     }
+  }
+
+  emitMessageToAllPlayersInUniverse(event: any, data: any) {
+    // console.log("emmitting message to players in universe" + this._id);
+    for (const p of this._players) {
+      // console.log("emitting to player in universe: " + p.name);
+      if (p.client != null) 
+        p.client.emit(event, data);
+      else 
+        console.log("ERROR: PLAYER SOCKET IS NULL");
+    }
+    // console.log("emitting to minister: " + this.minister.name);
+    this.minister.client.emit(event, data);
+  }
+
+  public playerConsent(id: number, hasConsented: boolean) : boolean {
+    //check minister
+    if (this.minister.id == id) {
+      this.minister.hasConsented = hasConsented;
+      return true;
+    }
+
+    for (let p of this._players) {
+      if (p.id == id) {
+        p.hasConsented = hasConsented;
+        console.log("CLIENT CONSENTED: " + p.name);
+        return true;
+      }
+    }
+
+    return false;
   }
 
   //get the universe id
@@ -480,7 +529,7 @@ export class Universe {
     }
   }
 
-  public getUniverseData() : UniverseData {
+  public getUniverseDataAsJSON(): UniverseData {
     let playerData: PlayerData[] = [];
 
     for (const p of this._players) {
@@ -490,7 +539,7 @@ export class Universe {
     return {
       id: this._id,
       minister: this.minister.toJSON(),
-      taxRate: this.taxRate, 
+      taxRate: this.taxRate,
       players: playerData
     }
 
@@ -510,11 +559,12 @@ export class Universe {
 export abstract class Player {
   private _name: string;
   private _id: number;
-  private _waitingId: string; 
+  private _waitingId: string;
   client: Socket;
   private _funds;
   private _hasBeenKicked;
-  private _role;
+  private _role: PlayerRole;
+  private _hasConsented: boolean;
 
   constructor(id: number, name: string, client: Socket, waitingId: string, role: PlayerRole) {
     this._id = id;
@@ -523,6 +573,15 @@ export abstract class Player {
     this._funds = 0;
     this._waitingId = waitingId;
     this._role = role;
+    this._hasConsented = false;
+  }
+
+  public set hasConsented(value: boolean) {
+    this._hasConsented = value;
+  }
+
+  public get hasConsented() {
+    return this._hasBeenKicked;
   }
 
   public get name() {
@@ -559,9 +618,9 @@ export abstract class Player {
     return this._hasBeenKicked;
   }
 
-  public abstract toJSON() : PlayerData;
+  public abstract toJSON(): PlayerData;
 
-  protected getJSON(role: PlayerRole) : PlayerData {
+  protected getJSON(role: PlayerRole): PlayerData {
     return {
       role: role,
       id: this._id,
@@ -569,7 +628,8 @@ export abstract class Player {
       funds: this._funds,
       hasBeenKicked: this._hasBeenKicked,
       waitingId: this._waitingId,
-      socketId: this.client.id
+      socketId: this.client.id,
+      hasConsented: this._hasConsented
     };
   }
 }
