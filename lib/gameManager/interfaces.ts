@@ -33,8 +33,20 @@ export interface PlayerData {
   hasConsented: boolean;
 }
 
-export interface declareVsPaidTax {
+//delcared vs paid 
+
+export interface declarePlayerArray {
   incomeReceived: number;
   declared: number;
   calculatedTax: number;
+}
+
+export interface declarePlayer {
+  id: number, 
+  delcared: declarePlayerArray[]
+}
+
+export interface declaredVsPaidUniverse {
+  universeId: string, 
+  declaredVsPaidPlayers: declarePlayer[]
 }

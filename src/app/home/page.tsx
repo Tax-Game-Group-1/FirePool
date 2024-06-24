@@ -197,7 +197,22 @@ export default function Home() {
 	});
 
 	useEffect(()=>{
+
+		let url = new URL(window.location.href);
+
+		let searchParams = url.searchParams;
+		let code = searchParams.get("code");
+		if(!code){
+			code = searchParams.get("c");
+		}
+		if(code){
+			tryJoin(code);
+			goToSection(PageSection.Join);
+			return;
+		}
+
 		goToSection(PageSection.Splash);
+		
 	},[])
 
 	return (

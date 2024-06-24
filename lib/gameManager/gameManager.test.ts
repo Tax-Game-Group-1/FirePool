@@ -130,27 +130,27 @@ describe('test the game manager', () => {
 
         //pay 3 times
         console.log("CITIZEN = FUNCDS")
-        citizens[0].payTaxAndRevieve(100, 100, 100 * TAX_PERCENT_TO_PAY); // + 60
+        citizens[0].payTaxAndReceive(100, 100, 100 * TAX_PERCENT_TO_PAY); // + 60
         console.log(citizens[0].funds);
-        citizens[0].payTaxAndRevieve(30, 30, 30 * TAX_PERCENT_TO_PAY); // + 18
+        citizens[0].payTaxAndReceive(30, 30, 30 * TAX_PERCENT_TO_PAY); // + 18
         console.log(citizens[0].funds);
-        citizens[0].payTaxAndRevieve(40, 40, 40 * TAX_PERCENT_TO_PAY); // + 24 = 102
+        citizens[0].payTaxAndReceive(40, 40, 40 * TAX_PERCENT_TO_PAY); // + 24 = 102
         console.log(citizens[0].funds);
 
         //pay 3 times, but lie
-        citizens[1].payTaxAndRevieve(100, 50, 50 * TAX_PERCENT_TO_PAY) // pay 60 penalty
+        citizens[1].payTaxAndReceive(100, 50, 50 * TAX_PERCENT_TO_PAY) // pay 60 penalty
  
-        citizens[1].payTaxAndRevieve(100, 40, 40 * TAX_PERCENT_TO_PAY) // pay 72 penalty
+        citizens[1].payTaxAndReceive(100, 40, 40 * TAX_PERCENT_TO_PAY) // pay 72 penalty
 
-        citizens[1].payTaxAndRevieve(100, 30, 30 * TAX_PERCENT_TO_PAY) // pay 84 penalty = 216
+        citizens[1].payTaxAndReceive(100, 30, 30 * TAX_PERCENT_TO_PAY) // pay 84 penalty = 216
       
 
         expect(citizens[1].funds).toBe(252); 
 
         //pay 3 times
-        citizens[2].payTaxAndRevieve(100, 50, 50 * TAX_PERCENT_TO_PAY) //pay 60
-        citizens[2].payTaxAndRevieve(100, 100, 100 * TAX_PERCENT_TO_PAY)
-        citizens[2].payTaxAndRevieve(100, 20, 20 * TAX_PERCENT_TO_PAY)  //pay 96 total penalty 156
+        citizens[2].payTaxAndReceive(100, 50, 50 * TAX_PERCENT_TO_PAY) //pay 60
+        citizens[2].payTaxAndReceive(100, 100, 100 * TAX_PERCENT_TO_PAY)
+        citizens[2].payTaxAndReceive(100, 20, 20 * TAX_PERCENT_TO_PAY)  //pay 96 total penalty 156
         expect(citizens[2].funds).toBe(232); 
 
 

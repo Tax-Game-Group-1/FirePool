@@ -18,7 +18,7 @@ import { createPopUp } from '../PopUp/PopUp';
 
 import { computed } from '@preact/signals-react';
 
-import { gameCode, GameGlobal, maxNumOfPlayers, numOfPlayers } from '@/app/global';
+import { gameCode, GameGlobal } from '@/app/global';
 
 ///Computed global data
 let hostName = computed(()=>{
@@ -29,7 +29,28 @@ let gameName = computed(()=>{
 	let name = GameGlobal.room.value.name || GameGlobal.room.value.gameName || "";
 	return name;
 })
-
+export let maxNumOfPlayers = computed(()=>{
+	let num = GameGlobal.room.value.maxPlayers || GameGlobal.room.value.maxNumberOfPlayers || 0;
+	return num;
+})
+export let numOfPlayers = computed(()=>{
+	let players = [];
+	if(GameGlobal.room.value.universes){
+		let universes = GameGlobal.room.value.universes;
+		for(let uni of universes){
+			players.push(uni.minister);
+			for(let p of uni.players){
+				players.push(p);
+			}
+		}
+	}else if(GameGlobal.room.value.playersInRoom){
+		let playersInRoom = GameGlobal.room.value.playersInRoom
+		for(let p of playersInRoom){
+			players.push(p);
+		}
+	}
+	return players.length;
+})
 
 const MatchMedia = dynamic(async() => {
 	let x = await import('@/components/useMediaQuery/useMediaQuery')
@@ -91,8 +112,11 @@ const GameFooter = forwardRef(function GameFooter(props,ref:Ref<any>) {
 					<div 
 						className={`${style.roomCodeCopyCont} ${theme.strokeSolidText}`}
 						onClick={async()=>{
-							let url = new URL(window.location.href);
-							await copyToClipboard(url.href);
+							let url = new URL(location.href);
+							let host = url.host;
+
+							let _url = `http://${host}/home?c=${gameCode.value}`;
+							await copyToClipboard(gameCode.value);
 
 							let notifData = (
 								<p className={`mx-4`}>Copied to clipboard!</p>
@@ -173,7 +197,7 @@ const GameFooter = forwardRef(function GameFooter(props,ref:Ref<any>) {
 						className={`${style.roomCodeCopyCont} ${theme.strokeSolidText}`}
 						onClick={async()=>{
 							let url = new URL(window.location.href);
-							await copyToClipboard(url.href);
+							await copyToClipboard(gameCode.value);
 
 							let notifData = (
 								<p className={`mx-4`}>Copied to clipboard!</p>

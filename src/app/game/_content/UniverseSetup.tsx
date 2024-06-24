@@ -13,6 +13,8 @@ import t from "../../../elements.module.scss"
 import { computed } from '@preact/signals-react'
 import { PlayerDataSlot, roleToString } from './Spectate'
 import { PlayerRole } from '&/gameManager/interfaces'
+import { GameState } from '@/interfaces'
+import { switchGameState } from './InGame'
 
 let players = computed(()=>{
 	let players = GameGlobal.universe.value.players || [];
@@ -20,9 +22,20 @@ let players = computed(()=>{
 })
 
 let role = computed(()=>{
-	let role = GameGlobal.player.value.type || GameGlobal.player.value.role || -1;
+	let role = GameGlobal.player.value.role;
 	return role;
 })
+
+function onProceed(){
+    console.log({role: role.value});
+    console.log({playerRole: PlayerRole.MINISTER});
+    
+    if(role.value == PlayerRole.MINISTER){
+        switchGameState(GameState.TaxRateSet);
+    }else if(role.value){
+        switchGameState(GameState.SalarySet);
+    }
+}
 
 export default function UniverseSetup() {
 
@@ -70,7 +83,7 @@ export default function UniverseSetup() {
                                 }
 								</div>
 								<div className={``}>
-									<Btn>
+									<Btn onClick={onProceed}>
 										<div className={`flex flex-row justify-center items-center`}>
 											<div>Enter</div>
 											<div>

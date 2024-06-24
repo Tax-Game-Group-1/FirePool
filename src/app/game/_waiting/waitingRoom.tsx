@@ -17,7 +17,7 @@ import { PopUpContainer } from '@/components/PopUp/PopUp';
 import NameRoom from './namingRoom';
 import { useSignals } from '@preact/signals-react/runtime';
 import { signal } from '@preact/signals-react';
-import { GameGlobal, hostID } from '@/app/global';
+import { GameGlobal, gameCode, hostID } from '@/app/global';
 
 import { socket } from "@/app/socket"
 
@@ -51,7 +51,10 @@ export const CurrentURL = forwardRef(function CurrentURL({}, ref:Ref<any>){
 
 	useEffect(() => {
 		if(!url){
-			setUrl(window.location.href);
+			let _url = new URL(location.href);
+			let host = _url.host;
+
+			setUrl(`http://${host}/home?c=${gameCode.value}`);
 		}
 	},[])
 

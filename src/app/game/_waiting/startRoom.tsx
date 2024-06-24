@@ -93,16 +93,22 @@ export function PlayerCards(){
 					</div>
 					<div className={`flex justify-center items-center gap-4 p-1 h-10`}>
 						<span className={`aspect-square h-full`} onClick={async()=>{
-							let url = new URL(window.location.href);
-							await shareURL(url);
+							let url = new URL(location.href);
+							let host = url.host;
+
+							let _url = `http://${host}/home?c=${gameCode.value}`;
+							await shareURL(new URL(_url));
 						}}>
 							<SVGIcon>
 								<ShareIcon className={`${t.fillSolidText}`}/>
 							</SVGIcon>
 						</span>
 						<span className={`aspect-square h-full`} onClick={async()=>{
-							let url = new URL(window.location.href);
-							await copyToClipboard(url.href);
+							let url = new URL(location.href);
+							let host = url.host;
+
+							let _url = `http://${host}/home?c=${gameCode.value}`;
+							await copyToClipboard(gameCode.value);
 
 							let notifData = (
 								<p className={`mx-4`}>Copied to clipboard!</p>

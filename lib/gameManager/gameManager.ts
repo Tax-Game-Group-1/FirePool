@@ -1,14 +1,14 @@
 import _ from "lodash";
 import { Socket } from "socket.io";
-import { PlayerInWaitingRoom, PlayerRole, UniverseData, PlayerData, declareVsPaidTax } from "./interfaces";
+import { PlayerInWaitingRoom, PlayerRole, UniverseData, PlayerData, declarePlayer, declaredVsPaidUniverse, declarePlayerArray } from "./interfaces";
 
 /*
  GAME:
   | id | penalty | roundNumber | taxCoefficient | maxPlayers | auditProbability | kickPlayersOnBankruptcy |
  */
 
-
 const MAX_WAIT_TIME = 15000;
+
 
 export class Game {
   //manage the game id
@@ -125,7 +125,28 @@ export class Game {
     throw "could not find player";
   }
 
+  public allHavePaid() {
+    for (const u of this._universes) {
+      if (!u.allCitizensHavePaidInUniverse())
+        return false;
+    }
 
+    return true;
+  }
+
+  public getDeclaredVsPaidTaxForAllUniverses(): declaredVsPaidUniverse[] {
+    let declareVsPaidGame : declaredVsPaidUniverse[]= [];
+    for (const u of this._universes) {
+        declareVsPaidGame.push(u.getIncomeVsDeclared())
+    }
+    return declareVsPaidGame;
+  }
+
+  resetAllHavePaid() {
+    for (const u of this._universes) {
+      u.resetHasPaidForAllCitizens()
+    }
+  }
   public removePlayerWithSocket(socketId: string): boolean {
     for (let i = 0; i < this._playersInWaitingRoom.length; i++) {
       const p = this._playersInWaitingRoom[i];
@@ -256,7 +277,6 @@ export class Game {
     return player;
   }
 
-
   public purgeNullPlayers(checkTimestamp: boolean) {
     for (let i = 0; i < this._playersInWaitingRoom.length; i++)
       if (this._playersInWaitingRoom[i].name == null)
@@ -269,6 +289,13 @@ export class Game {
             this._playersInWaitingRoom.splice(i, 1);
         }
 
+  }
+
+  public getDeclaredVsPaid() : declaredVsPaidUniverse[] {
+    let result : declaredVsPaidUniverse[] = [];
+    for (const u of this._universes)
+      result.push(u.getIncomeVsDeclared())
+    return result;
   }
 
   public addUniversesAndDividePlayers() {
@@ -425,13 +452,12 @@ export class Game {
  | id | gameID | ministerID | taxRate |
  */
 
-
 export class Universe {
  
   public readonly minister: Minister;
   public readonly taxRate: number;
   private _players: Citizen[];
-  private _id;
+  private _id: string;
 
   constructor(minister: Minister, taxRate: number, id: string) {
     this.minister = minister;
@@ -457,6 +483,31 @@ export class Universe {
       if (random <= auditProbability) c.audit(finePercent);
     }
   }
+
+  getIncomeVsDeclared(): declaredVsPaidUniverse {
+    let result: declarePlayer[] = [];
+    for (const p of this._players)
+      result.push(p.getIncomeVsDeclaredArray())
+
+    return {
+      universeId: this._id,
+      declaredVsPaidPlayers: result
+    }
+  }
+
+  allCitizensHavePaidInUniverse() {
+    for (const c of this._players)
+      if (c.hasPaid == false)
+        return false;
+
+    return true;
+  }
+
+  resetHasPaidForAllCitizens() {
+    for (const c of this._players)
+      c.hasPaid = false;
+  }
+
 
   emitMessageToAllPlayersInUniverse(event: any, data: any) {
     // console.log("emmitting message to players in universe" + this._id);
@@ -543,6 +594,16 @@ export class Universe {
       players: playerData
     }
 
+  }
+
+  public citizenPayTax(playerId: number, declared: number, received: number, calculatedTax: number) {
+    for (const citizen of this._players) {
+      if (citizen.id == playerId) {
+        citizen.payTaxAndReceive(received, declared, calculatedTax);
+        return ;
+      }
+    }
+    throw "could not find player to pay tax"
   }
 
 }
@@ -652,20 +713,35 @@ export class Minister extends Player {
   }
 }
 
-
-
 export abstract class Citizen extends Player {
   //player
-  private declaredArray: declareVsPaidTax[];
+  private declaredArray: declarePlayerArray[];
+  private _hasPaid : boolean;
 
   constructor(name: string, id: number, client: Socket, waitingId: string, playerRole: PlayerRole) {
     super(id, name, client, waitingId, playerRole);
     this.declaredArray = Array();
+    this._hasPaid = false;
+  }
+
+  public getIncomeVsDeclaredArray(): declarePlayer {
+    return {
+      id: this.id,
+      delcared: this.declaredArray
+    }
+  }
+
+  public set hasPaid(value: boolean) {
+    this._hasPaid = value;
+  }
+
+  public get hasPaid() {
+    return this._hasPaid;
   }
 
   //todo: continue with this
   //subtract from funds to pay the tax
-  public payTaxAndRevieve(
+  public payTaxAndReceive(
     received: number,
     declared: number,
     calculatedTax: number
@@ -675,13 +751,16 @@ export abstract class Citizen extends Player {
       declared: declared,
       calculatedTax: calculatedTax,
     });
+    
+
+    this.hasPaid = true;
 
     this.receiveFunds(received - calculatedTax);
   }
 
   public audit(finePercent) {
     //loop through the declared array
-    //check that declared is the same as recieved
+    //check that declared is the same as received
     //if there is a discrepency, fix it (set declared = recievd) && set a flag to fine player
     //if flag is true: funds -= funds * finepercent
     //get penalty from game ojbect

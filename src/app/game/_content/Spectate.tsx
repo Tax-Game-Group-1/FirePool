@@ -93,7 +93,7 @@ export function ContentStuff(){
 
 
 	return (
-		<GameContent id={``} className={` w-full md:w-5/6 h-full`}>
+		<GameContent isSub id={``} className={` w-full md:w-5/6 h-full`}>
 			<div className={`p-4 gap-2 grid grid-cols-12 w-full `}>
 				<div className={` col-span-5 flex flex-col gap-2`}>
 					<div className={`flex flex-row justify-between gap-2`}>

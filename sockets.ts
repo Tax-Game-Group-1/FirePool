@@ -1,7 +1,7 @@
 import { Server, Socket } from "socket.io";
 import { getGameInstanceByGameCode, removeWaitingPlayerFromAllGameInstancesBySocket } from "server";
 import { PlayerInWaitingRoom } from "&/gameManager/interfaces";
-import { Game } from "&/gameManager/gameManager";
+import { Game, Universe } from "&/gameManager/gameManager";
 
 export const setUpSocket = (io: Server) => {
   //--------------------------- socket stuff -------------------------//
@@ -13,18 +13,18 @@ export const setUpSocket = (io: Server) => {
    */
   //handle the connection of players
 
-  let purgePlayersInterval; 
+  let purgePlayersInterval;
 
   io.on("connection", (socket) => {
     console.log("Player connected to the socket...");
 
     //add the player to the waiting area, create a waitng player
     socket.on("server-roomData", ({ code, hostID, waitingId }) => {
-      console.log("recieved by socket");
+      console.log("received by socket");
       console.log(hostID, " ", waitingId, " ", code);
 
       if (waitingId != null && hostID == null) console.log("Player joined");
-      else if (hostID != null)  {
+      else if (hostID != null) {
         // purgePlayersInterval = setInterval(() => doSocketAction(Action.PURGE_NULL_PLAYERS, null, code), 45000);
         console.log("host joined");
       }
@@ -110,23 +110,35 @@ export const setUpSocket = (io: Server) => {
       UPDATE_READY,
       DISCONNECT,
       CONSENT,
-      PURGE_NULL_PLAYERS
+      PURGE_NULL_PLAYERS,
+      SET_TAX_RATE,
+      CITIZENS_PAY_TAX
     }
 
-    let mutex = Promise.resolve(); 
+    let mutex = Promise.resolve();
 
     const doSocketAction = async (a: Action, params: any, code) => {
 
       await mutex;
 
-      let game : Game;
+      let game: Game;
       if (code != null)
         game = getGameInstanceByGameCode(code);
+      let universe: Universe | null;
+      if (params.universeId != null) {
+        universe = game.getUniverseById(params.universeId)
+        if (universe == null)
+          throw "cannot find universe"
+      }
+
+
+      let hasPaidInterval;
 
       try {
         switch (a) {
           case Action.ASSIGN_NAME:
-            if (params.name == null) throw "name is  null";
+            if (params.name == null) throw "name is  null (socket.ts)";
+
             const result = await game.assignNameToPlayerInWaitingRoom(params.waitingId, params.name);
             if (result != true) {
               game.emitMessageToPlayers("client-update-players", {
@@ -135,22 +147,63 @@ export const setUpSocket = (io: Server) => {
               });
               return;
             }
+
             break;
+
           case Action.UPDATE_READY:
-            if (params.ready == null) throw "ready is  null";
+            if (params.ready == null) throw "ready is  null (socket.ts)";
             game.updateReadyState(params.waitingId, params.ready);
+
             break;
+
           case Action.CONSENT:
-            if (params.playerId == null || params.hasConsented == null)
-              throw "Cannot consent, parameters are null";
-              game.playerConsent(params.playerId, params.hasConsented);
-            break; 
+            if (params.playerId == null || params.hasConsented == null) throw "Cannot consent, parameters are null (socket.ts)";
+            game.playerConsent(params.playerId, params.hasConsented);
+
+            break;
+
           case Action.DISCONNECT:
             console.log("player disconnected")
+
+            break;
+
+          case Action.SET_TAX_RATE:
+            if (params.taxRate == null) throw "cannot set tax rate if null (socket.ts)"
+            if (params.universeId == null) throw "cannot set tax rate if universe id is null (socket.ts)"
+            if (game.getUniverseById(params.universeId) == null) throw "ucannot set tax rate if universe is null (socket.ts)"
+
+            universe.minister.setTaxRate(game, params.taxRate);
+            universe.resetHasPaidForAllCitizens();
+            hasPaidInterval = setInterval(() => {
+              if (game.allHavePaid()) {
+                //reset paid for all universes
+                game.resetAllHavePaid();
+                //send socket to client to say that they have paid
+                game.emitMessageToPlayers("client-paid-tax", {
+                  success: true,
+                  data: game.getDeclaredVsPaidTaxForAllUniverses()
+                })
+                clearInterval(hasPaidInterval);
+              }
+
+            }, 2500);
+
+            break;
+
+          case Action.CITIZENS_PAY_TAX:
+            if (params.declared == null) throw "cannot pay tax because declared is null (socket.ts)"
+            if (params.received == null) throw "cannot pay tax because received is null (socket.ts)"
+            if (params.playerId == null) throw "cannot pay tax because playerId is null (socket.ts)"
+            if (params.calculatedTax == null) throw "cannot pay tax because calculated tax is null (socket.ts)"
+
+            universe.citizenPayTax(params.playerId, params.declared, params.received, params.calculatedTax);
+
+            break;
+
           default:
+            throw "undefined action"
         }
 
-        console.log("emmitting message")
         game.emitMessageToPlayers("client-update-players", {
           success: true,
           data: {
@@ -168,23 +221,23 @@ export const setUpSocket = (io: Server) => {
       }
     };
 
-    socket.on("sign-consent", ({playerId, hasConsented, code }) => {
-      // console.log("------------------sign consent socket-----------------");
-      // console.log(playerId);
-      // console.log(hasConsented);
-      // console.log(code);
-      // console.log("--------------------------------------------------------")
+    socket.on("set-tax-rate", ({ code, taxRate, universeId }) => {
+      doSocketAction(Action.SET_TAX_RATE, { taxRate, universeId }, code);
+    })
 
-      doSocketAction(Action.CONSENT, { playerId, hasConsented}, code);
+    socket.on("pay-tax", ({ code, declared, received, universeId }) => {
+      doSocketAction(Action.CITIZENS_PAY_TAX, { declared, received, universeId }, code)
+    })
+
+    socket.on("sign-consent", ({ playerId, hasConsented, code }) => {
+      doSocketAction(Action.CONSENT, { playerId, hasConsented }, code);
     })
 
     socket.on("update-name", ({ name, waitingId, code }) => {
-      console.log("updating name");
       doSocketAction(Action.ASSIGN_NAME, { waitingId, name }, code);
     });
 
-    socket.on("update-ready", ({ waitingId, ready, code}) => {
-      console.log("notifying players of ready state on server");
+    socket.on("update-ready", ({ waitingId, ready, code }) => {
       doSocketAction(Action.UPDATE_READY, { waitingId, ready }, code);
     });
 

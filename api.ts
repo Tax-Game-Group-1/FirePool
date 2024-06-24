@@ -184,7 +184,7 @@ export function setUpServer(server:Express) {
 	//sets the game instance on the server when the admin starts the game
 	server.post("/startGame", async(req, res) => {
 
-		console.log("open game request recieved...");
+		console.log("open game request received...");
 		console.log("set game instance")
 
 		const id = req.body.id; 

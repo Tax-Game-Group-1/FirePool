@@ -15,6 +15,8 @@ import { createPopUp} from '@/components/PopUp/PopUp';
 import { createNotif} from '@/components/Notification/Notification';
 import Spectate from './_content/Spectate';
 import { socket } from '@/app/socket';
+import {  } from '&/gameManager/interfaces';
+
 
 import { UniverseData, PlayerData, PlayerRole } from '&/gameManager/interfaces';
 import { GameState } from '@/interfaces';
@@ -128,6 +130,7 @@ function onUpdatePlayers({data, message, success}){
 	GameGlobal.room.value = {
 		...roomData, 
 		playersInRoom: data.playersInRoom,
+		universes: data.universeData,
 		hostName: data.hostName,
 		gameName: data.name,
 	};

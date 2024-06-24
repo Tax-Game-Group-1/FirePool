@@ -13,7 +13,18 @@ import { showPlayerHUD } from '@/components/Game/PlayerHUD'
 import { showWorldHUD } from '@/components/Game/WorldHUD'
 import UniverseSetup from './UniverseSetup'
 import { games } from '@/app/host/page'
+import { PlayerRole } from '&/gameManager/interfaces'
+import { GameGlobal } from '@/app/global'
+import {computed} from "@preact/signals-react"
+import TaxRateSet from './TaxRateSet'
+import SalarySet from './SalarySet'
+import TaxDeclare from './TaxDeclare'
+import { AuditCitizen, AuditMinister } from './Audit'
 
+export let role = computed(()=>{
+	let role = GameGlobal.player.value.role;
+	return role;
+})
 
 //initial is waiting
 export const gameState = signal(GameState.Waiting);
@@ -87,17 +98,17 @@ export default function InGame() {
 		case GameState.Starting:{
 			showPlayerHUD.value = false;
 			showWorldHUD.value = false;
-			content = (<ConsentForm/>)
+			// content = (<ConsentForm/>)
 		} break;
 		case GameState.RolePicking:{
 			showPlayerHUD.value = false;
 			showWorldHUD.value = false;
-			content = (<RevealCard/>)
+			// content = (<RevealCard/>)
 		} break;
 		case GameState.UniverseSetup:{
 			showPlayerHUD.value = false;
 			showWorldHUD.value = false;
-			content = (<UniverseSetup/>)
+			// content = (<UniverseSetup/>)
 		} break;
 		default: 
 			console.log("SHOW CARD ON GAME STATE FAILED")
@@ -124,7 +135,31 @@ export default function InGame() {
 					{
 						gameState.value == GameState.UniverseSetup && <UniverseSetup />
 					}
-					{/* {content} */}
+					{
+						//role is minister, declare the tax
+						role.value == PlayerRole.MINISTER && 
+						gameState.value == GameState.TaxRateSet && <TaxRateSet />
+					}
+					{
+						//role is foreign worker or local worker, set the salary
+						(role.value == PlayerRole.FOREIGN_WORKER || role.value == PlayerRole.LOCAL_WORKER) &&
+							 gameState.value == GameState.SalarySet && <SalarySet />
+					}
+					{
+						//role is foreign worker or local worker, declare tax
+						(role.value == PlayerRole.FOREIGN_WORKER || role.value == PlayerRole.LOCAL_WORKER) &&
+							 gameState.value == GameState.TaxDeclare && <TaxDeclare />
+					}
+					{
+						//role is foreign worker or local worker, declare tax
+						(role.value == PlayerRole.FOREIGN_WORKER || role.value == PlayerRole.LOCAL_WORKER) &&
+							 gameState.value == GameState.Audit && <AuditCitizen />
+					}
+					{
+						//role is foreign worker or local worker, declare tax
+						(role.value == PlayerRole.MINISTER) &&
+							 gameState.value == GameState.Audit && <AuditMinister />
+					}
 				</GameContentContainer>
 			</ContentLayer>
 
