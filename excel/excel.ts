@@ -1,6 +1,7 @@
 import ExcelJS from 'exceljs';
 import { WGame, WPlayer, WRounds } from '../lib/gameManager/interfaces';
 
+//run with ts-node excel.ts
 export const createExcelWorkbook = (creatorName: string, gameName: string, game: WGame) => {
     const workbook = new ExcelJS.Workbook();
     workbook.lastModifiedBy = creatorName;
@@ -33,18 +34,18 @@ export const createExcelWorkbook = (creatorName: string, gameName: string, game:
         });
     };
 
-    // Admin sheet
-    const adminSheetData = [{
-        adminId: game.admin.adminId,
-        adminEmail: game.admin.email,
-        adminName: game.admin.name,
-    }];
-    const adminColumns = [
-        { header: 'adminId', key: 'adminId' },
-        { header: 'adminEmail', key: 'adminEmail' },
-        { header: 'adminName', key: 'adminName' },
-    ];
-    addSheetData('Admin', adminSheetData, adminColumns);
+    // // Admin sheet
+    // const adminSheetData = [{
+    //     adminId: game.admin.adminId,
+    //     adminEmail: game.admin.email,
+    //     adminName: game.admin.name,
+    // }];
+    // const adminColumns = [
+    //     { header: 'adminId', key: 'adminId' },
+    //     { header: 'adminEmail', key: 'adminEmail' },
+    //     { header: 'adminName', key: 'adminName' },
+    // ];
+    // addSheetData('Admin', adminSheetData, adminColumns);
 
     // Game sheet
     const gameSheetData = [{
@@ -65,56 +66,56 @@ export const createExcelWorkbook = (creatorName: string, gameName: string, game:
     ];
     addSheetData('Game', gameSheetData, gameColumns);
 
-    // Rounds sheet
-    const roundsSheetData = game.game.rounds.map((round: WRounds) => ({
-        roundId: round.id,
-        universeId: round.universeID,
-        universeMoneyPool: round.universeMoneyPool,
-    }));
-    const roundsColumns = [
-        { header: 'roundId', key: 'roundId' },
-        { header: 'universeId', key: 'universeId' },
-        { header: 'universeMoneyPool', key: 'universeMoneyPool' },
-    ];
-    addSheetData('Rounds', roundsSheetData, roundsColumns);
+    // // Rounds sheet
+    // const roundsSheetData = game.game.rounds.map((round: WRounds) => ({
+    //     roundId: round.id,
+    //     universeId: round.universeID,
+    //     universeMoneyPool: round.universeMoneyPool,
+    // }));
+    // const roundsColumns = [
+    //     { header: 'roundId', key: 'roundId' },
+    //     { header: 'universeId', key: 'universeId' },
+    //     { header: 'universeMoneyPool', key: 'universeMoneyPool' },
+    // ];
+    // addSheetData('Rounds', roundsSheetData, roundsColumns);
 
     
 
-    // Players sheet
-    const playersSheetData = game.game.players.flatMap((player: WPlayer) => {
-        const ministerTaxRate = player.setTaxRate ? player.setTaxRate.join(', ') : '';
-        const ministerDistributedTaxReturns = player.redistributedTax ? player.redistributedTax.join(', ') : '';
-        const playerIncome = player.playerIncome ? player.playerIncome.join(', ') : '';
-        const playerDeclaredIncome = player.playerDeclaredIncome ? player.playerDeclaredIncome.join(', ') : '';
-        const playerTaxReturns = player.playerTaxReturns ? player.playerTaxReturns.join(', ') : '';
-        const playerIsAudited = player.playerIsAudited ? player.playerIsAudited.join(', ') : '';
+    // // Players sheet
+    // const playersSheetData = game.game.players.flatMap((player: WPlayer) => {
+    //     const ministerTaxRate = player.setTaxRate ? player.setTaxRate.join(', ') : '';
+    //     const ministerDistributedTaxReturns = player.redistributedTax ? player.redistributedTax.join(', ') : '';
+    //     const playerIncome = player.playerIncome ? player.playerIncome.join(', ') : '';
+    //     const playerDeclaredIncome = player.playerDeclaredIncome ? player.playerDeclaredIncome.join(', ') : '';
+    //     const playerTaxReturns = player.playerTaxReturns ? player.playerTaxReturns.join(', ') : '';
+    //     const playerIsAudited = player.playerIsAudited ? player.playerIsAudited.join(', ') : '';
 
-        return player.funds.map((funds, index) => ({
-            playerId: player.id,
-            playerName: index === 0 ? player.name : '', // Include player name only once
-            ministerTaxRate,
-            ministerDistributedTaxReturns,
-            playerIncome,
-            playerDeclaredIncome,
-            playerTaxReturns,
-            playerIsAudited,
-            playerFineAmount: player.playerFineAmount.join(', '),
-            playerTotalFunds: funds,
-        }));
-    });
-    const playersColumns = [
-        { header: 'playerId', key: 'playerId' },
-        { header: 'playerName', key: 'playerName' },
-        { header: 'ministerTaxRate', key: 'ministerTaxRate' },
-        { header: 'ministerDistributedTaxReturns', key: 'ministerDistributedTaxReturns' },
-        { header: 'playerIncome', key: 'playerIncome' },
-        { header: 'playerDeclaredIncome', key: 'playerDeclaredIncome' },
-        { header: 'playerTaxReturns', key: 'playerTaxReturns' },
-        { header: 'playerIsAudited', key: 'playerIsAudited' },
-        { header: 'playerFineAmount', key: 'playerFineAmount' },
-        { header: 'playerTotalFunds', key: 'playerTotalFunds' },
-    ];
-    addSheetData('Players', playersSheetData, playersColumns);
+    //     return player.funds.map((funds, index) => ({
+    //         playerId: player.id,
+    //         playerName: index === 0 ? player.name : '', // Include player name only once
+    //         ministerTaxRate,
+    //         ministerDistributedTaxReturns,
+    //         playerIncome,
+    //         playerDeclaredIncome,
+    //         playerTaxReturns,
+    //         playerIsAudited,
+    //         playerFineAmount: player.playerFineAmount.join(', '),
+    //         playerTotalFunds: funds,
+    //     }));
+    // });
+    // const playersColumns = [
+    //     { header: 'playerId', key: 'playerId' },
+    //     { header: 'playerName', key: 'playerName' },
+    //     { header: 'ministerTaxRate', key: 'ministerTaxRate' },
+    //     { header: 'ministerDistributedTaxReturns', key: 'ministerDistributedTaxReturns' },
+    //     { header: 'playerIncome', key: 'playerIncome' },
+    //     { header: 'playerDeclaredIncome', key: 'playerDeclaredIncome' },
+    //     { header: 'playerTaxReturns', key: 'playerTaxReturns' },
+    //     { header: 'playerIsAudited', key: 'playerIsAudited' },
+    //     { header: 'playerFineAmount', key: 'playerFineAmount' },
+    //     { header: 'playerTotalFunds', key: 'playerTotalFunds' },
+    // ];
+    // addSheetData('Players', playersSheetData, playersColumns);
 
     // Write the workbook to a file or stream
     workbook.xlsx.writeFile('gameWorkbook.xlsx')
