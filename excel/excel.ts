@@ -78,6 +78,8 @@ export const createExcelWorkbook = (creatorName: string, gameName: string, game:
     ];
     addSheetData('Rounds', roundsSheetData, roundsColumns);
 
+    
+
     // Players sheet
     const playersSheetData = game.game.players.flatMap((player: WPlayer) => {
         const ministerTaxRate = player.setTaxRate ? player.setTaxRate.join(', ') : '';

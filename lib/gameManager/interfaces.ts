@@ -63,7 +63,7 @@ export interface AuditArray {
 
 export interface WRounds {
   id: number, 
-  universeID: number,
+  universeID: string,
   universeMoneyPool: number
 }
 

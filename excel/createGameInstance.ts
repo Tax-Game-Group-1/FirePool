@@ -41,29 +41,35 @@ console.log("Players in Waiting Room:", playersWaitingJSON);
 // After setting up, add universes and assign players randomly
 const numUniverses = game.addUniversesAndDividePlayers();
 
-// Example of accessing universes by ID
-for (let i = 0; i < numUniverses; i++) {
-    const universe = game.getUniverseById(i.toString());
-    if (universe) {
+for (let roundNum = 0; roundNum < 12; roundNum++) {
 
-        // Simulate actions for each universe (example: player pays tax)
+    // Example of accessing universes by ID
+    for (let i = 0; i < numUniverses; i++) {
+        const universe = game.getUniverseById(i.toString());
+        if (universe) {
 
-        for (const randomPlayer of universe.getAllPlayers()) {
-            const declaredIncome = Math.random() * 1000; // Example declared income const receivedIncome = Math.random() * 800; // Example received income
-            const receivedIncome = declaredIncome * 1.1;
-            universe.citizenPayTax(randomPlayer.id, declaredIncome, receivedIncome, declaredIncome * game.taxCoefficient);
+            // Simulate actions for each universe (example: player pays tax)
 
+            for (const randomPlayer of universe.getAllPlayers()) {
+                const declaredIncome = Math.random() * 1000; // Example declared income const receivedIncome = Math.random() * 800; // Example received income
+                const receivedIncome = declaredIncome * 1.1;
+                universe.citizenPayTax(randomPlayer.id, declaredIncome, receivedIncome, declaredIncome * game.taxCoefficient);
+
+            }
+
+
+            const totalTaxPool = 1000; // Example total tax pool to redistribute 
+            const toRedistribute = 700;
+            universe.minister.redistribute(universe, totalTaxPool, toRedistribute);
+
+            console.log(`Universe ${i}:`, universe);
         }
-
-
-        const totalTaxPool = 1000; // Example total tax pool to redistribute 
-        const toRedistribute = 700;
-        universe.minister.redistribute(universe, totalTaxPool, toRedistribute);
-
-        console.log(`Universe ${i}:`, universe);
     }
-}
 
+    game.auditAllPlayers();
+    game.finishRound();
+
+}
 
 const playersChosenForAudit = game.auditAllPlayers();
 

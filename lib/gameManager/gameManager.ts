@@ -509,6 +509,10 @@ export class Universe {
     this._game = game;
   }
 
+  public get game() {
+    return this._game;
+  }
+
   getRandomPlayer(): Citizen {
     if (this._players.length === 0) {
       throw new Error("No players in the universe.");
@@ -652,11 +656,10 @@ export class Universe {
       let primaryKey: number = 0; 
 
       for (let i = 0; i < numRounds; i++) {
-        for (const u of this._game._universes)
           roundsArray.push({
               id: primaryKey++,
-              universeID: u.id,
-              universeMoneyPool: u.getCumulativeFundsPerRound()[i]
+              universeID: myUniverse.id,
+              universeMoneyPool: myUniverse.getCumulativeFundsPerRound()[i]
           }); 
       }
 
