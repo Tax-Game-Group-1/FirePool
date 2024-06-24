@@ -27,7 +27,7 @@ export let role = computed(()=>{
 })
 
 //initial is waiting
-export const gameState = signal(GameState.Waiting);
+export const gameState = signal(GameState.Audit);
 
 export function switchGameState(newState: GameState) {
 	console.log(`new state`);
@@ -152,7 +152,7 @@ export default function InGame() {
 					}
 					{
 						//role is foreign worker or local worker, declare tax
-						(role.value == PlayerRole.FOREIGN_WORKER || role.value == PlayerRole.LOCAL_WORKER) &&
+						// (role.value == PlayerRole.FOREIGN_WORKER || role.value == PlayerRole.LOCAL_WORKER) &&
 							 gameState.value == GameState.Audit && <AuditCitizen />
 					}
 					{

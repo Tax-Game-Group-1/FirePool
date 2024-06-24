@@ -35,18 +35,23 @@ export interface PlayerData {
 
 //delcared vs paid 
 
-export interface declarePlayerArray {
+export interface DeclarePlayerArray {
   incomeReceived: number;
   declared: number;
   calculatedTax: number;
 }
 
-export interface declarePlayer {
+export interface DeclarePlayer {
   id: number, 
-  delcared: declarePlayerArray[]
+  delcared: DeclarePlayerArray[]
 }
 
-export interface declaredVsPaidUniverse {
+export interface DeclaredVsPaidUniverse {
   universeId: string, 
-  declaredVsPaidPlayers: declarePlayer[]
+  declaredVsPaidPlayers: DeclarePlayer[]
+}
+
+export interface PlayerChosenForAudit {
+  id: number,
+  newFunds: number
 }

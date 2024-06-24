@@ -1,6 +1,6 @@
 import _ from "lodash";
 import { Socket } from "socket.io";
-import { PlayerInWaitingRoom, PlayerRole, UniverseData, PlayerData, declarePlayer, declaredVsPaidUniverse, declarePlayerArray } from "./interfaces";
+import { PlayerInWaitingRoom, PlayerRole, UniverseData, PlayerData, DeclarePlayer, DeclaredVsPaidUniverse, DeclarePlayerArray, PlayerChosenForAudit } from "./interfaces";
 
 /*
  GAME:
@@ -40,6 +40,8 @@ export class Game {
 
   public gameCode: string;
 
+  public hasBeenAudited: boolean;
+
   constructor(
     id: string,
     name: string,
@@ -62,6 +64,7 @@ export class Game {
     );
     this._playersInWaitingRoom = [];
     this._universes = [];
+    this.hasBeenAudited = false;
   }
 
   /*
@@ -96,6 +99,9 @@ export class Game {
     };
   }
 
+  public resetAudit() {
+      this.hasBeenAudited = false;
+  }
   // waiting area for players who have joined a game, but are not assigned to a universe yet
   public addPlayerToWaitingRoom(waitingPlayer: PlayerInWaitingRoom): void {
     console.log("adding player with waiting room: " + waitingPlayer.waitingId);
@@ -134,8 +140,8 @@ export class Game {
     return true;
   }
 
-  public getDeclaredVsPaidTaxForAllUniverses(): declaredVsPaidUniverse[] {
-    let declareVsPaidGame : declaredVsPaidUniverse[]= [];
+  public getDeclaredVsPaidTaxForAllUniverses(): DeclaredVsPaidUniverse[] {
+    let declareVsPaidGame : DeclaredVsPaidUniverse[]= [];
     for (const u of this._universes) {
         declareVsPaidGame.push(u.getIncomeVsDeclared())
     }
@@ -291,8 +297,8 @@ export class Game {
 
   }
 
-  public getDeclaredVsPaid() : declaredVsPaidUniverse[] {
-    let result : declaredVsPaidUniverse[] = [];
+  public getDeclaredVsPaid() : DeclaredVsPaidUniverse[] {
+    let result : DeclaredVsPaidUniverse[] = [];
     for (const u of this._universes)
       result.push(u.getIncomeVsDeclared())
     return result;
@@ -323,19 +329,15 @@ export class Game {
     while (player != null) {
       const universe = this._universes[count++ % numUniverses];
       
-      if (_.random(0, 1) == 0) {
-        console.log("adding local worker to universe ")
+      if (_.random(0, 1) == 0) 
          universe.addPlayer(new LocalWorker(player.name, currPlayerId++, player.socket, player.waitingId, PlayerRole.LOCAL_WORKER))
-      }
-      else  {
-        console.log("adding foreign worker to universe ")
+      else  
         universe.addPlayer(new ForeignWorker(player.name, currPlayerId++, player.socket, player.waitingId, PlayerRole.FOREIGN_WORKER))
-      }
 
       player = this.getRandomPlayerFromWaitingRoom();
     }
 
-    console.log("ADDED " + currPlayerId + " PLAYERS")
+    console.log("ADDED " + currPlayerId + " PLAYERS (gameManager.ts)")
 
   }
   // add univers from the database to the game
@@ -421,11 +423,13 @@ export class Game {
   //if it's lower than audit probability, then audit the player
   //fine the player the fine percent
   //increase the audit count on the player
-  public auditAllPlayers() {
-    for (const universe of this._universes)
-      universe.auditPlayers(this._auditProbability, this._penalty);
-
-    throw "unimplementded";
+  public auditAllPlayers() : PlayerChosenForAudit[] {
+    let playersChosenForAudit: PlayerChosenForAudit[] = []
+    for (const universe of this._universes) {
+      let newPlayers = universe.auditPlayers(this._auditProbability, this._penalty);
+      playersChosenForAudit.concat(newPlayers);
+    }
+    return playersChosenForAudit;
   }
 
   public toString() {
@@ -477,15 +481,23 @@ export class Universe {
   //run through the players
   //roll a dice weigthed by audit probability
   //audit players if they are unluckly
-  auditPlayers(auditProbability: number, finePercent: number) {
+  public auditPlayers(auditProbability: number, finePercent: number): PlayerChosenForAudit[] {
+    let playersChosenForAudit: PlayerChosenForAudit[] = [];
     for (const c of this._players) {
       const random = Math.random();
-      if (random <= auditProbability) c.audit(finePercent);
+      if (random <= auditProbability) {
+        c.audit(finePercent);
+        playersChosenForAudit.push({
+          id: c.id,
+          newFunds: c.funds
+        })
+      }
     }
+    return playersChosenForAudit;
   }
 
-  getIncomeVsDeclared(): declaredVsPaidUniverse {
-    let result: declarePlayer[] = [];
+  getIncomeVsDeclared(): DeclaredVsPaidUniverse {
+    let result: DeclarePlayer[] = [];
     for (const p of this._players)
       result.push(p.getIncomeVsDeclaredArray())
 
@@ -532,7 +544,6 @@ export class Universe {
     for (let p of this._players) {
       if (p.id == id) {
         p.hasConsented = hasConsented;
-        console.log("CLIENT CONSENTED: " + p.name);
         return true;
       }
     }
@@ -613,10 +624,6 @@ export class Universe {
  | id | universeID (null if not defined) | name | type (minster | localWorker | foreignWorker) | currentFunds | hasBeenKicked |
  */
 
-
-
-
-
 export abstract class Player {
   private _name: string;
   private _id: number;
@@ -667,7 +674,8 @@ export abstract class Player {
 
   public payFunds(toPay: number) {
     this._funds -= toPay;
-    if (this._funds < 0) throw "Player is bankrupt";
+    if (this._funds < 0)
+      this._funds = 0;
   }
 
   //todo: test
@@ -715,7 +723,7 @@ export class Minister extends Player {
 
 export abstract class Citizen extends Player {
   //player
-  private declaredArray: declarePlayerArray[];
+  private declaredArray: DeclarePlayerArray[];
   private _hasPaid : boolean;
 
   constructor(name: string, id: number, client: Socket, waitingId: string, playerRole: PlayerRole) {
@@ -724,7 +732,7 @@ export abstract class Citizen extends Player {
     this._hasPaid = false;
   }
 
-  public getIncomeVsDeclaredArray(): declarePlayer {
+  public getIncomeVsDeclaredArray(): DeclarePlayer {
     return {
       id: this.id,
       delcared: this.declaredArray
@@ -764,6 +772,8 @@ export abstract class Citizen extends Player {
     //if there is a discrepency, fix it (set declared = recievd) && set a flag to fine player
     //if flag is true: funds -= funds * finepercent
     //get penalty from game ojbect
+
+    console.log("auditing player " + this.id);
 
     let fineDifference = 0;
     for (let d of this.declaredArray) {

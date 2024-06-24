@@ -1,6 +1,6 @@
 import { Server, Socket } from "socket.io";
 import { getGameInstanceByGameCode, removeWaitingPlayerFromAllGameInstancesBySocket } from "server";
-import { PlayerInWaitingRoom } from "&/gameManager/interfaces";
+import { PlayerChosenForAudit, PlayerInWaitingRoom } from "&/gameManager/interfaces";
 import { Game, Universe } from "&/gameManager/gameManager";
 
 export const setUpSocket = (io: Server) => {
@@ -20,10 +20,8 @@ export const setUpSocket = (io: Server) => {
 
     //add the player to the waiting area, create a waitng player
     socket.on("server-roomData", ({ code, hostID, waitingId }) => {
-      console.log("received by socket");
-      console.log(hostID, " ", waitingId, " ", code);
 
-      if (waitingId != null && hostID == null) console.log("Player joined");
+      if (waitingId != null && hostID == null) console.log("player joined");
       else if (hostID != null) {
         // purgePlayersInterval = setInterval(() => doSocketAction(Action.PURGE_NULL_PLAYERS, null, code), 45000);
         console.log("host joined");
@@ -112,7 +110,8 @@ export const setUpSocket = (io: Server) => {
       CONSENT,
       PURGE_NULL_PLAYERS,
       SET_TAX_RATE,
-      CITIZENS_PAY_TAX
+      CITIZENS_PAY_TAX,
+      AUDIT_ALL_PLAYERS
     }
 
     let mutex = Promise.resolve();
@@ -174,6 +173,7 @@ export const setUpSocket = (io: Server) => {
 
             universe.minister.setTaxRate(game, params.taxRate);
             universe.resetHasPaidForAllCitizens();
+            game.resetAudit();
             hasPaidInterval = setInterval(() => {
               if (game.allHavePaid()) {
                 //reset paid for all universes
@@ -199,6 +199,16 @@ export const setUpSocket = (io: Server) => {
             universe.citizenPayTax(params.playerId, params.declared, params.received, params.calculatedTax);
 
             break;
+
+          case Action.AUDIT_ALL_PLAYERS:
+            if (params.code == null) throw "cannot audit players because game code is null"
+            const playersAudited : PlayerChosenForAudit[] = game.auditAllPlayers();
+            game.emitMessageToPlayers("audit-all-players", {
+              success: true, 
+              data : playersAudited
+            })
+            return ;
+            
 
           default:
             throw "undefined action"
@@ -240,6 +250,10 @@ export const setUpSocket = (io: Server) => {
     socket.on("update-ready", ({ waitingId, ready, code }) => {
       doSocketAction(Action.UPDATE_READY, { waitingId, ready }, code);
     });
+
+    socket.on("audit-all-players", ({ code }) => {
+
+    })
 
     socket.on("disconnect", () => {
       console.log("player disconnected")

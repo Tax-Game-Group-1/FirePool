@@ -94,7 +94,13 @@ export default function TaxDeclare() {
 	
 		waiting.value = true;
 
-		GameGlobal.player.value.funds = (GameGlobal.player.value.funds + salary - value);
+		let playerdata = GameGlobal.player.value;
+		
+		GameGlobal.player.value = {...playerdata,
+			funds: playerdata.funds + salary.value - value,
+			salary: playerdata.salary,
+			declared: value,
+		}
 
 	}
 

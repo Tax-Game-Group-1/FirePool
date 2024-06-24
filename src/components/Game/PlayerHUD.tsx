@@ -12,6 +12,7 @@ import { computed, signal } from '@preact/signals-react';
 import { GameGlobal, playerFunds, playerIconURL, playerName, playerRole } from '@/app/global';
 import { getData } from '@/app/dummyData';
 import { getIconURL } from "@/utils/utils";
+import { roleToString } from "@/app/game/_content/Spectate";
 
 export const showPlayerHUD = signal(true);
 
@@ -32,7 +33,7 @@ export const PlayerHUD = forwardRef(function PlayerHUD({}, ref:Ref<any>){
 							<span className="player-name-value">{playerName}</span>
 						</div>
 						<div className={`${style.playerRole} ${t.accent} overflow-hidden`}>
-							<span className="player-role-value">{playerRole}</span>
+							<span className="player-role-value">{roleToString(playerRole.value)}</span>
 						</div>
 					</div>
 					<div className={`${style.hudIcons}`}>
