@@ -35,8 +35,9 @@ export enum GameState {
 	Audit,
 	Redistribution,
 	YearEnd,
-	Migration,
+	Stats,
 	Processing,
+	Migration,
 }
 
 export interface IPlayerData {

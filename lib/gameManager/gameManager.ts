@@ -462,6 +462,7 @@ export class Universe {
   public readonly taxRate: number;
   private _players: Citizen[];
   private _id: string;
+  private _universeFunds: number;
 
   constructor(minister: Minister, taxRate: number, id: string) {
     this.minister = minister;
@@ -469,6 +470,7 @@ export class Universe {
     this.taxRate = taxRate;
     this._id = id;
     this._players = [];
+    this._universeFunds = 0;
   }
 
   //add player to a universe, check that you can't add duplicates
@@ -557,11 +559,20 @@ export class Universe {
   }
 
   //give players tax by dividing the total amount given by the minister
-  public divideTaxAmongPlayers(toDivide: number) {
-    if (this._players.length == 0) throw "no players in the game yet";
+  public divideTaxAmongPlayers(percentage: number) {
+    if (this._players.length == 0)  {
+      throw "minister loses";
+      return ;
+    }
 
-    let eachPlayerReceives = toDivide / this._players.length;
+    if (percentage < 0 || percentage > 1)
+      throw "invalid percentage for redistribution, must be between 0 and 1"
 
+    const toGiveBack = this._universeFunds * percentage;
+    const eachPlayerReceives = toGiveBack / this._players.length;
+    this.minister.payFunds(toGiveBack);
+
+    console.log("each player receives (GameManager.divideTaxAmongPlayers)")
     console.log(eachPlayerReceives);
 
     for (let player of this._players) {
@@ -610,7 +621,11 @@ export class Universe {
   public citizenPayTax(playerId: number, declared: number, received: number, calculatedTax: number) {
     for (const citizen of this._players) {
       if (citizen.id == playerId) {
-        citizen.payTaxAndReceive(received, declared, calculatedTax);
+        //citizen pays tax
+        const taxPaid = citizen.payTaxAndReceive(received, declared, calculatedTax);
+
+        //add funds to the universe money pool
+        this._universeFunds += taxPaid; 
         return ;
       }
     }
@@ -749,11 +764,8 @@ export abstract class Citizen extends Player {
 
   //todo: continue with this
   //subtract from funds to pay the tax
-  public payTaxAndReceive(
-    received: number,
-    declared: number,
-    calculatedTax: number
-  ) {
+  public payTaxAndReceive(received: number, declared: number, calculatedTax: number) : number {
+
     this.declaredArray.push({
       incomeReceived: received,
       declared: declared,
@@ -764,6 +776,7 @@ export abstract class Citizen extends Player {
     this.hasPaid = true;
 
     this.receiveFunds(received - calculatedTax);
+    return calculatedTax;
   }
 
   public audit(finePercent) {
