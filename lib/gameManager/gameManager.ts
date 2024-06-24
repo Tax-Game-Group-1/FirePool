@@ -1,6 +1,6 @@
 import _ from "lodash";
 import { Socket } from "socket.io";
-import { PlayerInWaitingRoom, PlayerRole, UniverseData, PlayerData, DeclarePlayer, DeclaredVsPaidUniverse, DeclarePlayerArray, PlayerChosenForAudit } from "./interfaces";
+import { PlayerInWaitingRoom, PlayerRole, UniverseData, PlayerData, DeclarePlayer, DeclaredVsPaidUniverse, DeclarePlayerArray, PlayerChosenForAudit, AuditArray, WGAme, WRounds, WPlayer } from "./interfaces";
 
 /*
  GAME:
@@ -120,6 +120,21 @@ export class Game {
   // 		waitingId: req.body.waitingId
   // 	})
 
+  // public getAllInfoForWorkbook() : WGAme {
+    
+  //   const rounds: WRounds[] = [];
+  //   const players: WPlayer[] = [];
+  //   const universes: WUniverse[] = [];
+
+  //   const playerActions = [];
+
+  //   for (const u of this._universes) {
+  //     const playerActions = u.getPlayerActionsForWorkbook();
+  //   }
+
+
+  // }
+
   public assignSocketToPlayerInWaitingRoom(waitingId: string, socket: Socket) {
     for (const p of this._playersInWaitingRoom) {
       if (p.waitingId == waitingId) {
@@ -186,6 +201,11 @@ export class Game {
   }
   public getHostData() {
     return this._host;
+  }
+
+  public finishRound() {
+    for (const u of this._universes)
+      u.finishRound();
   }
 
   public async assignNameToPlayerInWaitingRoom(waitingId: string, name: string): Promise<boolean> {
@@ -304,7 +324,7 @@ export class Game {
     return result;
   }
 
-  public addUniversesAndDividePlayers() {
+  public addUniversesAndDividePlayers() : number {
     this.purgeNullPlayers(false);
     
     const numPlayers = this._playersInWaitingRoom.length;
@@ -338,6 +358,7 @@ export class Game {
     }
 
     console.log("ADDED " + currPlayerId + " PLAYERS (gameManager.ts)")
+    return numUniverses;
 
   }
   // add univers from the database to the game
@@ -448,6 +469,38 @@ export class Game {
     for (let u of this._universes) if (u.id == id) return u;
     throw "Cannot find universe";
   }
+
+
+  public geExcelData(adminId: number, email: string, adminName: string) : WGAme {
+
+    let players: WPlayer[] = [];
+    let rounds: WRounds[] = [];
+    for (const u of this._universes) {
+
+      const [ p, r ] : [WPlayer[] , WRounds[]] = u.getPlayerActionsForWorkbook();
+
+      players.concat(p);
+      rounds.concat(r);
+
+    }
+
+    return {
+      admin: {
+        adminId: adminId, 
+        email: email,
+        name: adminName
+      },
+      game: {
+        finePercent: this.penalty,
+        auditProbability: this.auditProbability,
+        kickPlayersOnBankruptcy: this.kickPlayersOnBankruptcy,
+        maxPlayers: this.maxPlayers,
+        taxCoefficient: this.taxCoefficient,
+        rounds: rounds, 
+        players: players
+      }
+    }
+  }
 }
 
 
@@ -457,11 +510,15 @@ export class Game {
  */
 
 export class Universe {
+  getAllPlayers() {
+    return this._players;
+  }
  
   public readonly minister: Minister;
   public readonly taxRate: number;
   private _players: Citizen[];
   private _id: string;
+  private _cumulativeFundsPerRound: number[];
 
   constructor(minister: Minister, taxRate: number, id: string) {
     this.minister = minister;
@@ -469,6 +526,16 @@ export class Universe {
     this.taxRate = taxRate;
     this._id = id;
     this._players = [];
+    this._cumulativeFundsPerRound = [];
+  }
+
+  getRandomPlayer(): Citizen {
+    if (this._players.length === 0) {
+      throw new Error("No players in the universe.");
+    }
+
+    const randomIndex = Math.floor(Math.random() * this._players.length);
+    return this._players[randomIndex];
   }
 
   //add player to a universe, check that you can't add duplicates
@@ -486,21 +553,147 @@ export class Universe {
     for (const c of this._players) {
       const random = Math.random();
       if (random <= auditProbability) {
-        c.audit(finePercent);
+        c.audit(finePercent, true);  
         playersChosenForAudit.push({
           id: c.id,
           newFunds: c.funds
         })
+      } else {
+        c.audit(0, false);
       }
     }
     return playersChosenForAudit;
   }
 
+  public finishRound() {
+
+    //total up all the funds of all the players and store in cumulativ funds
+    let totalFunds : number = 0; 
+
+    for (const player of this._players) {
+      totalFunds += player.funds;
+    }
+
+    this._cumulativeFundsPerRound.push(totalFunds);
+
+  }
+
+  public getCumulativeFundsPerRound() {
+    return this._cumulativeFundsPerRound;
+  }
+
+
+  
+  //why vs code no spellcheck?????
+  public getPlayerActionsForWorkbook() : [WPlayer[], WRounds[]] {
+
+    function getPlayerActions() : WPlayer[]{
+      const playerActions: WPlayer[] = [];
+
+      //loop through all citizens
+      for (const p of this._players) {
+
+        const playerFineAmount = [];
+        const playerIsAudited = [];
+        const playerIncome = [];
+        const playerDeclaredIncome = [];
+        const perRoundFunds = p.redistrubutedTaxPerRound;
+        const setTaxRate = [];
+        const playerTaxReturns = []; //how much the players got from redistibution per round (0 if minister)
+        const redistributedTax = []; //how much ministers redistribute to players per round (0 if citizen)
+
+
+        if (perRoundFunds.length != p.getIncomeVsDeclaredArray().length)
+          throw "Something went wrong with declard vs income array length";
+
+        if (perRoundFunds.length != p.auditedArray.length)
+          throw "Something went wrong with audited array length";
+
+        for (let i = 0; i < p.getIncomeVsDeclaredArray().length; i++) {
+          playerIncome.push(p.getIncomeVsDeclaredArray()[i].incomeReceived);
+          playerDeclaredIncome.push(p.getIncomeVsDeclaredArray()[i].declared);
+          playerFineAmount.push(p.auditedArray[i].fineAmount);
+          playerIsAudited.push(p.auditedArray[i].isAudited);
+          playerTaxReturns.push(p.getIncomeVsDeclaredArray()[i].incomeReceived);
+
+          //for ministers
+          setTaxRate.push(0);
+          redistributedTax.push(0);
+        }
+
+        const workbookPlayer: WPlayer = {
+          name: p.name,
+          id: p.id,
+          funds: p.funds,
+          playerFineAmount: playerFineAmount,
+          playerDeclaredIncome: playerDeclaredIncome,
+          playerIncome: playerIncome,
+          playerTaxReturns: playerTaxReturns,
+          playerIsAudited: playerIsAudited,
+          redistributedTax: redistributedTax,
+          setTaxRate: setTaxRate
+        };
+
+        playerActions.push(workbookPlayer);
+      }
+
+      const playerFineAmount = [];
+      const playerIsAudited = [];
+      const playerIncome = [];
+      const playerDeclaredIncome = [];
+      const perRoundFunds = [];
+      const setTaxRate = [];
+      const playerTaxReturns = []; //how much the players got from redistibution per round (0 if minister)
+      const redistributedTax = []; //how much ministers redistribute to players per round (0 if citizen)
+
+      const minister: Minister = this.minister;
+
+      for (let i = 0; i < minister.redistributedTax.length; i++) {
+        playerIncome.push(0);
+        perRoundFunds.push(minister.fundsPerRound[i]);
+        redistributedTax.push(minister.redistributedTax[i]);
+        setTaxRate.push(minister.previouslySetTaxRates[i]);
+        playerFineAmount.push(0);
+        playerIsAudited.push(0);
+        playerDeclaredIncome.push(0);
+        playerTaxReturns.push(0);
+      }
+
+
+      return playerActions;
+    }
+
+    function getRounds() : WRounds[] {
+      const roundsArray : WRounds[] = [];
+      const numRounds = this._universes[0].getCumulativeFundsPerRound().length;
+      let primaryKey: number = 0; 
+
+      for (let i = 0; i < numRounds; i++) {
+        for (const u of this._universes)
+          roundsArray.push({
+              id: primaryKey++,
+              universeID: u.id,
+              universeMoneyPool: u.getCumulativeFundsPerRound()[i]
+          }); 
+      }
+
+      return roundsArray;
+    }
+
+    return [
+      getPlayerActions(),
+      getRounds()
+    ]
+
+  }
+
   getIncomeVsDeclared(): DeclaredVsPaidUniverse {
     let result: DeclarePlayer[] = [];
     for (const p of this._players)
-      result.push(p.getIncomeVsDeclaredArray())
-
+          result.push({
+        delcared: p.getIncomeVsDeclaredArray(),
+        id: p.id
+      })
     return {
       universeId: this._id,
       declaredVsPaidPlayers: result
@@ -565,7 +758,7 @@ export class Universe {
     console.log(eachPlayerReceives);
 
     for (let player of this._players) {
-      player.receiveFunds(eachPlayerReceives);
+        player.recieveTaxReturns(eachPlayerReceives);
     }
   }
 
@@ -644,6 +837,7 @@ export abstract class Player {
     this._hasConsented = false;
   }
 
+
   public set hasConsented(value: boolean) {
     this._hasConsented = value;
   }
@@ -670,6 +864,10 @@ export abstract class Player {
 
   public get funds() {
     return this._funds;
+  }
+
+  protected setFunds(newFunds: number) {
+    this._funds = newFunds;
   }
 
   public payFunds(toPay: number) {
@@ -704,16 +902,40 @@ export abstract class Player {
 }
 
 export class Minister extends Player {
+  private _setTaxRates: number[];
+  private _redistributedTax: number[];
+  private _fundsPerRound: number[];
+
   constructor(name: string, id: number, client: Socket, waitingId: string, role: PlayerRole) {
     super(id, name, client, waitingId, role);
+    this._setTaxRates = [];
+    this._redistributedTax = [];
+    this._fundsPerRound = [];
   }
 
-  public setTaxRate(game: Game, newTaxRate: number) {
+  public setTaxRates(game: Game, newTaxRate: number) {
     game.taxCoefficient = newTaxRate;
+    this._setTaxRates.push(newTaxRate);
   }
 
-  public redistribute(universe: Universe, toDivide: number) {
-    universe.divideTaxAmongPlayers(toDivide);
+  public get previouslySetTaxRates() {
+    return this._setTaxRates;
+  }
+
+  public get redistributedTax() {
+    return this._redistributedTax;
+  }
+
+  public get fundsPerRound() {
+    return this._fundsPerRound;
+  }
+
+  public redistribute(universe: Universe, toRedistribute: number, totalIncome: number) {
+    universe.divideTaxAmongPlayers(toRedistribute);
+    this._redistributedTax.push(toRedistribute);
+    const toAddOrSubtract = totalIncome - toRedistribute;
+    this.setFunds(this.funds + toAddOrSubtract);
+    this._fundsPerRound.push(this.funds);
   }
 
   toJSON() {
@@ -721,22 +943,24 @@ export class Minister extends Player {
   }
 }
 
+
 export abstract class Citizen extends Player {
   //player
   private declaredArray: DeclarePlayerArray[];
   private _hasPaid : boolean;
+  public auditedArray: AuditArray[]
+  private _taxReturns: number[];
 
   constructor(name: string, id: number, client: Socket, waitingId: string, playerRole: PlayerRole) {
     super(id, name, client, waitingId, playerRole);
-    this.declaredArray = Array();
+    this.declaredArray = [];
     this._hasPaid = false;
+    this.auditedArray = [];
+    this._taxReturns = [];
   }
 
-  public getIncomeVsDeclaredArray(): DeclarePlayer {
-    return {
-      id: this.id,
-      delcared: this.declaredArray
-    }
+  public getIncomeVsDeclaredArray(): DeclarePlayerArray[] {
+      return this.declaredArray
   }
 
   public set hasPaid(value: boolean) {
@@ -747,8 +971,11 @@ export abstract class Citizen extends Player {
     return this._hasPaid;
   }
 
-  //todo: continue with this
-  //subtract from funds to pay the tax
+  public recieveTaxReturns(amount: number) {
+    this._taxReturns.push(amount);
+    this.receiveFunds(amount)
+  }
+
   public payTaxAndReceive(
     received: number,
     declared: number,
@@ -762,11 +989,22 @@ export abstract class Citizen extends Player {
     
 
     this.hasPaid = true;
-
     this.receiveFunds(received - calculatedTax);
   }
 
-  public audit(finePercent) {
+  public audit(finePercent, isAudited) {
+
+    if (!isAudited) {
+
+      this.auditedArray.push({
+        fineAmount: 0, 
+        isAudited: false
+      })
+
+      return ;
+    }
+
+
     //loop through the declared array
     //check that declared is the same as received
     //if there is a discrepency, fix it (set declared = recievd) && set a flag to fine player
@@ -783,9 +1021,19 @@ export abstract class Citizen extends Player {
         fineDifference += d.incomeReceived - d.declared;
         d.declared = d.incomeReceived;
       }
+
     }
-    this.payFunds(fineDifference + fineDifference * finePercent);
+
+    const auditAmount = fineDifference * finePercent; 
+
+    this.auditedArray.push({
+      fineAmount: auditAmount, 
+      isAudited: true
+    })
+
+    this.payFunds(auditAmount);
   }
+
 }
 
 export class LocalWorker extends Citizen {

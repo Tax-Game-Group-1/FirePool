@@ -171,7 +171,7 @@ export const setUpSocket = (io: Server) => {
             if (params.universeId == null) throw "cannot set tax rate if universe id is null (socket.ts)"
             if (game.getUniverseById(params.universeId) == null) throw "ucannot set tax rate if universe is null (socket.ts)"
 
-            universe.minister.setTaxRate(game, params.taxRate);
+            universe.minister.setTaxRates(game, params.taxRate);
             universe.resetHasPaidForAllCitizens();
             game.resetAudit();
             hasPaidInterval = setInterval(() => {

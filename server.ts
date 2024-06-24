@@ -1,15 +1,11 @@
 import next from "next";
-import {Server, Socket} from "socket.io";
-import {Player, Game, Citizen, Minister, ForeignWorker, LocalWorker, Universe} from "./lib/gameManager/gameManager"
+import {Server} from "socket.io";
+import {Game} from "./lib/gameManager/gameManager"
 import express, {Express} from "express"
 import {setUpServer} from "./api";
-import exp from "node:constants";
 import * as http from "node:http";
 import bodyParser from "body-parser"
 
-import { randomID } from "@catsums/my";
-import { isNullOrUndefined } from "node:util";
-import { games } from "@/app/host/page";
 import { setUpSocket } from "sockets";
 
 const dev = process.env.NODE_ENV !== "production";

@@ -55,3 +55,46 @@ export interface PlayerChosenForAudit {
   id: number,
   newFunds: number
 }
+
+export interface AuditArray {
+  isAudited: boolean, 
+  fineAmount: number
+}
+
+export interface WRounds {
+  id: number, 
+  universeID: number,
+  universeMoneyPool: number
+}
+
+export interface WPlayer {
+  name: string, //both
+  id: number,  //both 
+  funds: number[],  // both
+  setTaxRate?: number[] //minister
+  redistributedTax?: number[] //minister
+  playerIncome? : number [],  //citizen
+  playerDeclaredIncome?: number [], //citizen 
+  playerTaxReturns?: number [], //citizen
+  playerIsAudited?: boolean[], //citizen
+  playerFineAmount: number[], //citizen
+}
+
+
+
+export interface WGAme{
+  admin: {
+    adminId: number, 
+    email: string, 
+    name: string, 
+  } , 
+  game: {
+    finePercent: number, 
+    auditProbability: number, 
+    kickPlayersOnBankruptcy: boolean, 
+    maxPlayers: number,
+    taxCoefficient: number
+    rounds : WRounds[],
+    players: WPlayer[],
+  }
+}
