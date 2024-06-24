@@ -82,7 +82,7 @@ export interface WPlayer {
 
 
 
-export interface WGAme{
+export interface WGame{
   admin: {
     adminId: number, 
     email: string, 

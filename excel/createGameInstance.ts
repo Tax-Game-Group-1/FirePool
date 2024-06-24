@@ -2,6 +2,7 @@ import { ForeignWorker, Game, LocalWorker, Minister } from "&/gameManager/gameMa
 import { PlayerInWaitingRoom } from "&/gameManager/interfaces";
 import _ from "lodash";
 import { Socket } from "socket.io";
+import { createExcelWorkbook } from "./excel"
 
 // Create a new game instance
 const game = new Game(
@@ -63,6 +64,7 @@ for (let i = 0; i < numUniverses; i++) {
     }
 }
 
-// Example of auditing all players in all universes
+
 const playersChosenForAudit = game.auditAllPlayers();
-console.log("Players Chosen for Audit:", playersChosenForAudit);
+
+createExcelWorkbook("Mary", "My Game 1", game.geExcelData(1, "mary@mary.com", "Mary"));

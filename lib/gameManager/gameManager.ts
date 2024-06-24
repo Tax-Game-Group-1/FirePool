@@ -1,6 +1,6 @@
 import _ from "lodash";
 import { Socket } from "socket.io";
-import { PlayerInWaitingRoom, PlayerRole, UniverseData, PlayerData, DeclarePlayer, DeclaredVsPaidUniverse, DeclarePlayerArray, PlayerChosenForAudit, AuditArray, WGAme, WRounds, WPlayer } from "./interfaces";
+import { PlayerInWaitingRoom, PlayerRole, UniverseData, PlayerData, DeclarePlayer, DeclaredVsPaidUniverse, DeclarePlayerArray, PlayerChosenForAudit, AuditArray, WGame, WRounds, WPlayer } from "./interfaces";
 
 /*
  GAME:
@@ -41,6 +41,7 @@ export class Game {
   public gameCode: string;
 
   public hasBeenAudited: boolean;
+
 
   constructor(
     id: string,
@@ -85,6 +86,7 @@ export class Game {
     this.maxPlayers = maxPlayers;
     this.auditProbability = auditProbability;
     this.name = name;
+    this.penalty = penalty;
 
     this._roundNumber = roundNumber;
     this.kickPlayersOnBankruptcy = kickPlayersOnBankruptcy;
@@ -110,30 +112,6 @@ export class Game {
 
     this._playersInWaitingRoom.push(waitingPlayer);
   }
-
-  //assign socket to player in waiting room
-  //player joins with a post request, and doesn't have a socket yet
-  // getGameInstanceByGameCode(req.body.gameCode).addPlayerToWaitingArea({
-  // 		name: null,
-  // 		socket: null,
-  // 		roomCode: req.body.gameCode,
-  // 		waitingId: req.body.waitingId
-  // 	})
-
-  // public getAllInfoForWorkbook() : WGAme {
-    
-  //   const rounds: WRounds[] = [];
-  //   const players: WPlayer[] = [];
-  //   const universes: WUniverse[] = [];
-
-  //   const playerActions = [];
-
-  //   for (const u of this._universes) {
-  //     const playerActions = u.getPlayerActionsForWorkbook();
-  //   }
-
-
-  // }
 
   public assignSocketToPlayerInWaitingRoom(waitingId: string, socket: Socket) {
     for (const p of this._playersInWaitingRoom) {
@@ -340,7 +318,7 @@ export class Game {
     for (let i = 0; i < numUniverses; i++) {
       const ministerWaiting = this.getRandomPlayerFromWaitingRoom()
       const minister = new Minister(ministerWaiting.name, currPlayerId++, ministerWaiting.socket, ministerWaiting.waitingId, PlayerRole.MINISTER);
-      this._universes.push(new Universe(minister, 0, i.toString()))
+      this._universes.push(new Universe(minister, 0, i.toString(), this))
     }
 
     let player = this.getRandomPlayerFromWaitingRoom();
@@ -471,7 +449,7 @@ export class Game {
   }
 
 
-  public geExcelData(adminId: number, email: string, adminName: string) : WGAme {
+  public geExcelData(adminId: number, email: string, adminName: string) : WGame {
 
     let players: WPlayer[] = [];
     let rounds: WRounds[] = [];
@@ -519,14 +497,16 @@ export class Universe {
   private _players: Citizen[];
   private _id: string;
   private _cumulativeFundsPerRound: number[];
+  private _game: Game;
 
-  constructor(minister: Minister, taxRate: number, id: string) {
+  constructor(minister: Minister, taxRate: number, id: string, game: Game) {
     this.minister = minister;
     if (taxRate < 0 || taxRate > 1) throw "invalid tax rate";
     this.taxRate = taxRate;
     this._id = id;
     this._players = [];
     this._cumulativeFundsPerRound = [];
+    this._game = game;
   }
 
   getRandomPlayer(): Citizen {
@@ -587,27 +567,30 @@ export class Universe {
   //why vs code no spellcheck?????
   public getPlayerActionsForWorkbook() : [WPlayer[], WRounds[]] {
 
+    const myUniverse = this;
+
+
     function getPlayerActions() : WPlayer[]{
       const playerActions: WPlayer[] = [];
 
+      
       //loop through all citizens
-      for (const p of this._players) {
+      for (const p of myUniverse._players) {
 
         const playerFineAmount = [];
         const playerIsAudited = [];
         const playerIncome = [];
         const playerDeclaredIncome = [];
-        const perRoundFunds = p.redistrubutedTaxPerRound;
+        const perRoundFunds = [];
         const setTaxRate = [];
         const playerTaxReturns = []; //how much the players got from redistibution per round (0 if minister)
         const redistributedTax = []; //how much ministers redistribute to players per round (0 if citizen)
 
 
-        if (perRoundFunds.length != p.getIncomeVsDeclaredArray().length)
-          throw "Something went wrong with declard vs income array length";
-
-        if (perRoundFunds.length != p.auditedArray.length)
-          throw "Something went wrong with audited array length";
+        console.log("INCOME VS DECLARED")
+        console.log(p.getIncomeVsDeclaredArray().length)
+        console.log("auditedArray")
+        console.log(p.auditedArray.length)
 
         for (let i = 0; i < p.getIncomeVsDeclaredArray().length; i++) {
           playerIncome.push(p.getIncomeVsDeclaredArray()[i].incomeReceived);
@@ -646,7 +629,7 @@ export class Universe {
       const playerTaxReturns = []; //how much the players got from redistibution per round (0 if minister)
       const redistributedTax = []; //how much ministers redistribute to players per round (0 if citizen)
 
-      const minister: Minister = this.minister;
+      const minister: Minister = myUniverse.minister;
 
       for (let i = 0; i < minister.redistributedTax.length; i++) {
         playerIncome.push(0);
@@ -665,11 +648,11 @@ export class Universe {
 
     function getRounds() : WRounds[] {
       const roundsArray : WRounds[] = [];
-      const numRounds = this._universes[0].getCumulativeFundsPerRound().length;
+      const numRounds = myUniverse.getCumulativeFundsPerRound().length;
       let primaryKey: number = 0; 
 
       for (let i = 0; i < numRounds; i++) {
-        for (const u of this._universes)
+        for (const u of this._game._universes)
           roundsArray.push({
               id: primaryKey++,
               universeID: u.id,
@@ -835,6 +818,7 @@ export abstract class Player {
     this._waitingId = waitingId;
     this._role = role;
     this._hasConsented = false;
+    this._hasBeenKicked = false;
   }
 
 

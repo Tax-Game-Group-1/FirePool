@@ -290,12 +290,6 @@ export function setUpServer(server:Express) {
 				message: `${e.toString()}`
 			})
 		}
-
-
-	})
-
-	server.delete("deleteGame/:gameId", async (req, res) => {
-
 	})
 }
 
