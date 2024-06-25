@@ -1,0 +1,50 @@
+
+.gameFooter {
+	@apply overflow-hidden;
+
+	z-index: 1000;
+
+	&.mobileGameFooter {
+		@apply row-span-1 grid grid-cols-12 rounded-md p-0 px-2 gap-0 text-xs sm:text-sm;
+		
+		.roomCodeCont {
+			@apply bg-white font-medium text-[0.5rem] sm:text-xs p-1 flex items-center rounded-md;
+
+			.roomCodeTxt {
+				@apply inline-flex justify-center items-center p-0 m-0;
+			}
+		}
+		.roomCodeCopyCont {
+			@apply px-2 w-10 h-full flex justify-center items-center;
+		}
+
+		.popMenuIcon {
+			@apply flex absolute justify-center items-center rounded-full border w-14 p-3 bottom-[4.5%] aspect-square transition-all duration-300;
+
+		}
+		.popMenu {
+			@apply absolute grid grid-flow-row border rounded-md w-20 p-4 bottom-[10%] gap-4 origin-bottom;
+			&.popMenuClosed {
+				@apply hidden;
+			}
+		}
+	}
+	
+	&.PCGameFooter {
+		@apply row-span-1 grid grid-cols-12 rounded-md p-0 md:p-1 gap-2 text-sm;
+		
+		.roomCodeCopyCont {
+			@apply px-2 w-10 h-full flex justify-center items-center;
+		}
+		.roomCodeTxt {
+			@apply bg-white font-medium text-xs p-2 rounded-md;
+		}
+		.roomCodeCopyCont {
+			@apply px-2 w-12 h-full flex justify-center items-center;
+		}
+	}
+
+	.col {
+		@apply flex justify-center items-center rounded-md;
+	}
+}

@@ -1,0 +1,46 @@
+
+.formCard {
+	@apply  rounded-md min-h-full min-w-full sm:min-w-[75%] md:min-w-[45%] flex flex-col justify-start gap-6 p-4 items-center;
+
+	.iconContainer {
+		@apply  w-5/6 sm:w-2/3 md:w-2/3 lg:w-7/12 border aspect-square flex justify-center items-center p-6 m-0 rounded-md;
+	}
+
+	.randomizerContainer {
+		@apply  flex flex-col justify-center items-center text-sm;
+	}
+
+	.nameInputContainer {
+		@apply flex flex-col justify-center items-center w-2/3;
+
+		.nameInputBox {
+			@apply flex p-1 rounded-md rounded-r-none;
+			transition: outline 0.4s;
+			&:focus {
+				outline: thin solid var(--solidText);
+			}
+		}
+		.nameInputBtn {
+			@apply flex justify-center items-center rounded-md rounded-l-none w-1/5 p-3;
+			&:hover {
+				background-color: var(--solidText);
+				color: var(--solidAccent);
+				fill: var(--solidAccent);
+			}
+		}
+	}
+
+}
+.area {
+	
+	.formCard {
+		@apply hidden md:flex rounded-md min-h-0 min-w-0 md:min-w-[40%] lg:min-w-[40%] flex-col justify-center gap-2 lg:gap-4 p-2 lg:p-4 items-center;
+	
+		.qrContainer {
+			@apply max-w-full min-h-[40%] w-52 lg:min-h-52 border aspect-square flex justify-center items-center p-4 m-0 rounded-md;
+		}
+		.nameInputContainer {
+			@apply flex flex-col justify-center items-center w-full lg:w-2/3 text-xs;
+		}
+	}
+}
