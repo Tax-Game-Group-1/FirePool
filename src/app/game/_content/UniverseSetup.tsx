@@ -27,21 +27,14 @@ let role = computed(()=>{
 })
 
 function onProceed(){
-    console.log({role: role.value});
-    console.log({playerRole: PlayerRole.MINISTER});
-    
-    if(role.value == PlayerRole.MINISTER){
-        switchGameState(GameState.TaxRateSet);
-    }else if(role.value){
-        switchGameState(GameState.SalarySet);
-    }
+    switchGameState(GameState.YearStart);
 }
 
 export default function UniverseSetup() {
 
 	let playersData = players.value.map((player,i)=>{
 		return (
-			<PlayerDataSlot name={player.name} role={roleToString(player.role)}/>
+			<PlayerDataSlot key={i} name={player.name} role={roleToString(player.role)}/>
 		)
 	})
 

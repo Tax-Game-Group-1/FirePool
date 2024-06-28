@@ -499,6 +499,7 @@ export class Universe {
   private _id: string;
   private _cumulativeFundsPerRound: number[];
   private _game: Game;
+  private _universeFunds: number = 0;
 
   constructor(minister: Minister, taxRate: number, id: string, game: Game) {
     this.minister = minister;
@@ -737,11 +738,20 @@ export class Universe {
   }
 
   //give players tax by dividing the total amount given by the minister
-  public divideTaxAmongPlayers(toDivide: number) {
-    if (this._players.length == 0) throw "no players in the game yet";
+  public divideTaxAmongPlayers(percentage: number) {
+    if (this._players.length == 0)  {
+      throw "minister loses";
+      return ;
+    }
 
-    let eachPlayerReceives = toDivide / this._players.length;
+    if (percentage < 0 || percentage > 1)
+      throw "invalid percentage for redistribution, must be between 0 and 1"
 
+    const toGiveBack = this._universeFunds * percentage;
+    const eachPlayerReceives = toGiveBack / this._players.length;
+    this.minister.payFunds(toGiveBack);
+
+    console.log("each player receives (GameManager.divideTaxAmongPlayers)")
     console.log(eachPlayerReceives);
 
     for (let player of this._players) {
@@ -790,7 +800,11 @@ export class Universe {
   public citizenPayTax(playerId: number, declared: number, received: number, calculatedTax: number) {
     for (const citizen of this._players) {
       if (citizen.id == playerId) {
-        citizen.payTaxAndReceive(received, declared, calculatedTax);
+        //citizen pays tax
+        const taxPaid = citizen.payTaxAndReceive(received, declared, calculatedTax);
+
+        //add funds to the universe money pool
+        this._universeFunds += taxPaid; 
         return ;
       }
     }
@@ -978,6 +992,7 @@ export abstract class Citizen extends Player {
 
     this.hasPaid = true;
     this.receiveFunds(received - calculatedTax);
+    return calculatedTax;
   }
 
   public audit(finePercent, isAudited) {

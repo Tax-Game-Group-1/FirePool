@@ -5,18 +5,21 @@ import Btn from '@/components/Button/Btn'
 import { GameContent } from '@/components/Game/GameContentContainer'
 import LoadingStatus from '@/components/Loading/Loading'
 import { signal, computed } from '@preact/signals-react'
-import React from 'react'
+import React, { useEffect } from 'react'
 
 import t from "../../../elements.module.scss"
 import { PlayerChosenForAudit } from '&/gameManager/interfaces'
 import { CurrencyIcon } from '@/assets/svg/svg'
 import { GameState } from '@/interfaces'
 import { switchGameState } from './InGame'
+import { useSignals } from '@preact/signals-react/runtime'
+import AnimationContainer from '@/components/AnimationContainer/AnimationContainer'
+import { createNotif } from '@/components/Notification/Notification'
 
 
-let isUpForAudit = signal(true);
-let showResult = signal(true);
-let hasPenalty = signal(true);
+let isUpForAudit = signal(false);
+let showResult = signal(false);
+let hasPenalty = signal(false);
 
 let oldFunds = signal(0);
 let newFunds = signal(0);
@@ -29,7 +32,10 @@ let newFunds = signal(0);
 
 function onAudited({success, message, data}){
 	if(!success){
-
+		createNotif({
+			content: `Error in auditing: ${message}`
+		})
+		return;
 	}
 
 	let arr : PlayerChosenForAudit[] = data;
@@ -51,9 +57,11 @@ function onAudited({success, message, data}){
 			}
 
 			GameGlobal.player.value.funds = player.newFunds;
-			break;
+			return;
 		}
 	}
+
+	onProceed();
 
 }
 
@@ -64,20 +72,39 @@ function onProceed(){
 	
 }
 
+function onRevealClick(){
+	showResult.value = true;
+}
+
+function doAudit(){
+	socket.emit("audit",{
+		code: GameGlobal.room.value.gameCode,
+	})
+
+	socket.on("client-audited", onAudited);
+}
 
 export function AuditCitizen() {
 
-	function doAudit(){
-		socket.emit("audit",{
-			code: GameGlobal.room.value.gameCode,
-		})
+	useSignals();
 
-		socket.on("client-audited", onAudited);
-	}
+	useEffect(()=>{
+		doAudit();
+	},[])
+
 
 	return (
-		
-		
+		<AnimationContainer
+			enter={{
+				animations:{
+					opacity:[0,1],
+					y:[100,0]
+				},
+				options:{
+					duration: 0.3,
+				}
+			}}
+		>
 		<GameContent isSub isAbsolute>
 			{
 				showResult.value
@@ -168,12 +195,21 @@ export function AuditCitizen() {
 
 			}
 			</GameContent>
+
+		</AnimationContainer>
+		
 		
 
 	)
 }
 
+
 export function AuditMinister() {
+
+	useEffect(()=>{
+		doAudit();
+	},[])
+
 	return (
 		<GameContent isSub>
 			<div className={`flex flex-col justify-center items-center p-4 gap-4`}>

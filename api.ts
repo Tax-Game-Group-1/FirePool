@@ -255,6 +255,7 @@ export function setUpServer(server:Express) {
 
 	})
 
+
     //retrieves the list of games from the server
 	server.post("/listGames/:adminId", async (req, res) => {
 		console.log("list games")

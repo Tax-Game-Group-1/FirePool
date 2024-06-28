@@ -20,6 +20,11 @@ import TaxRateSet from './TaxRateSet'
 import SalarySet from './SalarySet'
 import TaxDeclare from './TaxDeclare'
 import { AuditCitizen, AuditMinister } from './Audit'
+import { CitizenRedistribution, MinisterRedistribution } from './Redistribution'
+import YearEnd from './YearEnd'
+import YearStart from './YearStart'
+import Stats from './Stats'
+import Processing from './Processing'
 
 export let role = computed(()=>{
 	let role = GameGlobal.player.value.role;
@@ -86,32 +91,24 @@ export default function InGame() {
 		
 	},[gameState.value])
 
-	let content = (<></>);
-
 	console.log("SHOWING CARD ON GAME, value: " + gameState.value);
 	
 	switch(gameState.value) {
-		case GameState.Waiting:{
+		case GameState.Waiting:
+		case GameState.Starting:
+		case GameState.RolePicking:
 			showPlayerHUD.value = false;
 			showWorldHUD.value = false;
-		} break;
-		case GameState.Starting:{
-			showPlayerHUD.value = false;
+			break;
+		case GameState.Stats:
+		case GameState.YearStart:
+		case GameState.YearEnd:
+			showPlayerHUD.value = true;
 			showWorldHUD.value = false;
-			// content = (<ConsentForm/>)
-		} break;
-		case GameState.RolePicking:{
-			showPlayerHUD.value = false;
-			showWorldHUD.value = false;
-			// content = (<RevealCard/>)
-		} break;
-		case GameState.UniverseSetup:{
-			showPlayerHUD.value = false;
-			showWorldHUD.value = false;
-			// content = (<UniverseSetup/>)
-		} break;
+			break;
 		default: 
-			console.log("SHOW CARD ON GAME STATE FAILED")
+			showPlayerHUD.value = true;
+			showWorldHUD.value = true;
 	}
 
 
@@ -136,6 +133,9 @@ export default function InGame() {
 						gameState.value == GameState.UniverseSetup && <UniverseSetup />
 					}
 					{
+						gameState.value == GameState.YearStart && <YearStart />
+					}
+					{
 						//role is minister, declare the tax
 						role.value == PlayerRole.MINISTER && 
 						gameState.value == GameState.TaxRateSet && <TaxRateSet />
@@ -151,14 +151,33 @@ export default function InGame() {
 							 gameState.value == GameState.TaxDeclare && <TaxDeclare />
 					}
 					{
-						//role is foreign worker or local worker, declare tax
-						// (role.value == PlayerRole.FOREIGN_WORKER || role.value == PlayerRole.LOCAL_WORKER) &&
+						//role is foreign worker or local worker, get audit
+						(role.value == PlayerRole.FOREIGN_WORKER || role.value == PlayerRole.LOCAL_WORKER) &&
 							 gameState.value == GameState.Audit && <AuditCitizen />
 					}
 					{
-						//role is foreign worker or local worker, declare tax
+						//role is minister, wait for audit
 						(role.value == PlayerRole.MINISTER) &&
 							 gameState.value == GameState.Audit && <AuditMinister />
+					}
+					{
+						//role is minister, redistribute
+						(role.value == PlayerRole.MINISTER) &&
+							 gameState.value == GameState.Redistribution && <MinisterRedistribution />
+					}
+					{
+						//role is foreign worker or local worker, get distribution
+						(role.value == PlayerRole.FOREIGN_WORKER || role.value == PlayerRole.LOCAL_WORKER) &&
+							 gameState.value == GameState.Redistribution && <CitizenRedistribution />
+					}
+					{
+							 gameState.value == GameState.YearEnd && <YearEnd />
+					}
+					{
+							 gameState.value == GameState.Stats && <Stats />
+					}
+					{
+							 gameState.value == GameState.Processing && <Processing />
 					}
 				</GameContentContainer>
 			</ContentLayer>
