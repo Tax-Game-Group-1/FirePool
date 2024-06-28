@@ -32,7 +32,7 @@ export enum GameScreen {
 
 // was currently working on reveal card, will change later
 //should be waiting room by default
-export let gameScreen = signal(GameScreen.InGame);
+export let gameScreen = signal(GameScreen.WaitingRoom);
 
 export function setGameScreen(screen: GameScreen) {
 	console.log(`Screen: ${screen}`);
