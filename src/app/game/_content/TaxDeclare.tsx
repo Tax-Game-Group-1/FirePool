@@ -116,11 +116,11 @@ export default function TaxDeclare() {
 						<div>Are you sure you want to declare this amount?</div>
 
 						<div className={`${t.toolBar} p-4 justify-end`}>
-							{(value).toFixed(2)}
+							{(value)?.toFixed(2)}
 						</div>
 
 						<div>
-							<p>This is {(tax.value - value).toFixed(2)} credits away from the expected amount.</p>
+							<p>This is {(tax.value - value)?.toFixed(2)} credits away from the expected amount.</p>
 							<p>You get to keep the profit, but you might face a penalty for being audited. </p>
 						</div>
 

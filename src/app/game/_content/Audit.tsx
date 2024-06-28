@@ -105,7 +105,7 @@ export function AuditCitizen() {
 							<div className={`flex flex-row justify-between items-center p-2 rounded-md gap-2 ${t.toolBar}`}>
 								<div className={`w-8 rounded-full border ${t.currencyIcon} ${t.solidBorder} ${t.fillSolidText} justify-center items-center`}><CurrencyIcon/></div>
 								<div className={``}>
-									{ (oldFunds.value - newFunds.value).toFixed(2)}
+									{ (oldFunds.value - newFunds.value)?.toFixed(2)}
 								</div>
 							</div>
 						</div>

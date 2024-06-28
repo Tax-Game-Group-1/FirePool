@@ -214,7 +214,7 @@ export class Game {
     // }).catch(e => {
     //   console.log("error checking name")
     //   console.error(e)
-    //   return false;
+      return false;
     // })
 
   }

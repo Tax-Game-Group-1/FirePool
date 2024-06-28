@@ -72,7 +72,7 @@ export function SalaryDisplay(){
                 <CurrencyIcon/>
             </div>
             <div>
-                {(totalSalary.value).toFixed(2)}
+                {(totalSalary.value)?.toFixed(2)}
             </div>
         </div>
     )
@@ -123,7 +123,7 @@ export function SalaryBox({salary}:{
             <div ref={salaryRef} className={`absolute flex justify-center`}  style={{
                 pointerEvents: "all",
             }}>
-                {"R "}{salary.toFixed(2)}
+                {"R "}{salary?.toFixed(2)}
             </div>
             <div ref={boxRef} className={`relative ${t.toolBar} ${t.fillSolidText} w-full aspect-square justify-center items-center`}  style={{
                 pointerEvents: "all",
