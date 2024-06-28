@@ -51,7 +51,7 @@ export const UniverseDataSlot = forwardRef(function UniverseDataSlot({index=0, n
 		<div ref={ref} className={`${t.toolBar} ${t.solidText} rounded-md grid grid-cols-12 p-3 gap-1`}>
 			<div className={`col-span-1 text-center p-1 aspect-square rounded-md ${t.accent}`}>{index}</div>
 			<div className={`col-span-7 text-left p-1`}>{name}</div>
-			<div className={`col-start-9 col-span-4 text-right p-1`}>{funds?.toFixed(2)}</div>
+			<div className={`col-start-9 col-span-4 text-right p-1`}>{funds}</div>
 		</div>
 	)
 })
@@ -68,7 +68,7 @@ export const PlayerDataSlot = forwardRef(function PlayerDataSlot({index=0, name=
 		<div className={`${t.toolBar} ${t.solidText} rounded-md grid grid-cols-12 p-3 gap-1`}>
 			<div className={`col-span-1 text-center p-1 aspect-square rounded-md ${t.accent}`}>{index}</div>
 			<div className={`col-span-4 text-left p-1`}>{name}</div>
-			<div className={`col-span-3 text-left right-1`}>{funds?.toFixed(2)}</div>
+			<div className={`col-span-3 text-left right-1`}>{funds}</div>
 			<div className={`col-start-9 col-span-4 text-center p-1`}>{role}</div>
 		</div>
 	)

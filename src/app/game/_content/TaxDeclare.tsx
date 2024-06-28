@@ -116,11 +116,11 @@ export default function TaxDeclare() {
 						<div>Are you sure you want to declare this amount?</div>
 
 						<div className={`${t.toolBar} p-4 justify-end`}>
-							{(value)?.toFixed(2)}
+							{(value)}
 						</div>
 
 						<div>
-							<p>This is {(tax.value - value)?.toFixed(2)} credits away from the expected amount.</p>
+							<p>This is {(tax.value - value)} credits away from the expected amount.</p>
 							<p>You get to keep the profit, but you might face a penalty for being audited. </p>
 						</div>
 
@@ -157,21 +157,21 @@ export default function TaxDeclare() {
 						<div>Income Received</div>
 						<div className={`flex flex-row justify-between items-center p-2 rounded-md gap-2 ${t.toolBar}`}>
 							<div className={`w-8 rounded-full border ${t.currencyIcon} ${t.solidBorder} ${t.fillSolidText} justify-center items-center`}><CurrencyIcon/></div>
-							<div className={``}>{salary.value?.toFixed(2)}</div>
+							<div className={``}>{salary.value}</div>
 						</div>
 					</div>
 					<div className={`flex flex-row justify-between items-center w-full`}>
 						<div>Calculated tax income</div>
 						<div className={`flex flex-row justify-between items-center p-2 rounded-md gap-2 ${t.toolBar}`}>
 							<div className={`w-8 rounded-full border ${t.currencyIcon} ${t.solidBorder} ${t.fillSolidText} justify-center items-center`}><CurrencyIcon/></div>
-							<div className={``}>{tax.value?.toFixed(2)}</div>
+							<div className={``}>{tax.value}</div>
 						</div>
 					</div>
 					<div className={`text-lg`}>
 						What is the the tax amount you want to pay?
 					</div>
 					<div className={`flex flex-row justify-between items-center w-full`}>
-						<input placeholder={`${tax.value?.toFixed(2)}`} step="0.01" type="number" className={`flex flex-row justify-center text-right items-center p-2 rounded-md gap-2 ${t.toolBar}`} />	
+						<input placeholder={`${tax.value}`} step="0.01" type="number" className={`flex flex-row justify-center text-right items-center p-2 rounded-md gap-2 ${t.toolBar}`} />	
 					</div>
 					<div>
 						<Btn onClick={onClick}>

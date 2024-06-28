@@ -122,7 +122,7 @@ export let playerIconURL = computed(()=>{
 })
 export let playerFunds = computed(()=>{
 	let funds = GameGlobal.player.value?.funds || 0;
-	return funds.toFixed(2);
+	return funds;
 })
 export let playerRole = computed(()=>{
 	let role = GameGlobal.player.value?.role || "";
