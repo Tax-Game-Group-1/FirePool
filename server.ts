@@ -11,7 +11,7 @@ import path from "node:path";
 
 const dev = process.env.NODE_ENV !== "production";
 const hostname = "localhost";
-let port = Number(process.env.PORT) || 80;
+let port = 80;
 
 // const app = next({dev, hostname, port});
 // const handler = app.getRequestHandler();
