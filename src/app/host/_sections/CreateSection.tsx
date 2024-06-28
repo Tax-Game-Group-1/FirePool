@@ -64,6 +64,13 @@ export default function CreateSection() {
 		obj.adminId = hostID.value;
 		obj.roundNumber = 0;
 
+		if(obj.finePercent > 1){
+			obj.finePercent /= 100;
+		}
+		if(obj.auditProbability > 1){
+			obj.auditProbability /= 100;
+		}
+
 		if(currGame.value){
 			tryEdit(obj);
 		}else{
