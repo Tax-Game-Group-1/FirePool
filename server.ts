@@ -83,13 +83,22 @@ console.log(`Trying to listen on ${port} (kill port if failing)`);
 	let routes = [
 		"index", "home", "host","signup","game",
 	]
-	for(let route of routes){
-		expressServer.get(`${route}`,(req,res)=>{
-			console.log(`accessing ${route}`)
-			res.sendFile(`${route}.html`, {root:dir});
-		})
-	}
 	expressServer
+	.get('/', (req, res) => {
+		res.sendFile('index.html', {root: dir});
+	})
+	.get('/home', (req, res) => {
+        res.sendFile('home.html', {root: dir});
+	})
+	.get('/host', (req, res) => {
+        res.sendFile('host.html', {root: dir});
+	})
+	.get('/signup', (req, res) => {
+		res.sendFile('signup.html', {root: dir});
+	})
+	.get('/game', (req, res) => {
+		res.sendFile('game.html', {root: dir});
+	})
 	.get('*', (req, res) => {
 		res.sendFile('404.html', {root: dir});
 	})
