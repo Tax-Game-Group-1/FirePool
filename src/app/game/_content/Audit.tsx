@@ -117,7 +117,7 @@ export function AuditCitizen() {
 							</div>
 						</div>
 						<div className={`flex flex-row text-lg`}>
-							<Btn>Pay Penalty</Btn>
+							<Btn onClick={onProceed}>Pay Penalty</Btn>
 						</div>
 					</div>
 
@@ -128,7 +128,7 @@ export function AuditCitizen() {
 							No penalty has to be paid. Thank you for your honesty.
 						</div>
 						<div className={`text-lg`}>
-							<Btn>Continue</Btn>
+							<Btn onClick={onProceed}>Continue</Btn>
 						</div>
 					</div>
 				)
@@ -146,7 +146,7 @@ export function AuditCitizen() {
 							Tax Authority has chosen you for an audit!
 						</div>
 						<div>
-							<Btn>View Result</Btn>
+							<Btn onClick={doAudit}>View Result</Btn>
 						</div>
 					</div>
 			
