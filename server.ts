@@ -7,10 +7,11 @@ import * as http from "node:http";
 import bodyParser from "body-parser"
 
 import { setUpSocket } from "sockets";
+import path from "node:path";
 
 const dev = process.env.NODE_ENV !== "production";
 const hostname = "localhost";
-const port = 80;
+let port = Number(process.env.PORT) || 80;
 
 // const app = next({dev, hostname, port});
 // const handler = app.getRequestHandler();
@@ -73,9 +74,32 @@ console.log(`Trying to listen on ${port} (kill port if failing)`);
     
 	expressServer.use(bodyParser.json())
     expressServer.use(bodyParser.urlencoded({ extended: true }))
+
+	expressServer.use(express.static(path.join(__dirname, 'out')));
+
+	let dir = path.join(__dirname, 'out');
     
 	//next will route and serve the frontend pages here
-	// expressServer.get('*', (req, res) => {
+	expressServer
+	.get('/', (req, res) => {
+		res.sendFile('index.html', {root: dir});
+	})
+	.get('/home', (req, res) => {
+        res.sendFile('home.html', {root: dir});
+	})
+	.get('/host', (req, res) => {
+        res.sendFile('host.html', {root: dir});
+	})
+	.get('/signup', (req, res) => {
+		res.sendFile('signup.html', {root: dir});
+	})
+	.get('/game', (req, res) => {
+		res.sendFile('game.html', {root: dir});
+	})
+	.get('*', (req, res) => {
+		res.sendFile('404.html', {root: dir});
+	})
+	// expressServer.get('/', (req, res) => {
     //     return handler(req, res)
 	// })
     
