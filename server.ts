@@ -12,8 +12,8 @@ const dev = process.env.NODE_ENV !== "production";
 const hostname = "localhost";
 const port = 80;
 
-const app = next({dev, hostname, port});
-const handler = app.getRequestHandler();
+// const app = next({dev, hostname, port});
+// const handler = app.getRequestHandler();
 
 //Map<gameId, Game Ojbect>()
 const gamesCurrentlyRunning = new Map<string,Game>()
@@ -67,7 +67,7 @@ export function removeWaitingPlayerFromAllGameInstancesBySocket(socketId: string
 
 
 console.log(`Trying to listen on ${port} (kill port if failing)`);
-app.prepare().then(() => {
+// app.prepare().then(() => {
 
     const expressServer: Express = express();
     
@@ -75,9 +75,9 @@ app.prepare().then(() => {
     expressServer.use(bodyParser.urlencoded({ extended: true }))
     
 	//next will route and serve the frontend pages here
-	expressServer.get('*', (req, res) => {
-        return handler(req, res)
-	})
+	// expressServer.get('*', (req, res) => {
+    //     return handler(req, res)
+	// })
     
 	//----------------------------- server stuff ------------------------//
     
@@ -99,7 +99,7 @@ app.prepare().then(() => {
   
     setUpSocket(io);
 
-}).catch((err) => {
-    console.error("Next.js app error:", err);
-    process.exit(1);
-});
+// }).catch((err) => {
+//     console.error("Next.js app error:", err);
+//     process.exit(1);
+// });
