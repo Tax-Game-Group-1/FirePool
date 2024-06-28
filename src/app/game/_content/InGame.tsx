@@ -27,7 +27,7 @@ export let role = computed(()=>{
 })
 
 //initial is waiting
-export const gameState = signal(GameState.Audit);
+export const gameState = signal(GameState.Waiting);
 
 export function switchGameState(newState: GameState) {
 	console.log(`new state`);

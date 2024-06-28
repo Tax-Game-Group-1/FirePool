@@ -49,7 +49,7 @@ const getAdminById = async (id: number) => {
 const createGame = async (adminId: number, name: string, taxCoefficient: number, maxPlayers: number, finePercent: number, roundNumber: number, auditProbability: number, kickPlayersOnBankruptcy: boolean) => {
     //test that the game is valid by seeing if you can create an instance
     const testId = "1";
-    const testGame = new Game(testId, name, taxCoefficient, maxPlayers, finePercent, roundNumber, auditProbability, kickPlayersOnBankruptcy);
+    const testGame = new Game(testId, name, taxCoefficient, maxPlayers, finePercent/100, roundNumber, auditProbability/100, kickPlayersOnBankruptcy);
 
     if (adminId == null)
         throw "Admin ID cannot be null";
@@ -111,6 +111,7 @@ const editAdminGame = async (game: Game) => {
     .set({name : game.name, auditProbability: game.auditProbability, finePercent: game.penalty, kickPlayersOnBankruptcy: game.kickPlayersOnBankruptcy, maxPlayers: game.maxPlayers, roundNumber: game.roundNumber, taxCoefficient: game.taxCoefficient })
     .where(eq(tblGameInstance.gameId, parseInt(game.id)));
 }
+
 
 /*
  get the game manager object
