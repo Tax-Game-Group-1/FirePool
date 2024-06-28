@@ -187,34 +187,35 @@ export class Game {
   }
 
   public async assignNameToPlayerInWaitingRoom(waitingId: string, name: string): Promise<boolean> {
-    return await fetch("https://vfa5gkjsbxwhoxfsdiufnesm6a0bonck.lambda-url.us-east-1.on.aws/", {
-      method: "POST",
-      body: JSON.stringify({
-        content: name
-      })
-    }).then(async result => {
-      const res = await result.json();
-      if (res.success) {
+    // return await fetch("https://vfa5gkjsbxwhoxfsdiufnesm6a0bonck.lambda-url.us-east-1.on.aws/", {
+    //   method: "POST",
+    //   body: JSON.stringify({
+    //     content: name
+    //   })
+    // }).then(async result => {
+    //   const res = await result.json();
+    //   if (res.success) {
 
         for (const p of this._playersInWaitingRoom) {
           if (p.waitingId == waitingId) {
-            p.name = res.data.cleanName;
+            // p.name = res.data.cleanName;
+            p.name = name;
             return true;
           }
         }
 
 
-      } else {
-        throw "API call for clean name not successful"
-      }
+    //   } else {
+    //     throw "API call for clean name not successful"
+    //   }
 
       //send a response here to say they could not finde name
-      throw "could not find player";
-    }).catch(e => {
-      console.log("error checking name")
-      console.error(e)
-      return false;
-    })
+    //   throw "could not find player";
+    // }).catch(e => {
+    //   console.log("error checking name")
+    //   console.error(e)
+    //   return false;
+    // })
 
   }
 
