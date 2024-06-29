@@ -30,10 +30,8 @@
     "animejs": "^3.2.2",
     "aws-sdk": "^2.1646.0",
     "bcrypt": "^5.1.1",
-    "cloudinary": "^2.2.0",
     "dotenv": "^16.4.5",
     "drizzle-orm": "^0.31.2",
-    "esrun": "^3.2.26",
     "exceljs": "^4.4.0",
     "express": "^4.19.2",
     "framer-motion": "^11.2.10",
@@ -54,7 +52,6 @@
     "tsconfig-paths": "^4.2.0"
   },
   "devDependencies": {
-    "@tauri-apps/cli": "^1.5.14",
     "@types/bcrypt": "^5.0.2",
     "@types/express": "^4.17.21",
     "@types/jest": "^29.5.12",
