@@ -1,6 +1,5 @@
 "use client"
 
-import { updateGameGlobal } from "@/app/global";
 import { animate, AnimationPlaybackControls } from 'framer-motion';
 import { useEffect } from "react";
 
@@ -26,9 +25,9 @@ export function useRemoveLoadingScreen(callback:()=>void, onLoad?:()=>void, time
 				callback();
 		
 				loadingThingy?.classList.add("hidden");
-				try{
-					loadingThingy?.remove();
-				}catch(err){}
+				// try{
+				// 	loadingThingy?.remove();
+				// }catch(err){}
 
 			});
 		}
@@ -45,4 +44,17 @@ export function useRemoveLoadingScreen(callback:()=>void, onLoad?:()=>void, time
 			window.removeEventListener('load', onPageLoad)
 		};
 	},[callback, onLoad, time])
+}
+
+export function showLoadingScreen(callback:Function){
+	let loadingThingy = document.querySelector(`.loadingThingy`);
+	if(!loadingThingy) return;
+	loadingThingy?.classList.add("hidden");
+	let anim = animate(loadingThingy, { opacity:[0,1] }, {duration: 0.5})
+	anim.then(()=>{
+
+		// do something else
+		callback?.();
+
+	});
 }

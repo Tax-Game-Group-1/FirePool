@@ -10,7 +10,7 @@ import InGame, { switchGameState } from './_content/InGame';
 import { signal } from '@preact/signals-react';
 import { WaitingRoom } from './_waiting/waitingRoom';
 import { GameGlobal, gameCodeLength, hostID, loadGameGlobal, playerID, saveGameGlobal } from '@/app/global';
-import { useRemoveLoadingScreen } from '@/components/LoadingScreen/LoadingScreenUtil';
+import { showLoadingScreen, useRemoveLoadingScreen } from '@/components/LoadingScreen/LoadingScreenUtil';
 import { createPopUp} from '@/components/PopUp/PopUp';
 import { createNotif} from '@/components/Notification/Notification';
 import Spectate from './_content/Spectate';
@@ -113,7 +113,9 @@ export async function startGame(){
 }
 
 function redirect(){
-	window.location.href = "/";
+	showLoadingScreen(()=>{
+		window.location.href = "/";
+	})
 }
 
 function onUpdatePlayers({data, message, success}){
@@ -134,10 +136,48 @@ function onUpdatePlayers({data, message, success}){
 		hostName: data.hostName,
 		gameName: data.name,
 	};
-	saveGameGlobal();
+	let universes = data.universeData as UniverseData[];
 	
-}
+	if(GameGlobal.user.value.id){
+		GameGlobal.room.value.universes = [...universes];
 
+		console.log("universes for host")
+		console.log(GameGlobal.room.value.universes)
+
+	}else{
+		let waitingId = GameGlobal.player.value.waitingId;
+	
+		let currPlayer:PlayerData;
+		let currUniverse:UniverseData;
+	
+		for(let universe of universes){
+			if(currUniverse && currPlayer) break;
+	
+			if(universe.minister.waitingId == waitingId){
+				currPlayer = universe.minister;
+				currUniverse = universe;
+				break;
+			}
+			let players = universe.players;
+			for(let player of players){
+				if(waitingId == player.waitingId){
+					currPlayer = player;
+					currUniverse = universe;
+					break;
+				}
+			}
+		}
+		///receive data of players, universe and game room
+		GameGlobal.player.value = {... currPlayer};
+		GameGlobal.universe.value = {... currUniverse};
+		console.log("player data")
+		console.log({
+			currPlayer, currUniverse
+		})
+		
+	}
+	saveGameGlobal();
+}
 function onGetRoomData(res){
 	
 	console.log("gettting room data")

@@ -12,7 +12,7 @@ import { closeAllNotifs, createNotif } from '@/components/Notification/Notificat
 import { getData, setData } from '@/app/dummyData';
 import { randomID, sanitizeString } from '@catsums/my';
 import LoadingScreen from '@/components/LoadingScreen/LoadingScreen';
-import { useRemoveLoadingScreen } from '@/components/LoadingScreen/LoadingScreenUtil';
+import { showLoadingScreen, useRemoveLoadingScreen } from '@/components/LoadingScreen/LoadingScreenUtil';
 import { deleteGameGlobal, gameCodeLength, GameGlobal, loadGameGlobal, saveGameGlobal } from '@/app/global';
 import { JoinSection, JoiningSection } from './_sections/JoinSection';
 import { LoginSection } from './_sections/LoginSection';
@@ -20,6 +20,8 @@ import { SplashSection } from './_sections/SplashSection';
 import { StartSection } from './_sections/StartSection';
 import { findData } from '@/app/dummyData';
 import { useRouter } from 'next/navigation';
+
+import { theme } from '@/app/global';
 
 let mainRouter = null;
 
@@ -107,7 +109,10 @@ export async function tryLogin(username:string, password:string){
 		return;
 	}
 	//clear GameGlobal
-	deleteGameGlobal();
+	deleteGameGlobal("player");
+	deleteGameGlobal("user");
+	deleteGameGlobal("universe");
+	deleteGameGlobal("room");
 
 	GameGlobal.user.value.id = res.data.id;
 	GameGlobal.user.value.name = username;
@@ -163,7 +168,10 @@ export async function tryJoin(code:string){
 	console.log({res})
 
 	//clear GameGlobal
-	deleteGameGlobal();
+	deleteGameGlobal("player");
+	deleteGameGlobal("user");
+	deleteGameGlobal("universe");
+	deleteGameGlobal("room");
 
 	GameGlobal.room.value = {
 		gameCode: code,
@@ -178,7 +186,9 @@ export async function tryJoin(code:string){
 	goToSection(PageSection.Joining);
 	createTimer(1,()=>{
 		// mainRouter.push(`/game?c=${code}`)
-		window.location.href = `/game?c=${code}`;
+		showLoadingScreen(()=>{
+			window.location.href = `/game?c=${code}`;
+		})
 	});
 	
 	return;
@@ -187,8 +197,6 @@ export async function tryJoin(code:string){
 
 export default function Home() {
 	useSignals();
-
-	const { theme  } = useTheme();
 
 	mainRouter = useRouter();
 
@@ -218,7 +226,7 @@ export default function Home() {
 	return (
 		<>
 			<LoadingScreen/>
-			<main className={`${s.splash} ${theme} overflow-auto`} id={"top"}>
+			<main className={`${s.splash} ${theme.value} overflow-auto`} id={"top"}>
 				<SplashSection/>
 				<StartSection/>
 				<LoginSection/>
