@@ -42,7 +42,7 @@ export function generateRandomSalary(num:number = 4){
 
 export async function onProceedClick(){
 
-    GameGlobal.player.value.salary = totalSalary;
+    GameGlobal.player.value.salary = totalSalary.value;
     GameGlobal.player.value = {...GameGlobal.player.value, funds: GameGlobal.player.value.funds + totalSalary};
 
 	waiting.value = true;

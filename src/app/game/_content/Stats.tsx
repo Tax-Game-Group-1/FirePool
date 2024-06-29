@@ -12,10 +12,26 @@ import { useSignals } from '@preact/signals-react/runtime'
 import { switchGameState } from './InGame'
 import { GameState } from '@/interfaces'
 import { socket } from '@/app/socket'
-import { salary, tax } from './TaxDeclare'
 import { UniverseData, PlayerData } from '&/gameManager/interfaces'
 import { createNotif } from '@/components/Notification/Notification'
 import { setGameScreen, GameScreen } from '../layouts'
+
+export let salary = computed(()=>{
+	let s = GameGlobal.player.value.salary || 0;
+	return s;
+})
+export let declared = computed(()=>{
+	let s = GameGlobal.player.value.declated || 0;
+	return s;
+})
+export let taxRate = computed(()=>{
+	let s = GameGlobal.universe.value.taxRate || 0;
+	return s;
+})
+export let tax = computed(()=>{
+	let s = salary.value * taxRate.value;
+	return s || 0;
+})
 
 export const universes = computed(()=>{
 	let u = GameGlobal.room.value.universes || [];
@@ -47,7 +63,6 @@ export enum StatsMode {
 let mode = signal(StatsMode.Statistics)
 
 export default function Stats() {
-
 	useSignals();
 
 
@@ -111,7 +126,7 @@ export default function Stats() {
 							<div className={`w-full flex-row justify-between items-center flex p-2 rounded-md ${t.toolBar}`}>
 								<div>Declared Tax</div>
 								<div className={`p-1 ${t.solidElement} rounded-md`}>
-									{(GameGlobal.player.value?.declared).toFixed(2)}
+									{(declared.value).toFixed(2)}
 								</div>
 							</div>
 							<div className={`w-full flex-row justify-between items-center flex p-2 rounded-md ${t.toolBar}`}>

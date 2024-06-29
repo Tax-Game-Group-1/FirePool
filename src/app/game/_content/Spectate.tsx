@@ -107,13 +107,33 @@ async function onExportGame(){
 		})
 	}).then(r => r.blob());
 
-	let file = URL.createObjectURL(res);
-    // window.location.assign(file);
-	window.open(file,"_blank");
+	console.log({res});
 
-	createNotif({
-		content: "File exported!"
-	})
+	// let file = URL.createObjectURL(res);
+    // window.location.assign(file);
+	// window.open(file,"_blank",{})
+	// window.open(file,"_blank");
+
+	
+	var saveData = (function () {
+		var a = document.createElement("a");
+		document.body.appendChild(a);
+		a.style.display = "none";
+		a.target = "_blank";
+		a.download = `GameGlobal.room.value.gameCode.xlsx`;
+		let url = window.URL.createObjectURL(res);
+		a.href = url;
+		return function () {
+			url = window.URL.createObjectURL(res);
+			a.href = url;
+			a.click();
+			// window.URL.revokeObjectURL(url);
+			createNotif({
+				content: "File exported!"
+			})
+		};
+	}());
+	saveData();
 }
 
 export function ContentStuff(){

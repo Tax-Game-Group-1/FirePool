@@ -130,7 +130,7 @@ export default function Processing() {
 				playerBankruptcy.value &&
 				<div className={`flex flex-col`}>
 					<div>
-						Your universe has sufficient funds to keep going. It is going to file for bankruptcy.
+						Your universe has no sufficient funds to keep going. It is going to file for bankruptcy.
 					</div>
 					<div>
 						<Btn onClick={fileForBankruptcyUniverse}>Game Over</Btn>
@@ -138,12 +138,12 @@ export default function Processing() {
 				</div>
 			}{
 				(!playerBankruptcy.value && !universeBankruptcy.value) &&
-				<div className={`flex flex-col`}>
+				<div className={`flex flex-col p-8 justify-center`}>
 					<div>
-						Your universe has sufficient funds to keep going. It is going to file for bankruptcy.
+						This universe has sufficient funds to keep going.
 					</div>
 					<div>
-						<Btn onClick={onProceedClick}>Game Over</Btn>
+						<Btn onClick={onProceedClick}>Proceed</Btn>
 					</div>
 				</div>
 			}

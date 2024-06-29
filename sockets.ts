@@ -389,6 +389,8 @@ export const setUpSocket = (io: Server) => {
             universeData: universeData,
           },
         });
+
+		
       } catch (e) {
         console.error(e);
         socket.emit("client-update-players", {
@@ -405,6 +407,14 @@ export const setUpSocket = (io: Server) => {
 				socket.id
 			  );
 			socket.emit("client-game-over",{})
+
+			game.emitMessageToPlayers("client-update-players", {
+				success: true,
+				data: {
+				  playersInRoom: game.getPlayersInWaitingRoomAsJSON(),
+				  universeData: game.getAllUniversesAsJSON(),
+				},
+			  });
 		}catch(e){
 			console.log(e);
 			socket.emit("client-update-players", {
@@ -425,6 +435,14 @@ export const setUpSocket = (io: Server) => {
 			}
 
 			socket.emit("client-game-over",{})
+
+			game.emitMessageToPlayers("client-update-players", {
+				success: true,
+				data: {
+				  playersInRoom: game.getPlayersInWaitingRoomAsJSON(),
+				  universeData: game.getAllUniversesAsJSON(),
+				},
+			  });
 		}catch(e){
 			console.log(e);
 			socket.emit("client-update-players", {
@@ -437,6 +455,14 @@ export const setUpSocket = (io: Server) => {
 		try{
 			let game = getGameInstanceByGameCode(code);
 			game.emitMessageToPlayers("client-end-game",{})
+
+			game.emitMessageToPlayers("client-update-players", {
+				success: true,
+				data: {
+				  playersInRoom: game.getPlayersInWaitingRoomAsJSON(),
+				  universeData: game.getAllUniversesAsJSON(),
+				},
+			  });
 		}catch(e){
 			console.log(e);
 			socket.emit("client-update-players", {
@@ -444,6 +470,7 @@ export const setUpSocket = (io: Server) => {
 				message: e.toString()
 			})
 		}
+		
 	})
 	socket.on("finish-round", ({ code })=>{
 		try{
@@ -466,6 +493,14 @@ export const setUpSocket = (io: Server) => {
 				})
 			}
 
+			game.emitMessageToPlayers("client-update-players", {
+				success: true,
+				data: {
+				  playersInRoom: game.getPlayersInWaitingRoomAsJSON(),
+				  universeData: game.getAllUniversesAsJSON(),
+				},
+			  });
+
 		}catch(e){
 			console.log(e);
 			socket.emit("client-update-players", {
@@ -477,8 +512,8 @@ export const setUpSocket = (io: Server) => {
 
 	socket.on("player-salary", ({universeId, code, salary, playerId})=>{
 		try {
-			const gameInstance = getGameInstanceByGameCode(code);
-			let universe = gameInstance.getUniverseById(universeId);
+			const game = getGameInstanceByGameCode(code);
+			let universe = game.getUniverseById(universeId);
 			if(!universe){
 				throw "Player is not part of any universe"
 			}
@@ -494,6 +529,14 @@ export const setUpSocket = (io: Server) => {
 				success: true,
 				// data: gameInstance.getDeclaredVsPaidTaxForAllUniverses()
 			})
+
+			game.emitMessageToPlayers("client-update-players", {
+				success: true,
+				data: {
+				  playersInRoom: game.getPlayersInWaitingRoomAsJSON(),
+				  universeData: game.getAllUniversesAsJSON(),
+				},
+			  });
 
 		} catch (e) {
 			console.log(e);

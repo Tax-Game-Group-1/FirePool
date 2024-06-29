@@ -6,7 +6,7 @@ import React, { useRef, useState } from 'react'
 import t from "../../../elements.module.scss"
 import { CurrencyIcon, PercentageIcon } from '@/assets/svg/svg'
 import Btn from '@/components/Button/Btn'
-import { GameGlobal } from '@/app/global'
+import { GameGlobal, saveGameGlobal } from '@/app/global'
 import { socket } from '@/app/socket'
 import _ from 'lodash'
 
@@ -20,15 +20,15 @@ import { useSignals } from '@preact/signals-react/runtime'
 
 let waiting = signal(false)
 
-let salary = computed(()=>{
+export let salary = computed(()=>{
 	let s = GameGlobal.player.value.salary;
 	return s;
 })
-let taxRate = computed(()=>{
+export let taxRate = computed(()=>{
 	let s = GameGlobal.universe.value.taxRate;
 	return s;
 })
-let tax = computed(()=>{
+export let tax = computed(()=>{
 	let s = salary.value * taxRate.value;
 	return s;
 })
@@ -106,10 +106,12 @@ export default function TaxDeclare() {
 		let playerdata = GameGlobal.player.value;
 		
 		GameGlobal.player.value = {...playerdata,
-			funds: playerdata.funds + salary.value - value,
+			funds: (playerdata.funds + salary.value - value),
 			salary: playerdata.salary,
 			declared: value,
 		}
+
+		saveGameGlobal();
 
 	}
 
