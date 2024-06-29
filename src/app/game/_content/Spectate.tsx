@@ -2,17 +2,18 @@
 import { ContentLayer, ContentLayersContainer } from '@/components/Game/ContentLayer'
 import GameContentContainer, { GameContent } from '@/components/Game/GameContentContainer'
 import GameHUD, { WorldHUD, PlayerHUD } from '@/components/Game/GameHUD'
-import NotifContainer from '@/components/Notification/Notification'
-import { PopUpContainer } from '@/components/PopUp/PopUp'
+import NotifContainer, { createNotif } from '@/components/Notification/Notification'
+import { createPopUp, PopUpContainer } from '@/components/PopUp/PopUp'
 import React, { Ref } from 'react'
 
 import t from "../../../elements.module.scss"
 import Btn from '@/components/Button/Btn'
 import {forwardRef} from 'react';
-import { GameGlobal } from '@/app/global'
+import { gameCode, GameGlobal } from '@/app/global'
 import { computed, signal } from '@preact/signals-react'
 
 import { PlayerRole } from '&/gameManager/interfaces'
+import { socket } from '@/app/socket'
 
 export function roleToString(role: PlayerRole){
 	switch(role){
@@ -55,7 +56,7 @@ export const UniverseDataSlot = forwardRef(function UniverseDataSlot({index=0, n
 		</div>
 	)
 })
-export const PlayerDataSlot = forwardRef(function PlayerDataSlot({index=0, name="", role="A", funds=0, showFunds=false, showRole=false,}:{
+export const PlayerDataSlot = forwardRef(function PlayerDataSlot({index=0, name="", role="", funds=0, showFunds=false, showRole=false,}:{
 	index?:number,
 	name?:string,
 	role?:string,
@@ -63,7 +64,6 @@ export const PlayerDataSlot = forwardRef(function PlayerDataSlot({index=0, name=
 	showFunds?:boolean,
 	showRole?:boolean,
 }, ref:Ref<any>){
-
 
 	return (
 		<div className={`${t.toolBar} ${t.solidText} rounded-md grid grid-cols-12 p-3 gap-1 w-full`}>
@@ -80,6 +80,42 @@ export const PlayerDataSlot = forwardRef(function PlayerDataSlot({index=0, name=
 	)
 })
 
+async function endGame(){
+	socket.emit("game-end",{
+		code: GameGlobal.room.value.gameCode || GameGlobal.room.value.code,
+	})
+}
+
+function onEndGameClick(){
+	createPopUp({
+		content: "End game?",
+		buttons:{
+			"Yes": endGame,
+			"No": ()=>{},
+		}
+	})
+}
+async function onExportGame(){
+	let res = await fetch("/export-game",{
+		headers: {
+			'Accept': 'application/json',
+			'Content-Type': 'application/json'
+		},
+		method: "POST", body: JSON.stringify({
+			gameCode: GameGlobal.room.value.gameCode || GameGlobal.room.value.code,
+			adminId: GameGlobal.user.value.id || GameGlobal.room.value.adminId,
+		})
+	}).then(r => r.blob());
+
+	let file = URL.createObjectURL(res);
+    // window.location.assign(file);
+	window.open(file,"_blank");
+
+	createNotif({
+		content: "File exported!"
+	})
+}
+
 export function ContentStuff(){
 
 	console.log({universes:universes.value, players:players.value})
@@ -93,7 +129,7 @@ export function ContentStuff(){
 	}) || []
 	let playersData = players.value?.map((p, i)=>{
 		return (
-			<PlayerDataSlot showFunds key={i} name={p.name} index={i} funds={p.funds} role={roleToString(p.role)}/>
+			<PlayerDataSlot showFunds showRole key={i} name={p.name} index={i} funds={p.funds} role={roleToString(p.role)}/>
 		)
 	}) || [];
 
@@ -137,10 +173,10 @@ export function ContentStuff(){
 						</div>
 					</div>
 					<div className={`flex flex-row justify-evenly p-2 gap-2`}>
-						<Btn>
+						<Btn onClick={onExportGame}>
 							Export Data
 						</Btn>
-						<Btn>
+						<Btn onClick={onEndGameClick}>
 							End Game
 						</Btn>
 					</div>

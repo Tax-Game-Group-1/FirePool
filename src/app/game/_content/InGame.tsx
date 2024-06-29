@@ -17,7 +17,7 @@ import { PlayerRole } from '&/gameManager/interfaces'
 import { GameGlobal } from '@/app/global'
 import {computed} from "@preact/signals-react"
 import TaxRateSet from './TaxRateSet'
-import SalarySet from './SalarySet'
+import SalarySet, { SalarySetMinister } from './SalarySet'
 import TaxDeclare from './TaxDeclare'
 import { AuditCitizen, AuditMinister } from './Audit'
 import { CitizenRedistribution, MinisterRedistribution } from './Redistribution'
@@ -139,6 +139,11 @@ export default function InGame() {
 						//role is minister, declare the tax
 						role.value == PlayerRole.MINISTER && 
 						gameState.value == GameState.TaxRateSet && <TaxRateSet />
+					}
+					{
+						//role is minister, declare the tax
+						role.value == PlayerRole.MINISTER && 
+						gameState.value == GameState.SalarySet && <SalarySetMinister />
 					}
 					{
 						//role is foreign worker or local worker, set the salary

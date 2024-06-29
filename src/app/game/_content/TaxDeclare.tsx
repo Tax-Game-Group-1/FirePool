@@ -1,7 +1,7 @@
 "use client"
 
 import { GameContent } from '@/components/Game/GameContentContainer'
-import React, { useRef } from 'react'
+import React, { useRef, useState } from 'react'
 
 import t from "../../../elements.module.scss"
 import { CurrencyIcon, PercentageIcon } from '@/assets/svg/svg'
@@ -16,6 +16,7 @@ import { switchGameState } from './InGame'
 import LoadingStatus from '@/components/Loading/Loading'
 import { computed, signal } from '@preact/signals-react'
 import { createPopUp } from '@/components/PopUp/PopUp'
+import { useSignals } from '@preact/signals-react/runtime'
 
 let waiting = signal(false)
 
@@ -55,6 +56,7 @@ export interface declaredVsPaidUniverse {
 */
 
 function onCitizensPaidTax({success, data, message}){
+	console.log("on citizens pay tax")
 	if(!success){
 		createNotif({
 			content: `Error: ${message}`,
@@ -75,6 +77,9 @@ function onCitizensPaidTax({success, data, message}){
 }
 
 export default function TaxDeclare() {
+	useSignals();
+
+	let [waitingForOthers, setWaitingForOthers] = useState(false);
 
 	let inputRef = useRef(null);
 
@@ -83,16 +88,20 @@ export default function TaxDeclare() {
 	
 		let value = _.clamp(Number(inputBox.value), 0, salary.value);
 	
-		socket.emit("pax-tax",{
+		console.log("paying tax")
+		socket.emit("pay-tax",{
 			code: GameGlobal.room.value.gameCode,
 			received: salary.value,
 			universeId: GameGlobal.universe.value.id,
+			playerId: GameGlobal.player.value.id,
 			declared: value,
+			calculatedTax: tax.value,
 		});
 	
 		socket.on("client-paid-tax", onCitizensPaidTax);
 	
-		waiting.value = true;
+		// waiting.value = true;
+		setWaitingForOthers(true);
 
 		let playerdata = GameGlobal.player.value;
 		
@@ -131,13 +140,15 @@ export default function TaxDeclare() {
 					"No": ()=>{},
 				}
 			})
+		}else{
+			onConfirm();
 		}
 	}
 
 	return (
 		<GameContent isSub isAbsolute>
 			{
-				waiting.value
+				waitingForOthers
 				
 				? 
 
@@ -171,7 +182,7 @@ export default function TaxDeclare() {
 						What is the the tax amount you want to pay?
 					</div>
 					<div className={`flex flex-row justify-between items-center w-full`}>
-						<input placeholder={`${tax.value}`} step="0.01" type="number" className={`flex flex-row justify-center text-right items-center p-2 rounded-md gap-2 ${t.toolBar}`} />	
+						<input ref={inputRef} placeholder={`${tax.value}`} step="0.01" type="number" className={`flex flex-row justify-center text-right items-center p-2 rounded-md gap-2 ${t.toolBar}`} />	
 					</div>
 					<div>
 						<Btn onClick={onClick}>

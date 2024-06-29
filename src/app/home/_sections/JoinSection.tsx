@@ -75,7 +75,15 @@ export function JoinSection(){
 					</div>
 					<div className={`flex flex-col gap-2 `}>
 						<label className={`flex`}>Room Code</label>
-						<input ref={textBoxRef} className={`text-2xl tracking-widest text-center justify-center items-center flex rounded-md p-2 ${t.inputBox} ${t.buttonText}`} maxLength={9}/>
+						<input ref={textBoxRef} className={`text-2xl tracking-widest text-center justify-center items-center flex rounded-md p-2 ${t.inputBox} ${t.buttonText}`} maxLength={9}
+							onKeyUp={(e)=>{
+								if(e.key == 'Enter'){
+									let textBox = textBoxRef.current as HTMLInputElement;
+									let v = textBox.value;
+									tryJoin(v);
+								}
+							}}
+						/>
 					</div>
 					<div>
 						<Btn onClick={()=>{

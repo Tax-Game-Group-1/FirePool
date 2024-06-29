@@ -97,7 +97,7 @@ export class Game {
       waitingId: "",
       ready: true,
       roomCode: "",
-      timeStamp: Date.now()
+      timeStamp: Date.now(),
     };
   }
 
@@ -218,6 +218,17 @@ export class Game {
     // })
 
   }
+  public async assignIconToPlayerInWaitingRoom(waitingId: string, icon: string): Promise<boolean> {
+    for (const p of this._playersInWaitingRoom) {
+          if (p.waitingId == waitingId) {
+            // p.name = res.data.cleanName;
+            p.icon = icon;
+            return true;
+          }
+        }
+      return false;
+
+  }
 
   public emitMessageToPlayers(event, data) {
     console.log(`emitting [${event}] to players`);
@@ -251,6 +262,28 @@ export class Game {
   public get name() {
     return this._name;
   }
+
+  public resetReceieveSalary() {
+		for(let universe of this._universes){
+			let players = universe.getAllPlayers();
+			for(let player of players){
+				player.hasReceivedSalary = false;
+			}
+		}
+	}
+
+	public hasAllPlayerspaid
+	() {
+		for(let universe of this._universes){
+			let players = universe.getAllPlayers();
+			for(let player of players){
+				if(!player.hasReceivedSalary){
+					return false;
+				}
+			}
+		}
+		return true;
+	}
 
   public numPlayersNotAssigned = () => this._playersInWaitingRoom.length;
 
@@ -309,8 +342,8 @@ export class Game {
     const numPlayers = this._playersInWaitingRoom.length;
 
     let numUniverses = Math.floor(5 * Math.log10(numPlayers + 4) - 3);
-    if (numUniverses < 2)
-      numUniverses = 2;
+    if (numUniverses < 1)
+      numUniverses = 1;
 
     const playersPerUniverse = Math.floor(this._playersInWaitingRoom.length / numUniverses);
     console.log("creating " + numUniverses + " universes with " + playersPerUniverse + " in each universe");
@@ -318,7 +351,7 @@ export class Game {
 
     for (let i = 0; i < numUniverses; i++) {
       const ministerWaiting = this.getRandomPlayerFromWaitingRoom()
-      const minister = new Minister(ministerWaiting.name, currPlayerId++, ministerWaiting.socket, ministerWaiting.waitingId, PlayerRole.MINISTER);
+      const minister = new Minister(ministerWaiting.name, currPlayerId++, ministerWaiting.socket, ministerWaiting.waitingId, PlayerRole.MINISTER, ministerWaiting.icon);
       this._universes.push(new Universe(minister, 0, i.toString(), this))
     }
 
@@ -329,9 +362,9 @@ export class Game {
       const universe = this._universes[count++ % numUniverses];
       
       if (_.random(0, 1) == 0) 
-         universe.addPlayer(new LocalWorker(player.name, currPlayerId++, player.socket, player.waitingId, PlayerRole.LOCAL_WORKER))
+         universe.addPlayer(new LocalWorker(player.name, currPlayerId++, player.socket, player.waitingId, PlayerRole.LOCAL_WORKER, player.icon))
       else  
-        universe.addPlayer(new ForeignWorker(player.name, currPlayerId++, player.socket, player.waitingId, PlayerRole.FOREIGN_WORKER))
+        universe.addPlayer(new ForeignWorker(player.name, currPlayerId++, player.socket, player.waitingId, PlayerRole.FOREIGN_WORKER, player.icon))
 
       player = this.getRandomPlayerFromWaitingRoom();
     }
@@ -357,6 +390,27 @@ export class Game {
     throw "cannot find universe with id " + id;
 
   }
+
+  public citizenPayTax(playerId: number, declared: number, received: number, calculatedTax: number) {
+	
+	for (const universe of this._universes) {
+		for(let player of universe.getAllPlayers()){
+			if (player.id == playerId) {
+				//citizen pays tax
+				universe.citizenPayTax(playerId, declared, received, calculatedTax);
+				break;
+			}
+		}
+	}
+
+	for(let universe of this._universes){
+		if(!universe.hasPaid){
+			return false;
+		}
+	}
+	return true;
+
+   }
 
   //get the id of the game
   public get id(): string {
@@ -450,7 +504,7 @@ export class Game {
   }
 
 
-  public geExcelData(adminId: number, email: string, adminName: string) : WGame {
+  public getExcelData(adminId: number, email: string, adminName: string) : WGame {
 
     let players: WPlayer[] = [];
     let rounds: WRounds[] = [];
@@ -458,8 +512,8 @@ export class Game {
 
       const [ p, r ] : [WPlayer[] , WRounds[]] = u.getPlayerActionsForWorkbook();
 
-      players.concat(p);
-      rounds.concat(r);
+      players = players.concat(p);
+      rounds = rounds.concat(r);
 
     }
 
@@ -494,12 +548,13 @@ export class Universe {
   }
  
   public readonly minister: Minister;
-  public readonly taxRate: number;
+  public  taxRate: number;
   private _players: Citizen[];
   private _id: string;
   private _cumulativeFundsPerRound: number[];
   private _game: Game;
   private _universeFunds: number = 0;
+  public hasPaid:boolean = false;
 
   constructor(minister: Minister, taxRate: number, id: string, game: Game) {
     this.minister = minister;
@@ -551,6 +606,7 @@ export class Universe {
     return playersChosenForAudit;
   }
 
+
   public finishRound() {
 
     //total up all the funds of all the players and store in cumulativ funds
@@ -569,6 +625,21 @@ export class Universe {
   }
 
 
+  public paySalaryByPlayerId(playerId: number, salary: number){
+	let roundNumber = this.game.roundNumber;
+	let allHavePaid = true;
+	for(let player of this._players){
+		if(player.id == playerId){
+			player.receiveFunds(salary);
+		}
+		if(!player.hasReceivedSalary){
+			allHavePaid = false;
+		}	
+	}
+
+	return allHavePaid;
+
+  }
   
   //why vs code no spellcheck?????
   public getPlayerActionsForWorkbook() : [WPlayer[], WRounds[]] {
@@ -604,6 +675,7 @@ export class Universe {
           playerFineAmount.push(p.auditedArray[i].fineAmount);
           playerIsAudited.push(p.auditedArray[i].isAudited);
           playerTaxReturns.push(p.getIncomeVsDeclaredArray()[i].incomeReceived);
+          perRoundFunds.push(p.getIncomeVsDeclaredArray()[i].funds);
 
           //for ministers
           setTaxRate.push(0);
@@ -613,7 +685,7 @@ export class Universe {
         const workbookPlayer: WPlayer = {
           name: p.name,
           id: p.id,
-          funds: p.funds,
+          funds: perRoundFunds,
           playerFineAmount: playerFineAmount,
           playerDeclaredIncome: playerDeclaredIncome,
           playerIncome: playerIncome,
@@ -744,8 +816,15 @@ export class Universe {
       return ;
     }
 
-    if (percentage < 0 || percentage > 1)
-      throw "invalid percentage for redistribution, must be between 0 and 1"
+    if (percentage < 0 || percentage > 1){
+		if(percentage >= 0 && percentage <= 100){
+			percentage /= 100;
+		}else{
+			console.log({percentage})
+			throw "invalid percentage for redistribution, must be between 0 and 1"
+		}
+
+	}
 
     const toGiveBack = this._universeFunds * percentage;
     const eachPlayerReceives = toGiveBack / this._players.length;
@@ -792,23 +871,36 @@ export class Universe {
       id: this._id,
       minister: this.minister.toJSON(),
       taxRate: this.taxRate,
-      players: playerData
+      players: playerData,
+	  funds: this._universeFunds,
     }
 
   }
 
   public citizenPayTax(playerId: number, declared: number, received: number, calculatedTax: number) {
-    for (const citizen of this._players) {
+   let hasPaid = false;
+	for (const citizen of this._players) {
       if (citizen.id == playerId) {
         //citizen pays tax
         const taxPaid = citizen.payTaxAndReceive(received, declared, calculatedTax);
-
+		console.log("Tax paid:")
+		console.log({taxPaid})
         //add funds to the universe money pool
         this._universeFunds += taxPaid; 
-        return ;
+       hasPaid = true;
       }
     }
-    throw "could not find player to pay tax"
+	if(!hasPaid){
+		throw "could not find player to pay tax"
+	}
+
+	for(let citizen of this._players){
+		if(!citizen.hasPaid){
+			this.hasPaid = false;
+			return;
+		}
+	}
+	this.hasPaid = true;
   }
 
 }
@@ -827,16 +919,20 @@ export abstract class Player {
   private _hasBeenKicked;
   private _role: PlayerRole;
   private _hasConsented: boolean;
+  public hasReceivedSalary: boolean;
+  public icon:string;
 
-  constructor(id: number, name: string, client: Socket, waitingId: string, role: PlayerRole) {
+  constructor(id: number, name: string, client: Socket, waitingId: string, role: PlayerRole, icon:string,) {
     this._id = id;
     this._name = name;
     this.client = client;
     this._funds = 0;
     this._waitingId = waitingId;
     this._role = role;
+    this._role = role;
     this._hasConsented = false;
     this._hasBeenKicked = false;
+	this.hasReceivedSalary = false;
   }
 
 
@@ -862,6 +958,7 @@ export abstract class Player {
 
   public receiveFunds(toReceive: number) {
     this._funds += toReceive;
+	this.hasReceivedSalary = true;
   }
 
   public get funds() {
@@ -894,6 +991,7 @@ export abstract class Player {
       role: role,
       id: this._id,
       name: this._name,
+      icon: this.icon,
       funds: this._funds,
       hasBeenKicked: this._hasBeenKicked,
       waitingId: this._waitingId,
@@ -908,15 +1006,15 @@ export class Minister extends Player {
   private _redistributedTax: number[];
   private _fundsPerRound: number[];
 
-  constructor(name: string, id: number, client: Socket, waitingId: string, role: PlayerRole) {
-    super(id, name, client, waitingId, role);
+  constructor(name: string, id: number, client: Socket, waitingId: string, role: PlayerRole, icon) {
+    super(id, name, client, waitingId, role, icon);
     this._setTaxRates = [];
     this._redistributedTax = [];
     this._fundsPerRound = [];
   }
 
-  public setTaxRates(game: Game, newTaxRate: number) {
-    game.taxCoefficient = newTaxRate;
+  public setTaxRates(game: Game, newTaxRate: number, universe: Universe) {
+   	universe.taxRate = newTaxRate;
     this._setTaxRates.push(newTaxRate);
   }
 
@@ -953,8 +1051,8 @@ export abstract class Citizen extends Player {
   public auditedArray: AuditArray[]
   private _taxReturns: number[];
 
-  constructor(name: string, id: number, client: Socket, waitingId: string, playerRole: PlayerRole) {
-    super(id, name, client, waitingId, playerRole);
+  constructor(name: string, id: number, client: Socket, waitingId: string, playerRole: PlayerRole, icon) {
+    super(id, name, client, waitingId, playerRole, icon);
     this.declaredArray = [];
     this._hasPaid = false;
     this.auditedArray = [];
@@ -981,12 +1079,13 @@ export abstract class Citizen extends Player {
   public payTaxAndReceive(
     received: number,
     declared: number,
-    calculatedTax: number
+    calculatedTax: number,
   ) {
     this.declaredArray.push({
       incomeReceived: received,
       declared: declared,
       calculatedTax: calculatedTax,
+	  funds: this.funds,
     });
     
 

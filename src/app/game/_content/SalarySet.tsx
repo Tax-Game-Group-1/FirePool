@@ -12,14 +12,20 @@ import Btn from "@/components/Button/Btn";
 
 import { useSignals } from "@preact/signals-react/runtime";
 import AnimationContainer from "@/components/AnimationContainer/AnimationContainer";
-import { GameGlobal } from "@/app/global";
+import { GameGlobal, saveGameGlobal } from "@/app/global";
 import { GameState } from "@/interfaces";
 import { switchGameState } from "./InGame";
+import LoadingStatus from "@/components/Loading/Loading";
+import { socket } from "@/app/socket";
+import { gameCode, taxRate } from '../../global';
+import { createNotif } from "@/components/Notification/Notification";
 
 let clickCount = signal(0);
 let totalSalary = signal(0);
 
 let showSalary = signal(false);
+
+let waiting = signal(false);
 
 export function generateRandomSalary(num:number = 4){
     let min = 10;
@@ -37,6 +43,37 @@ export function generateRandomSalary(num:number = 4){
 export async function onProceedClick(){
 
     GameGlobal.player.value.salary = totalSalary;
+    GameGlobal.player.value = {...GameGlobal.player.value, funds: GameGlobal.player.value.funds + totalSalary};
+
+	waiting.value = true;
+
+    socket.emit("player-salary",{
+		universeId: GameGlobal.universe.value?.id,
+		code: GameGlobal.room.value?.gameCode,
+		salary: totalSalary,
+		playerId: GameGlobal.player.value.id,
+		roundNumber: GameGlobal.room.value?.roundNumber,
+	})
+
+	socket.on("client-taxrate-set",({success, data, message})=>{
+		if(!success){
+			createNotif({
+				content: `Error: ${message}`
+			})
+		}
+
+		let taxRate = data.taxRate;
+
+		let universeData = GameGlobal.universe.value;
+		universeData.taxRate = taxRate;
+		GameGlobal.universe.value = {...universeData};
+		saveGameGlobal();
+
+		onMinisterTaxSet();
+	})
+
+}
+export async function onMinisterTaxSet(){
 
     switchGameState(GameState.TaxDeclare)
 
@@ -135,6 +172,32 @@ export function SalaryBox({salary}:{
 
 }
 
+export function SalarySetMinister(){
+	useSignals();
+
+	useEffect(()=>{
+		socket.on("client-salary-paid",({success})=>{
+			console.log("All paid")
+			if(!success) return;
+
+			switchGameState(GameState.TaxRateSet);
+		})
+	},[])
+
+	return (
+        <GameContent isSub className={`w-1/3 aspect-square justify-center items-center`}>
+          <div className={`flex flex-col w-full m-2 p-2 gap-4 justify-around items-center`}>
+					<div>
+						Waiting for players to get salaries
+					</div>
+					<div className={`text-xs`}>
+						<LoadingStatus/>
+					</div>
+				</div>
+		</GameContent>
+	)
+}
+
 export default function SalarySet() {
     useSignals();
 
@@ -148,33 +211,51 @@ export default function SalarySet() {
 
     return (
         <GameContent isSub className={`w-1/3 aspect-square justify-center items-center`}>
-            
-           {
-            showSalary.value  == true &&
-
-            <div className={`flex flex-col w-full m-2 p-2 gap-4 justify-around items-center`}>
-                <div>
-                    You received
-                </div>
-                <SalaryDisplay/>
-                <div className={`text-xs`}>
-                   This is randomly generated
-                </div>
-                <div className={``}>
-                   <Btn onClick={onProceedClick}>
-                        <div>Proceed</div>
-                   </Btn>
-                </div>
-            </div>
-            }
-
             {
-                showSalary.value == false &&
+				waiting.value
 
-                <div className={`grid grid-cols-2 grid-rows-2 gap-4 w-full`}>
-                    {boxes}
-                </div>
-            }
+				&&
+
+				<div className={`flex flex-col w-full m-2 p-2 gap-4 justify-around items-center`}>
+					<div>
+						Waiting for minister to set tax rate
+					</div>
+					<div className={`text-xs`}>
+						<LoadingStatus/>
+					</div>
+				</div>
+				
+			}{
+				!waiting.value &&
+				
+				<>{
+				showSalary.value  == true &&
+
+				<div className={`flex flex-col w-full m-2 p-2 gap-4 justify-around items-center`}>
+					<div>
+						You received
+					</div>
+					<SalaryDisplay/>
+					<div className={`text-xs`}>
+					This is randomly generated
+					</div>
+					<div className={``}>
+					<Btn onClick={onProceedClick}>
+							<div>Proceed</div>
+					</Btn>
+					</div>
+				</div>
+				}
+
+				{
+					showSalary.value == false &&
+
+					<div className={`grid grid-cols-2 grid-rows-2 gap-4 w-full`}>
+						{boxes}
+					</div>
+				}
+				</>
+			}
 
         </GameContent>
     )

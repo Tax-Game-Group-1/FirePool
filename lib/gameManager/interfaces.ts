@@ -5,6 +5,7 @@ export interface UniverseData {
   minister: PlayerData;
   taxRate: number;
   players: PlayerData[];
+  funds: number;
 }
 
 export interface PlayerInWaitingRoom {
@@ -14,6 +15,7 @@ export interface PlayerInWaitingRoom {
   ready: boolean;
   socket: Socket | null;
   timeStamp: number;
+  icon?: string;
 }
 
 export enum PlayerRole {
@@ -31,6 +33,7 @@ export interface PlayerData {
   hasBeenKicked: boolean;
   role: PlayerRole;
   hasConsented: boolean;
+  icon?: string;
 }
 
 //delcared vs paid 
@@ -39,6 +42,7 @@ export interface DeclarePlayerArray {
   incomeReceived: number;
   declared: number;
   calculatedTax: number;
+  funds: number;
 }
 
 export interface DeclarePlayer {

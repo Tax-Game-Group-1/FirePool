@@ -1,13 +1,8 @@
 import { Server, Socket } from "socket.io";
-import {
-  getGameInstanceByGameCode,
-  removeWaitingPlayerFromAllGameInstancesBySocket,
-} from "server";
-import {
-  PlayerChosenForAudit,
-  PlayerInWaitingRoom,
-} from "&/gameManager/interfaces";
-import { Game, Universe } from "&/gameManager/gameManager";
+import { getGameInstanceByGameCode, removeWaitingPlayerFromAllGameInstancesBySocket } from "server";
+import { PlayerChosenForAudit, PlayerData, PlayerInWaitingRoom } from "&/gameManager/interfaces";
+import { Game, Player, Universe } from "&/gameManager/gameManager";
+import { GameState } from "@/interfaces";
 
 export const setUpSocket = (io: Server) => {
   //--------------------------- socket stuff -------------------------//
@@ -20,6 +15,8 @@ export const setUpSocket = (io: Server) => {
   //handle the connection of players
 
   let purgePlayersInterval;
+
+  let queue = [];
 
   io.on("connection", (socket) => {
     console.log("Player connected to the socket...");
@@ -109,6 +106,7 @@ export const setUpSocket = (io: Server) => {
 
     enum Action {
       ASSIGN_NAME,
+      ASSIGN_ICON,
       UPDATE_READY,
       DISCONNECT,
       CONSENT,
@@ -136,7 +134,7 @@ export const setUpSocket = (io: Server) => {
 
       try {
         switch (a) {
-          case Action.ASSIGN_NAME:
+          case Action.ASSIGN_NAME:{
             if (params.name == null) throw "name is  null (socket.ts)";
 
             const result = await game.assignNameToPlayerInWaitingRoom(
@@ -151,7 +149,22 @@ export const setUpSocket = (io: Server) => {
               return;
             }
 
-            break;
+		 } break;
+          case Action.ASSIGN_ICON:{
+
+            const result = await game.assignIconToPlayerInWaitingRoom(
+              params.waitingId,
+              params.icon
+            );
+            if (result != true) {
+              game.emitMessageToPlayers("client-update-players", {
+                success: false,
+                message: "could not update icon",
+              });
+              return;
+            }
+
+		 } break;
 
           case Action.UPDATE_READY:
             if (params.ready == null) throw "ready is  null (socket.ts)";
@@ -179,21 +192,29 @@ export const setUpSocket = (io: Server) => {
             if (game.getUniverseById(params.universeId) == null)
               throw "ucannot set tax rate if universe is null (socket.ts)";
 
-            universe.minister.setTaxRates(game, params.taxRate);
+            universe.minister.setTaxRates(game, params.taxRate, universe);
+			console.log("sending to everyone tax rate");
+			universe.emitMessageToAllPlayersInUniverse("client-taxrate-set",{
+				success: true,
+				data: {
+					taxRate: params.taxRate,
+				}
+			})
             universe.resetHasPaidForAllCitizens();
             game.resetAudit();
-            hasPaidInterval = setInterval(() => {
-              if (game.allHavePaid()) {
-                //reset paid for all universes
-                game.resetAllHavePaid();
-                //send socket to client to say that they have paid
-                game.emitMessageToPlayers("client-paid-tax", {
-                  success: true,
-                  data: game.getDeclaredVsPaidTaxForAllUniverses(),
-                });
-                clearInterval(hasPaidInterval);
-              }
-            }, 2500);
+            // hasPaidInterval = setInterval(() => {
+            //   if (game.allHavePaid()) {
+            //     //reset paid for all universes
+            //     game.resetAllHavePaid();
+            //     //send socket to client to say that they have paid
+            //     game.emitMessageToPlayers("client-paid-tax", {
+            //       success: true,
+            //       data: game.getDeclaredVsPaidTaxForAllUniverses()
+            //     })
+            //     clearInterval(hasPaidInterval);
+            //   }
+
+            // }, 2500);
 
             break;
 
@@ -207,12 +228,23 @@ export const setUpSocket = (io: Server) => {
             if (params.calculatedTax == null)
               throw "cannot pay tax because calculated tax is null (socket.ts)";
 
-            universe.citizenPayTax(
-              params.playerId,
-              params.declared,
-              params.received,
-              params.calculatedTax
-            );
+			console.log("paying tax")
+            let everyoneHasPaid = game.citizenPayTax(params.playerId, params.declared, params.received, params.calculatedTax);
+
+			if(!everyoneHasPaid) break;
+			console.log("everyone has paid")
+
+			game.emitMessageToPlayers("client-paid-tax", {
+				success: true,
+				data: {
+					universeData: game.getAllUniversesAsJSON(),
+					declaredVsPaidUniverse: game.getDeclaredVsPaidTaxForAllUniverses()
+				}
+				
+			})
+
+
+
 
             break;
 
@@ -221,11 +253,12 @@ export const setUpSocket = (io: Server) => {
               throw "cannot audit players because game code is null";
             const playersAudited: PlayerChosenForAudit[] =
               game.auditAllPlayers();
-            game.emitMessageToPlayers("audit-all-players", {
+			  console.log("auditing to players")
+            game.emitMessageToPlayers("client-audit-all-players", {
               success: true,
               data: playersAudited,
             });
-            return;
+            break;
 
           //doSocketAction(Action.REDISTRIBUTE, { universeId, code, amount }, code)
           case Action.REDISTRIBUTE:
@@ -236,15 +269,25 @@ export const setUpSocket = (io: Server) => {
               throw "cannot redistribute, because percentage is null";
 
             try {
+				console.log("distribut0")
               universe.divideTaxAmongPlayers(params.redistributionPercentage);
+			  console.log("distribut1")
+			  universe.emitMessageToAllPlayersInUniverse("client-redistribution",{
+				success:true,
+				data: {
+					universeData: universe.getUniverseDataAsJSON(),
+				}
+			  })
+			  console.log("distribut2")
             } catch (e) {
               if (e == "minister loses") {
                 //todo: implement
                 throw "minister loses! unimplemented in sockets.ts";
               } else {
-                game.emitMessageToPlayers("audit-all-players", {
+				console.log(e);
+                game.emitMessageToPlayers("client-redistribution", {
                   success: false,
-                  message: e.tostring(),
+                  message: e.toString(),
                 });
               }
             }
@@ -273,13 +316,15 @@ export const setUpSocket = (io: Server) => {
     };
 
     socket.on("set-tax-rate", ({ code, taxRate, universeId }) => {
+		console.log("setting tax rate");
       doSocketAction(Action.SET_TAX_RATE, { taxRate, universeId }, code);
     });
 
-    socket.on("pay-tax", ({ code, declared, received, universeId }) => {
-      doSocketAction(
+    socket.on("pay-tax", ({ code, declared, received, playerId, universeId, calculatedTax }) => {
+      console.log("paytax")
+		doSocketAction(
         Action.CITIZENS_PAY_TAX,
-        { declared, received, universeId },
+        { declared, received, universeId, playerId, calculatedTax },
         code
       );
     });
@@ -291,24 +336,35 @@ export const setUpSocket = (io: Server) => {
     socket.on("update-name", ({ name, waitingId, code }) => {
       doSocketAction(Action.ASSIGN_NAME, { waitingId, name }, code);
     });
+    socket.on("update-icon", ({ icon, waitingId, code }) => {
+      doSocketAction(Action.ASSIGN_ICON, { waitingId, icon }, code);
+    });
 
     socket.on("update-ready", ({ waitingId, ready, code }) => {
       doSocketAction(Action.UPDATE_READY, { waitingId, ready }, code);
     });
 
-    socket.on("audit-all-players", ({ code }) => {});
+    socket.on("audit-all-players", ({ code }) => {
+		console.log("received audit all players request")
+		doSocketAction(Action.AUDIT_ALL_PLAYERS, { code }, code);
+	});
 
-    socket.on("redistribute", ({ universeId, code, amount }) => {
-      doSocketAction(Action.REDISTRIBUTE, { universeId, code, amount }, code);
+    socket.on("redistribute", ({ universeId, code, amount, redistributionPercentage }) => {
+      doSocketAction(Action.REDISTRIBUTE, { universeId, code, amount, redistributionPercentage }, code);
     });
 
     socket.on("disconnect", () => {
       console.log("player disconnected");
       try {
-        const gameInstance = removeWaitingPlayerFromAllGameInstancesBySocket(
-          socket.id
-        );
-        doSocketAction(Action.DISCONNECT, {}, gameInstance.gameCode);
+		
+		let timer = setTimeout(()=>{
+			const gameInstance = removeWaitingPlayerFromAllGameInstancesBySocket(
+			  socket.id
+			);
+			doSocketAction(Action.DISCONNECT, {}, gameInstance.gameCode);
+		}, 100000)
+
+		// queue.push({timer, socket});
       } catch (e) {
         console.error("error disconnecting player with socket");
         socket.emit("client-update-players", {
@@ -337,9 +393,118 @@ export const setUpSocket = (io: Server) => {
         console.error(e);
         socket.emit("client-update-players", {
           success: false,
-          message: e.toString(),
-        });
+          message: e.toString()
+        })
       }
-    });
+    })
+
+	socket.on("game-over", ({ code })=>{
+		try{
+			let game = getGameInstanceByGameCode(code);
+			removeWaitingPlayerFromAllGameInstancesBySocket(
+				socket.id
+			  );
+			socket.emit("client-game-over",{})
+		}catch(e){
+			console.log(e);
+			socket.emit("client-update-players", {
+				success: false,
+				message: e.toString()
+			})
+		}
+	})
+	socket.on("universe-game-over", ({ code, universeId })=>{
+		try{
+			let game = getGameInstanceByGameCode(code);
+			let universe = game.getUniverseById(universeId);
+
+			for(let player of universe.getAllPlayers()){
+				removeWaitingPlayerFromAllGameInstancesBySocket(
+					socket.id
+				  );
+			}
+
+			socket.emit("client-game-over",{})
+		}catch(e){
+			console.log(e);
+			socket.emit("client-update-players", {
+				success: false,
+				message: e.toString()
+			})
+		}
+	})
+	socket.on("game-end", ({ code })=>{
+		try{
+			let game = getGameInstanceByGameCode(code);
+			game.emitMessageToPlayers("client-end-game",{})
+		}catch(e){
+			console.log(e);
+			socket.emit("client-update-players", {
+				success: false,
+				message: e.toString()
+			})
+		}
+	})
+	socket.on("finish-round", ({ code })=>{
+		try{
+			let game = getGameInstanceByGameCode(code);
+			queue.push(socket);
+			let players = game.getAllUniversesAsJSON().reduce((players, universe) => {
+				return players.concat(universe.players);
+			},[] as PlayerData[])
+
+			if(queue.length >= players.length){
+				game.finishRound();
+				game.roundNumber += 1;
+
+				game.emitMessageToPlayers("next-round",{
+					success:true,
+					data: {
+						playersInRoom: game.getPlayersInWaitingRoomAsJSON(),
+						universeData: game.getAllUniversesAsJSON(),
+					  },
+				})
+			}
+
+		}catch(e){
+			console.log(e);
+			socket.emit("client-update-players", {
+				success: false,
+				message: e.toString()
+			})
+		}
+	})
+
+	socket.on("player-salary", ({universeId, code, salary, playerId})=>{
+		try {
+			const gameInstance = getGameInstanceByGameCode(code);
+			let universe = gameInstance.getUniverseById(universeId);
+			if(!universe){
+				throw "Player is not part of any universe"
+			}
+
+			let allHavePaid = universe.paySalaryByPlayerId(playerId, salary);
+
+			console.log("Someone paid")
+			if(!allHavePaid) return;
+
+			console.log("All paid")
+
+			universe.minister.client.emit("client-salary-paid", {
+				success: true,
+				// data: gameInstance.getDeclaredVsPaidTaxForAllUniverses()
+			})
+
+		} catch (e) {
+			console.log(e);
+			socket.emit("client-taxrate-set", {
+				success: false,
+				message: e.toString()
+			  })
+		}
+	})
+
+	
+
   });
 };

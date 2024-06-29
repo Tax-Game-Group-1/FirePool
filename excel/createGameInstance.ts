@@ -3,6 +3,7 @@ import { PlayerInWaitingRoom } from "&/gameManager/interfaces";
 import _ from "lodash";
 import { Socket } from "socket.io";
 import { createExcelWorkbook } from "./excel"
+import fs from "fs";
 
 // Create a new game instance
 const game = new Game(
@@ -59,8 +60,8 @@ for (let roundNum = 0; roundNum < 12; roundNum++) {
 
 
             const totalTaxPool = 1000; // Example total tax pool to redistribute 
-            const toRedistribute = 700;
-            universe.minister.redistribute(universe, totalTaxPool, toRedistribute);
+            const toRedistribute = 0.7;
+            universe.minister.redistribute(universe, toRedistribute, totalTaxPool);
 
             console.log(`Universe ${i}:`, universe);
         }
@@ -73,4 +74,21 @@ for (let roundNum = 0; roundNum < 12; roundNum++) {
 
 const playersChosenForAudit = game.auditAllPlayers();
 
-createExcelWorkbook("Mary", "My Game 1", game.geExcelData(1, "mary@mary.com", "Mary"));
+(async()=>{
+
+	let workbook = await createExcelWorkbook("Mary", "My Game 1", game.getExcelData(1, "mary@mary.com", "Mary"));
+	// Write the workbook to a file or stream
+	try{
+		await workbook.xlsx.writeFile('gameWorkbook.xlsx')
+		console.log('Workbook created successfully.');
+
+		let buffer = await workbook.xlsx.writeBuffer();
+		let blob = new Blob([buffer]);
+
+		// fs.writeFile('workshop.xlsx', buffer, () => console.log('video saved!') );
+
+	}catch(err){
+
+		console.error('Error creating workbook:', err);
+	}
+})()

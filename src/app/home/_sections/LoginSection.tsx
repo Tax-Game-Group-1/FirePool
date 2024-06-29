@@ -52,13 +52,21 @@ export function LoginSection(){
 				<div className={`rounded-md rounded-b-none md:rounded-b-md rounded-r-md md:rounded-r-none  ${t.solidElement} row-span-1 md:row-span-2 col-span-2 md:col-span-1 flex flex-col justify-evenly md:gap-20 md:justify-center items-center`}>
 					<div className={`flex flex-col gap-2 w-2/3 lg:w-1/2`}>
 						<label className={`flex`}>Username</label>
-						<input name="username" className={`text-sm flex rounded-md p-2 ${t.inputBox} ${t.buttonText}`}/>
+						<input name="username" className={`text-sm flex rounded-md p-2 ${t.inputBox} ${t.buttonText}`}
+							onKeyUp={(e)=>{
+								if(e.key == 'Enter') onLoginBtnClick();
+							}}
+						/>
 					</div>
 					<div className={`flex flex-col gap-2 w-2/3 lg:w-1/2`}>
 						<label className={`flex`}>Password</label>
 						<input name="password" type={showPass ? `text` : `password`} className={`text-sm flex rounded-md p-2 ${t.inputBox} ${t.buttonText}`}/>
 						<div className={`flex gap-2 text-xs self-end`}>
-							<input ref={checkBoxRef} onChange={onCheck} type="checkbox" className={`flex rounded-md p-2 ${t.inputBox} ${t.buttonText}`}/>
+							<input ref={checkBoxRef} onChange={onCheck} type="checkbox" className={`flex rounded-md p-2 ${t.inputBox} ${t.buttonText}`}
+								onKeyUp={(e)=>{
+									if(e.key == 'Enter') onLoginBtnClick();
+								}}
+							/>
 							<label className={`flex`}>Show password</label>
 						</div>
 					</div>

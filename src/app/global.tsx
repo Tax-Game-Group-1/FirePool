@@ -125,7 +125,7 @@ export let playerFunds = computed(()=>{
 	return funds;
 })
 export let playerRole = computed(()=>{
-	let role = GameGlobal.player.value?.role || "";
+	let role = GameGlobal.player.value?.role;
 	return role;
 })
 

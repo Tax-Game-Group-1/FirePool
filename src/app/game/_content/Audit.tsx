@@ -1,5 +1,5 @@
 "use client"
-import { GameGlobal } from '@/app/global'
+import { GameGlobal, saveGameGlobal } from '@/app/global'
 import { socket } from '@/app/socket'
 import Btn from '@/components/Button/Btn'
 import { GameContent } from '@/components/Game/GameContentContainer'
@@ -15,6 +15,7 @@ import { switchGameState } from './InGame'
 import { useSignals } from '@preact/signals-react/runtime'
 import AnimationContainer from '@/components/AnimationContainer/AnimationContainer'
 import { createNotif } from '@/components/Notification/Notification'
+import { PlayerRole } from '&/gameManager/interfaces'
 
 
 let isUpForAudit = signal(false);
@@ -45,18 +46,22 @@ function onAudited({success, message, data}){
 			//handle audit
 
 			isUpForAudit.value = true;
-
+			GameGlobal.player.value.audited = true;
+			
 			let _currFunds = GameGlobal.player.value.funds;
 			let _newFunds = player.newFunds;
 			
 			oldFunds.value = _currFunds;
 			newFunds.value = _newFunds;
-
+			
 			if(_newFunds < _currFunds){
 				hasPenalty.value = true;
+				GameGlobal.player.value.fined = true;
 			}
 
 			GameGlobal.player.value.funds = player.newFunds;
+			GameGlobal.player.value = {... GameGlobal.player.value};
+			saveGameGlobal();
 			return;
 		}
 	}
@@ -77,11 +82,13 @@ function onRevealClick(){
 }
 
 function doAudit(){
-	socket.emit("audit",{
-		code: GameGlobal.room.value.gameCode,
-	})
+	if(GameGlobal.player.value.role == PlayerRole.MINISTER){
+		socket.emit("audit-all-players",{
+			code: GameGlobal.room.value.gameCode,
+		})
+	}
 
-	socket.on("client-audited", onAudited);
+	socket.on("client-audit-all-players", onAudited);
 }
 
 export function AuditCitizen() {

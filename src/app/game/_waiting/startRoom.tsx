@@ -75,7 +75,7 @@ export function PlayerCards(){
 		players.value;
 		return (
 			<PlayerCard key={i} name={user.name || "Player joining..."} ready={user.ready}>
-				<img className={`rounded-md`} src={getIconURL(user.name).href} alt={`${user.name} icon`}/>
+				<img className={`rounded-md`} src={user.icon || getIconURL(user.icon).href} alt={`${user.name} icon`}/>
 			</PlayerCard>
 		)
 	})

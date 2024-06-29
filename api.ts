@@ -3,6 +3,7 @@ import { destroyGameInstance, createGameInstance, getGameInstanceByGameCode } fr
 import { createAdminUser, getAdminIdByUserName, createGame, getAdminGames, getGameById, getAdminById} from "&/queries/queries"
 import _ from "lodash"
 import { Citizen, Game } from "&/gameManager/gameManager";
+import { createExcelWorkbook } from "excel/excel";
 
 
 export function setUpServer(server:Express) {
@@ -280,10 +281,37 @@ export function setUpServer(server:Express) {
 		}
 	})
 
-	server.post("editGame/:gameId", async (req, res) => {
+	server.post("/editGame/:gameId", async (req, res) => {
 
 		try {
 			const game = new Game(req.body.id, req.body.name, req.body.taxCoefficient, req.body.maxPlayers, req.body.penalty, req.body.roundNumber, req.body.auditProbability, req.body.kickPlayersOnBankruptcy);
+		} catch (e) {
+			console.error(e); 
+			res.status(400).json({
+				success:false, 
+				message: `${e.toString()}`
+			})
+		}
+	})
+	server.post("/export-game", async (req, res) => {
+
+		let { gameCode, adminId } = req.body;
+
+		try {
+			let gameInst = getGameInstanceByGameCode(gameCode);
+			let user = await getAdminById(adminId);
+			let exceldata = gameInst.getExcelData(user.id,user.email, user.username);
+
+
+			let sheet = await createExcelWorkbook(user.username, gameInst.name, exceldata);
+			let buffer = await sheet.xlsx.writeBuffer({filename:`${gameInst.name}`});
+			let blob = new Blob([buffer]);
+
+			res
+			.header(`Content-Disposition: attachment; filename="${gameInst.name}.xls"`)
+			.status(200)
+			.send(blob);
+
 		} catch (e) {
 			console.error(e); 
 			res.status(400).json({

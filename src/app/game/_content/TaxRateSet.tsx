@@ -6,7 +6,7 @@ import React, { useRef } from 'react'
 import t from "../../../elements.module.scss"
 import { PercentageIcon } from '@/assets/svg/svg'
 import Btn from '@/components/Button/Btn'
-import { GameGlobal } from '@/app/global'
+import { GameGlobal, saveGameGlobal } from '@/app/global'
 import { socket } from '@/app/socket'
 import _ from 'lodash'
 
@@ -16,6 +16,7 @@ import { switchGameState } from './InGame'
 import LoadingStatus from '@/components/Loading/Loading'
 import { signal } from '@preact/signals-react'
 import { useSignals } from '@preact/signals-react/runtime'
+import { taxRate } from '../../global';
 
 let waiting = signal(false);
 
@@ -27,7 +28,19 @@ function onCitizensPaidTax({success, data, message}){
 		return;
 	}
 
+	console.log({data})
+
 	GameGlobal.universe.value.declared = data.declaredVSPaidUniverse;
+	for(let universe of data.universeData){
+		if(universe.id = GameGlobal.universe.value.id){
+		
+			GameGlobal.universe.value = {... GameGlobal.universe.value,
+				funds: universe.funds,
+				taxRate: universe.taxRate,
+			};
+			break;
+		}
+	}
 
 		
 	console.log("All citizens paid to minister");
@@ -35,8 +48,11 @@ function onCitizensPaidTax({success, data, message}){
 		declaredVsPaid: data.declaredVSPaidUniverse,
 	})
 
-
+	saveGameGlobal();
+	
 	switchGameState(GameState.Audit);
+
+
 
 }
 
@@ -46,12 +62,15 @@ export default function TaxRateSet() {
 	let inputRef = useRef(null);
 
 	function onClick(){
-		let inputBox = inputRef.current;
+		let inputBox = inputRef.current as HTMLInputElement;
 
+		if(!inputBox.value){
+			inputBox.value = inputBox.placeholder;
+		}
 		let value = _.clamp(Number(inputBox.value), 0, 100);
 
+		socket.emit("set-tax-rate",{
 
-		socket.emit("set-taxrate",{
 			code: GameGlobal.room.value.gameCode,
 			taxRate: (value/100),
 			universeId: GameGlobal.universe.value.id,
@@ -84,7 +103,7 @@ export default function TaxRateSet() {
 				
 				<div className={`flex flex-col justify-center items-center p-4 gap-4`}>
 					<div className={`text-lg`}>
-						What is this year's tax going to be?
+						{"What is this year's tax going to be?"}
 					</div>
 					<div className={`flex flex-row`}>
 						<input ref={inputRef} type="number" placeholder="40" className={`${t.inputBox} ${t.solidText} justify-end flex p-1 rounded-md text-lg`} />

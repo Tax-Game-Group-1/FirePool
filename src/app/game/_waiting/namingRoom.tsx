@@ -38,6 +38,7 @@ function generateNewAvatarIcon(){
 	let url = getIconURL();
 
 	avatarSignal.emit("newImage", url);
+	updateIcon(url.href);
 }
 
 
@@ -142,6 +143,30 @@ async function updateName(name:string){
 		code: GameGlobal.room.value.gameCode,
 	})
 	socket.once("client-update-players", onUpdateName);
+}
+async function updateIcon(icon:string){
+	
+	function onUpdateIcon({success, message, data}){
+		console.log("received update-icon request")
+		if(!success){
+			createNotif({
+				content: `Error: ${message}`,
+			})
+			return;
+		}
+	
+		let playerData = GameGlobal.player.value;
+		GameGlobal.player.value = {...playerData, name:name};
+		saveGameGlobal();
+	
+		// changeWaitingRoomPage(Page.StartRoom);
+	}
+	socket.emit("update-icon",{
+		icon: icon,
+		waitingId: GameGlobal.player.value.waitingId,
+		code: GameGlobal.room.value.gameCode,
+	})
+	socket.once("client-update-players", onUpdateIcon);
 }
 
 let nameLimit = 16;

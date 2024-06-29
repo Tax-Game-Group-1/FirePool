@@ -1,8 +1,8 @@
 "use client"
-import { GameGlobal } from '@/app/global'
+import { GameGlobal, saveGameGlobal } from '@/app/global'
 import Btn from '@/components/Button/Btn'
 import { GameContent } from '@/components/Game/GameContentContainer'
-import React from 'react'
+import React, { useEffect } from 'react'
 import { PlayerDataSlot, roleToString, UniverseDataSlot } from './Spectate'
 import { computed, signal } from '@preact/signals-react'
 
@@ -11,6 +11,11 @@ import { randomID } from '@catsums/my';
 import { useSignals } from '@preact/signals-react/runtime'
 import { switchGameState } from './InGame'
 import { GameState } from '@/interfaces'
+import { socket } from '@/app/socket'
+import { salary, tax } from './TaxDeclare'
+import { UniverseData, PlayerData } from '&/gameManager/interfaces'
+import { createNotif } from '@/components/Notification/Notification'
+import { setGameScreen, GameScreen } from '../layouts'
 
 export const universes = computed(()=>{
 	let u = GameGlobal.room.value.universes || [];
@@ -45,23 +50,17 @@ export default function Stats() {
 
 	useSignals();
 
-	let universesData = universes.value?.map((uni, i)=>{
-		return (
-			<UniverseDataSlot key={i} name={uni.minister?.name} index={i} funds={uni.funds}/>
-		)
-	}) || []
-	// let playersData = players.value?.map((p, i)=>{
-	// 	return (
-	// 		<PlayerDataSlot showFunds key={i} name={p.name} index={i} funds={p.funds} role={roleToString(p.role)}/>
-	// 	)
-	// }) || [];
-	let playersData = [];
 
-	for(let i=0; i<20; i++){
-		playersData.push(
-			<PlayerDataSlot name="Red" index={i+1} key={i} showFunds/>
+	// let universesData = universes.value?.map((uni, i)=>{
+	// 	return (
+	// 		<UniverseDataSlot key={i} name={uni.minister?.name} index={i} funds={uni.funds}/>
+	// 	)
+	// }) || []
+	let playersData = players.value?.map((p, i)=>{
+		return (
+			<PlayerDataSlot showFunds key={i} name={p.name} index={i} funds={p.funds} role={roleToString(p.role)}/>
 		)
-	}
+	}) || [];
 
 	function switchModeTo(newMode: StatsMode){
 		mode.value = newMode;
@@ -101,42 +100,42 @@ export default function Stats() {
 						<div className={`flex flex-col justify-start items-baseline overflow-auto  rounded-md h-full w-full`}>
 							<div className={`w-full flex-row justify-between items-center flex p-2 my-2 rounded-md ${t.toolBar}`}>
 								<div>Name</div>
-								<div className={`p-1 ${t.solidElement} rounded-md`}>Lucy</div>
+								<div className={`p-1 ${t.solidElement} rounded-md`}>{GameGlobal.player.value?.name}</div>
 							</div>
 							<div className={`w-full flex-row justify-between items-center flex p-2 rounded-md ${t.toolBar}`}>
 								<div>Salary</div>
 								<div className={`p-1 ${t.solidElement} rounded-md`}>
-									{(0).toFixed(2)}
+									{(salary.value).toFixed(2)}
 								</div>
 							</div>
 							<div className={`w-full flex-row justify-between items-center flex p-2 rounded-md ${t.toolBar}`}>
 								<div>Declared Tax</div>
 								<div className={`p-1 ${t.solidElement} rounded-md`}>
-									{(0).toFixed(2)}
+									{(GameGlobal.player.value?.declared).toFixed(2)}
 								</div>
 							</div>
 							<div className={`w-full flex-row justify-between items-center flex p-2 rounded-md ${t.toolBar}`}>
 								<div>Actual Tax</div>
 								<div className={`p-1 ${t.solidElement} rounded-md`}>
-									{(0).toFixed(2)}
+									{(tax.value).toFixed(2)}
 								</div>
 							</div>
 							<div className={`w-full flex-row justify-between items-center flex p-2 rounded-md ${t.toolBar}`}>
 								<div>Fined?</div>
 								<div className={`p-1 ${t.solidElement} rounded-md`}>
-									{true ? "Yes" : "No"}
+									{GameGlobal.player.value.fined ? "Yes" : "No"}
 								</div>
 							</div>
 							<div className={`w-full flex-row justify-between items-center flex p-2 rounded-md ${t.toolBar}`}>
 								<div>Audited?</div>
 								<div className={`p-1 ${t.solidElement} rounded-md`}>
-									{true ? "Yes" : "No"}
+									{GameGlobal.player.value.audited ? "Yes" : "No"}
 								</div>
 							</div>
 							<div className={`w-full flex-row justify-between items-center flex p-2 my-1 text-xl rounded-md ${t.toolBar}`}>
 								<div>Total Funds</div>
 								<div className={`p-1 ${t.solidElement} rounded-md`}>
-									{(0).toFixed(2)}
+									{(GameGlobal.player.value.funds).toFixed(2)}
 								</div>
 							</div>
 						</div>
