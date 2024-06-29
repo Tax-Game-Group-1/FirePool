@@ -9,24 +9,11 @@ import { useState } from "react";
 import { PageSection, homePageSectionBus, goToSection } from "../page";
 import { FixedContents } from "./FixedContents";
 
-import Themes from "../../../components/ThemeContext/themes.module.scss"
 import s from '../page.module.scss';
 import t from '../../../elements.module.scss'
-import { GameGlobal, saveGameGlobal } from "@/app/global";
-
-function toggleTheme(){
-	let themesArr = Object.values(Themes);
-	let index = themesArr.indexOf(GameGlobal.theme.value);
-	let newIndex = (index+1) % themesArr.length;
-	console.log({index,newIndex, i:themesArr[index], n:themesArr[newIndex]})
-    // setTheme(themesArr[newIndex]);
-	GameGlobal.theme.value = themesArr[newIndex] as string;
-
-	saveGameGlobal();
-}
 
 export function SplashSection(){
-	// const { toggleTheme  } = useTheme();
+	const { toggleTheme  } = useTheme();
 
 	let [active, setActive] = useState(false);
 

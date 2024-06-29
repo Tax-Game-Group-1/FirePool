@@ -34,6 +34,10 @@ export async function createExcelWorkbook(creatorName: string, gameName: string,
         });
     };
 
+	console.log("------")
+	console.log(game.game)
+	console.log("------")
+
 	// return;
 
     // Admin sheet

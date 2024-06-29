@@ -2,8 +2,6 @@ import { computed, signal } from "@preact/signals-react";
 import {} from '@/interfaces';
 import { getIconURL } from "@/utils/utils";
 
-import Themes from "../components/ThemeContext/themes.module.scss"
-
 export const gameCodeLength = 6;
 
 export const GameGlobal = {
@@ -13,12 +11,7 @@ export const GameGlobal = {
 	user:  signal<any>({}),
 	playerRound:  signal<any>({}),
 	universeRound:  signal<any>({}),
-	theme: signal<string>(Themes.darkBlue),
 }
-
-export let theme = {
-	value: GameGlobal.theme.value,
-};
 
 export function saveGameGlobal(key?:string){
 	if(GameGlobal[key]){
@@ -47,7 +40,7 @@ export function loadGameGlobal(key?:string){
 		
 		let obj = JSON.parse(str);
 	
-		GameGlobal[key].value = obj as any;
+		GameGlobal[key].value = {...obj} as any;
 		console.log(`${key} loaded from storage`)
 		console.log(obj);
 	}else{
@@ -57,7 +50,7 @@ export function loadGameGlobal(key?:string){
 			
 			let obj = JSON.parse(str);
 			
-			v.value = obj as any;
+			v.value = {...obj} as any;
 			console.log(`${k} loaded from storage`)
 			console.log(obj);
 		}

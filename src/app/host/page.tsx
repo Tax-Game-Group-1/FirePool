@@ -23,10 +23,8 @@ import CreateSection from './_sections/CreateSection'
 import { useSignals } from '@preact/signals-react/runtime'
 import { useRouter } from 'next/navigation'
 import { deleteData, getData, setData } from '../dummyData'
-import { showLoadingScreen, useRemoveLoadingScreen } from '@/components/LoadingScreen/LoadingScreenUtil'
+import { useRemoveLoadingScreen } from '@/components/LoadingScreen/LoadingScreenUtil'
 import LoadingScreen from '@/components/LoadingScreen/LoadingScreen'
-
-import { theme } from '../global'
 
 export let hostID = computed(()=>{
 	let id = GameGlobal.user.value?.id || "";
@@ -240,9 +238,7 @@ export async function tryStart(data){
 
 	
 	//REDIRECT
-	showLoadingScreen(()=>{
-		window.location.href = `/game?c=${gameCode}`;
-	})
+	window.location.href = `/game?c=${gameCode}`;
 
 }
 
@@ -258,10 +254,7 @@ export function PageHeader({username}:{
 			buttons:{
 				"Yes": () => {
 					//clear GameGlobal
-					deleteGameGlobal("player");
-					deleteGameGlobal("user");
-					deleteGameGlobal("universe");
-					deleteGameGlobal("room");
+					deleteGameGlobal();
 					window.location.href = "/home";
 					// router.push("/home");
 				},
@@ -291,6 +284,8 @@ export function PageHeader({username}:{
 export default function Page() {
 	useSignals();
 
+	const {theme} = useTheme();
+
 	// mainRouter = useRouter();
 
 	useEffect(()=>{
@@ -315,7 +310,7 @@ export default function Page() {
 		<>
 			<LoadingScreen/>
 
-			<main className={`${theme.value}`}>
+			<main className={`${theme}`}>
 				<div className={`${t.background} h-screen w-screen flex flex-row p-8 justify-evenly items-center overflow-hidden`}>
 					{section}
 					<div className={`h-screen w-screen absolute top-0 left-0 pointer-events-none`}>
