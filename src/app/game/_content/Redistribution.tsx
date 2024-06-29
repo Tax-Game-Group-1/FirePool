@@ -23,11 +23,6 @@ let revealed = signal(false);
 
 let oldFunds = signal(0);
 
-let received = computed(()=>{
-	let r = oldFunds.value - GameGlobal.player.value.funds;
-	return r;
-})
-
 let newFunds = computed(()=>{
 	let currFunds = GameGlobal.universe.value.funds;
 	let taxCoeff = GameGlobal.room.value.taxCoefficient;
@@ -70,6 +65,8 @@ export function CitizenRedistribution(){
 
 	let [waitingforRedistribution, setWaitingforRedistribution] = useState(true);
 
+	let [oldFunds, setOldFunds] = useState(0);
+
 	let hiderRef = useRef(null);
 	let amountRef = useRef(null);
 
@@ -88,6 +85,7 @@ export function CitizenRedistribution(){
 	}
 
 	useEffect(()=>{
+		setOldFunds(GameGlobal.player.value.funds);
 		socket.on("client-redistribution", ({success, data, message})=>{
 			if(!success) return;
 
@@ -95,7 +93,8 @@ export function CitizenRedistribution(){
 
 			for(let player of players){
 				if(GameGlobal.player.value.id == player.id){
-					oldFunds.value = GameGlobal.player.value.funds;
+					//before redist //salary tax penalty
+					//after redist
 					GameGlobal.player.value = {...GameGlobal.player.value, funds: player.funds};
 					break;
 				}
@@ -105,6 +104,15 @@ export function CitizenRedistribution(){
 			// waiting.value = false;
 		})
 	},[])
+
+	function received(){
+		let r = GameGlobal.player.value.funds - oldFunds;
+		console.log("BOBA OLD FUNDS")
+		console.log(oldFunds);
+		console.log("BOBA NEW FUNDS")
+		console.log(GameGlobal.player.value.funds);
+		return r;
+	}
 
 
 	return (
@@ -145,7 +153,7 @@ export function CitizenRedistribution(){
 							revealed.value ?
 							<>
 								<div className={`flex justify-center items-center text-center text-base`}>
-									Congratulations! You received <span className={`p-2 m-2 ${t.toolBar} rounded-md`}>R {(received.value).toFixed(2)}</span> for this round.
+									Congratulations! You received <span className={`p-2 m-2 ${t.toolBar} rounded-md`}>R {(received()).toFixed(2)}</span> for this round.
 								</div>
 								<div className={`flex justify-center items-center text-center text-base`}>
 									<Btn onClick={onProceed}>

@@ -1,7 +1,7 @@
 "use client"
 
 import { GameContent } from '@/components/Game/GameContentContainer'
-import React, { useRef } from 'react'
+import React, { useRef, useState } from 'react'
 
 import t from "../../../elements.module.scss"
 import { PercentageIcon } from '@/assets/svg/svg'
@@ -18,7 +18,7 @@ import { signal } from '@preact/signals-react'
 import { useSignals } from '@preact/signals-react/runtime'
 import { taxRate } from '../../global';
 
-let waiting = signal(false);
+// let waiting = signal(false);
 
 function onCitizensPaidTax({success, data, message}){
 	if(!success){
@@ -61,6 +61,8 @@ export default function TaxRateSet() {
 
 	let inputRef = useRef(null);
 
+	let [waiting, setWaiting] = useState(false);
+
 	function onClick(){
 		let inputBox = inputRef.current as HTMLInputElement;
 
@@ -78,7 +80,7 @@ export default function TaxRateSet() {
 
 		socket.on("client-paid-tax", onCitizensPaidTax);
 
-		waiting.value = true;
+		setWaiting(true);
 
 	}
 
@@ -86,7 +88,7 @@ export default function TaxRateSet() {
 	return (
 		<GameContent isSub isAbsolute>
 			{
-				waiting.value
+				waiting
 				
 				? 
 

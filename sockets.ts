@@ -122,6 +122,8 @@ export const setUpSocket = (io: Server) => {
     const doSocketAction = async (a: Action, params: any, code) => {
       await mutex;
 
+	  console.log({mutex})
+
       let game: Game;
       if (code != null) game = getGameInstanceByGameCode(code);
       let universe: Universe | null;
@@ -129,8 +131,6 @@ export const setUpSocket = (io: Server) => {
         universe = game.getUniverseById(params.universeId);
         if (universe == null) throw "cannot find universe";
       }
-
-      let hasPaidInterval;
 
       try {
         switch (a) {
@@ -303,6 +303,7 @@ export const setUpSocket = (io: Server) => {
           data: {
             playersInRoom: game.getPlayersInWaitingRoomAsJSON(),
             universeData: game.getAllUniversesAsJSON(),
+			gameData: game.getGameJSON(),
           },
         });
       } catch (e) {
@@ -310,6 +311,8 @@ export const setUpSocket = (io: Server) => {
           success: false,
           message: e.toString(),
         });
+		console.error(e);
+		console.trace(e);
       } finally {
         mutex = Promise.resolve();
       }
@@ -334,13 +337,15 @@ export const setUpSocket = (io: Server) => {
     });
 
     socket.on("update-name", ({ name, waitingId, code }) => {
-      doSocketAction(Action.ASSIGN_NAME, { waitingId, name }, code);
+		console.log({name, code, waitingId})
+		doSocketAction(Action.ASSIGN_NAME, { waitingId, name }, code);
     });
     socket.on("update-icon", ({ icon, waitingId, code }) => {
-      doSocketAction(Action.ASSIGN_ICON, { waitingId, icon }, code);
+		doSocketAction(Action.ASSIGN_ICON, { waitingId, icon }, code);
     });
-
+	
     socket.on("update-ready", ({ waitingId, ready, code }) => {
+		console.log({ready, code, waitingId})
       doSocketAction(Action.UPDATE_READY, { waitingId, ready }, code);
     });
 
@@ -357,12 +362,12 @@ export const setUpSocket = (io: Server) => {
       console.log("player disconnected");
       try {
 		
-		let timer = setTimeout(()=>{
+		// let timer = setTimeout(()=>{
 			const gameInstance = removeWaitingPlayerFromAllGameInstancesBySocket(
 			  socket.id
 			);
 			doSocketAction(Action.DISCONNECT, {}, gameInstance.gameCode);
-		}, 100000)
+		// }, 100000)
 
 		// queue.push({timer, socket});
       } catch (e) {
@@ -408,13 +413,7 @@ export const setUpSocket = (io: Server) => {
 			  );
 			socket.emit("client-game-over",{})
 
-			game.emitMessageToPlayers("client-update-players", {
-				success: true,
-				data: {
-				  playersInRoom: game.getPlayersInWaitingRoomAsJSON(),
-				  universeData: game.getAllUniversesAsJSON(),
-				},
-			  });
+			
 		}catch(e){
 			console.log(e);
 			socket.emit("client-update-players", {
@@ -436,13 +435,7 @@ export const setUpSocket = (io: Server) => {
 
 			socket.emit("client-game-over",{})
 
-			game.emitMessageToPlayers("client-update-players", {
-				success: true,
-				data: {
-				  playersInRoom: game.getPlayersInWaitingRoomAsJSON(),
-				  universeData: game.getAllUniversesAsJSON(),
-				},
-			  });
+			
 		}catch(e){
 			console.log(e);
 			socket.emit("client-update-players", {
@@ -461,6 +454,7 @@ export const setUpSocket = (io: Server) => {
 				data: {
 				  playersInRoom: game.getPlayersInWaitingRoomAsJSON(),
 				  universeData: game.getAllUniversesAsJSON(),
+				  gameData: game.getGameJSON(),
 				},
 			  });
 		}catch(e){
@@ -482,13 +476,14 @@ export const setUpSocket = (io: Server) => {
 
 			if(queue.length >= players.length){
 				game.finishRound();
-				game.roundNumber += 1;
+				
 
 				game.emitMessageToPlayers("next-round",{
 					success:true,
 					data: {
 						playersInRoom: game.getPlayersInWaitingRoomAsJSON(),
 						universeData: game.getAllUniversesAsJSON(),
+						gameData: game.getGameJSON(),
 					  },
 				})
 			}
@@ -535,6 +530,7 @@ export const setUpSocket = (io: Server) => {
 				data: {
 				  playersInRoom: game.getPlayersInWaitingRoomAsJSON(),
 				  universeData: game.getAllUniversesAsJSON(),
+				  gameData: game.getGameJSON(),
 				},
 			  });
 

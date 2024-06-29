@@ -52,7 +52,7 @@ export const PlayerHUD = forwardRef(function PlayerHUD({}, ref:Ref<any>){
 						</SVGIcon>
 					</div>
 					<div className="player-currency-amount mx-1 ml-8 self-end">
-						<span className="player-currency-value">{playerFunds}</span>
+						<span className="player-currency-value">{playerFunds.value?.toFixed(2)}</span>
 					</div>
 				</div>
 			</div>

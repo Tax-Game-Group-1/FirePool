@@ -167,6 +167,7 @@ export async function readyPlayer(){
 	GameGlobal.player.value = {...playerdata};
 
 	saveGameGlobal("players")
+	console.log({})
 	// playerCardsSignal.emit("update");
 
 	//for testing
@@ -237,6 +238,11 @@ export function AsideCardPlayer(){
 export function AsideCard(){
 	useSignals();
 
+	let url = new URL(location.href);
+	let host = url.host;
+
+	let _url = `http://${host}/home?c=${gameCode.value}`;
+
 	return (
 		<div className={`${t.solidElement} ${t.solidText} ${style.formCard} hidden md:flex`}>
 			<div className={`flex flex-col justify-center text-center items-center m-0 text-[0.5rem] lg:text-xs xl:text-base`}>
@@ -248,7 +254,7 @@ export function AsideCard(){
 			<div className={`${style.qrContainer}`}>
 				<div className={`bg-white w-full h-full aspect-square flex justify-center items-center rounded-md p-4`}>
 					<SVGIcon>
-						<GameCodeQRCode/>
+						<GameCodeQRCode url={_url}/>
 					</SVGIcon>
 				</div>
 			</div>

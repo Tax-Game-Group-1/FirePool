@@ -11,6 +11,7 @@ import Spectate from './Spectate';
 import { GameScreen, gameScreen, setGameScreen } from '../layouts'
 import { PlayerData, UniverseData } from '&/gameManager/interfaces'
 import { createNotif } from '@/components/Notification/Notification'
+import { createPopUp } from '@/components/PopUp/PopUp'
 
 async function fileForBankruptcyPlayer(){
 	socket.emit("game-over",{
@@ -85,6 +86,17 @@ function onProceedClick(){
 		}
 
 		saveGameGlobal();
+
+		if(GameGlobal.room.value.roundNumber >= 12){
+			//end game
+
+			createPopUp({
+				content: "The game is over",
+				onClose: () => {
+					switchGameState(GameState.End);
+				}
+			})
+		}
 
 		if(GameGlobal.player.value.id !== undefined){
 			setGameScreen(GameScreen.InGame);

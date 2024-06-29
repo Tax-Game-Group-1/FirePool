@@ -120,7 +120,7 @@ async function onExportGame(){
 		document.body.appendChild(a);
 		a.style.display = "none";
 		a.target = "_blank";
-		a.download = `GameGlobal.room.value.gameCode.xlsx`;
+		a.download = `${GameGlobal.room.value.gameCode}.xlsx`;
 		let url = window.URL.createObjectURL(res);
 		a.href = url;
 		return function () {

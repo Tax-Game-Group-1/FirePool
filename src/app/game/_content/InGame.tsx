@@ -25,6 +25,7 @@ import YearEnd from './YearEnd'
 import YearStart from './YearStart'
 import Stats from './Stats'
 import Processing from './Processing'
+import End from './End'
 
 export let role = computed(()=>{
 	let role = GameGlobal.player.value.role;
@@ -183,6 +184,9 @@ export default function InGame() {
 					}
 					{
 							 gameState.value == GameState.Processing && <Processing />
+					}
+					{
+							 gameState.value == GameState.End && <End />
 					}
 				</GameContentContainer>
 			</ContentLayer>

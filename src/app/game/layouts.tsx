@@ -124,15 +124,17 @@ function onUpdatePlayers({data, message, success}){
 		});
 		return;
 	}
+	let newRoomData = data.gameData;
 	
 	let roomData = GameGlobal.room.value;
 
 	GameGlobal.room.value = {
-		...roomData, 
+		...newRoomData, 
 		playersInRoom: data.playersInRoom,
 		universes: data.universeData,
-		hostName: data.hostName,
-		gameName: data.name,
+		hostName: data.gameData.host,
+		gameName: data.gameData.name,
+		name: data.gameData.name,
 	};
 	saveGameGlobal();
 	

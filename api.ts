@@ -4,6 +4,7 @@ import { createAdminUser, getAdminIdByUserName, createGame, getAdminGames, getGa
 import _ from "lodash"
 import { Citizen, Game } from "&/gameManager/gameManager";
 import { createExcelWorkbook } from "excel/excel";
+import fs from "fs";
 
 
 export function setUpServer(server:Express) {
@@ -305,12 +306,16 @@ export function setUpServer(server:Express) {
 
 			let sheet = await createExcelWorkbook(user.username, gameInst.name, exceldata);
 			let buffer = await sheet.xlsx.writeBuffer({filename:`${gameInst.name}`});
+			if (!fs.existsSync("./sheets")){
+				await fs.promises.mkdir("./sheets");
+			}
+			await sheet.xlsx.writeFile(`./sheets/${gameInst.name}.xlsx`);
 			let blob = new Blob([buffer]);
 
 			res
 			.header(`Content-Disposition: attachment; filename="${gameInst.name}.xls"`)
 			.status(200)
-			.send(blob);
+			.sendFile(`${__dirname}/sheets/${gameInst.name}.xlsx`);
 
 		} catch (e) {
 			console.error(e); 

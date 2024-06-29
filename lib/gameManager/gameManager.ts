@@ -160,6 +160,7 @@ export class Game {
   }
 
   public updateReadyState(waitingId: any, ready: any) {
+	console.log("ff")
     for (const p of this._playersInWaitingRoom) {
       if (p.waitingId == waitingId) {
         p.ready = ready;
@@ -182,8 +183,10 @@ export class Game {
   }
 
   public finishRound() {
-    for (const u of this._universes)
-      u.finishRound();
+    for (const u of this._universes){
+		u.finishRound();
+	}
+	this.roundNumber += 1;
   }
 
   public async assignNameToPlayerInWaitingRoom(waitingId: string, name: string): Promise<boolean> {
@@ -503,6 +506,23 @@ export class Game {
     throw "Cannot find universe";
   }
 
+  public getGameJSON(){
+	return {
+		id: this._id,
+		name: this.name,
+		auditProbability: this.auditProbability,
+        kickPlayersOnBankruptcy: this.kickPlayersOnBankruptcy,
+        maxPlayers: this.maxPlayers,
+        taxCoefficient: this.taxCoefficient,
+        penalty: this.penalty,
+        finePercent: this.penalty,
+		roundNumber: this.roundNumber,
+		host: this._host.name,
+		code: this.gameCode,
+		gameCode: this.gameCode,
+		universes: this._universes.map(u => u.getUniverseDataAsJSON()),
+	}
+  }
 
   public getExcelData(adminId: number, email: string, adminName: string) : WGame {
 
@@ -614,6 +634,8 @@ export class Universe {
 
     for (const player of this._players) {
       totalFunds += player.funds;
+	  player.hasReceivedSalary = false;
+	 
     }
 
     this._cumulativeFundsPerRound.push(totalFunds);

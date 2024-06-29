@@ -96,7 +96,7 @@ export default function Stats() {
 						Statistics
 					</div>
 				</div>
-				<div className={`flex flex-row justify-center items-start gap-4 h-[90%] w-full`}>
+				<div className={`flex flex-col justify-center items-start gap-4 h-[90%] w-full`}>
 					{
 						mode.value === StatsMode.LeaderBoard && 
 

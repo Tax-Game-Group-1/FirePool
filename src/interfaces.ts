@@ -38,6 +38,7 @@ export enum GameState {
 	Stats,
 	Processing,
 	Migration,
+	End,
 }
 
 export interface IPlayerData {

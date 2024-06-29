@@ -20,12 +20,8 @@ import { socket } from "@/app/socket";
 import { gameCode, taxRate } from '../../global';
 import { createNotif } from "@/components/Notification/Notification";
 
-let clickCount = signal(0);
+// let clickCount = signal(0);
 let totalSalary = signal(0);
-
-let showSalary = signal(false);
-
-let waiting = signal(false);
 
 export function generateRandomSalary(num:number = 4){
     let min = 10;
@@ -40,49 +36,11 @@ export function generateRandomSalary(num:number = 4){
 
 }
 
-export async function onProceedClick(){
-
-    GameGlobal.player.value.salary = totalSalary.value;
-    GameGlobal.player.value = {...GameGlobal.player.value, funds: GameGlobal.player.value.funds + totalSalary};
-
-	waiting.value = true;
-
-    socket.emit("player-salary",{
-		universeId: GameGlobal.universe.value?.id,
-		code: GameGlobal.room.value?.gameCode,
-		salary: totalSalary,
-		playerId: GameGlobal.player.value.id,
-		roundNumber: GameGlobal.room.value?.roundNumber,
-	})
-
-	socket.on("client-taxrate-set",({success, data, message})=>{
-		if(!success){
-			createNotif({
-				content: `Error: ${message}`
-			})
-		}
-
-		let taxRate = data.taxRate;
-
-		let universeData = GameGlobal.universe.value;
-		universeData.taxRate = taxRate;
-		GameGlobal.universe.value = {...universeData};
-		saveGameGlobal();
-
-		onMinisterTaxSet();
-	})
-
-}
 export async function onMinisterTaxSet(){
 
     switchGameState(GameState.TaxDeclare)
 
 }
-
-export function showRealSalary(){
-    showSalary.value = true;
-}
-
 export function SalaryDisplay(){
 
     let [scope, animate] = useAnimate();
@@ -115,8 +73,9 @@ export function SalaryDisplay(){
     )
 }
 
-export function SalaryBox({salary}:{
+export function SalaryBox({salary, setClickCount}:{
     salary:number,
+	setClickCount: Function,
 }){
 
     let salaryRef = useRef(null);
@@ -138,16 +97,9 @@ export function SalaryBox({salary}:{
             scale: [1,1.4]
         }, {duration: 0.4, ease: "backInOut"})
 
-        let c = clickCount.value;
-        c++;
-        clickCount.value = c;
+        setClickCount(prev => prev + 1);
         totalSalary.value = totalSalary.value + salary;
 
-        console.log({c})
-        if(c >= 4){
-            console.log("YEEEE BOIII")
-            showRealSalary();
-        }
 
     }
 
@@ -175,6 +127,7 @@ export function SalaryBox({salary}:{
 export function SalarySetMinister(){
 	useSignals();
 
+	
 	useEffect(()=>{
 		socket.on("client-salary-paid",({success})=>{
 			console.log("All paid")
@@ -199,20 +152,59 @@ export function SalarySetMinister(){
 }
 
 export default function SalarySet() {
-    useSignals();
+	useSignals();
+	let [clickCount, setClickCount] = useState(0);
 
     let salaries = generateRandomSalary();
+	// let [showSalary, setShowSalary] = useState(false);
 
     let boxes = salaries.map((salary,i)=>{
         return (
-            <SalaryBox salary={salary} key={i} />
+            <SalaryBox setClickCount={setClickCount} salary={salary} key={i} />
         )
     })
+
+	let [waiting, setWaiting] = useState(false);
+	
+	function onProceedClick(){
+
+		GameGlobal.player.value.salary = totalSalary.value;
+		GameGlobal.player.value = {...GameGlobal.player.value, funds: GameGlobal.player.value.funds + totalSalary};
+
+
+		socket.emit("player-salary",{
+			universeId: GameGlobal.universe.value?.id,
+			code: GameGlobal.room.value?.gameCode,
+			salary: totalSalary,
+			playerId: GameGlobal.player.value.id,
+			roundNumber: GameGlobal.room.value?.roundNumber,
+		})
+
+		setWaiting(true);
+
+		socket.on("client-taxrate-set",({success, data, message})=>{
+			if(!success){
+				createNotif({
+					content: `Error: ${message}`
+				})
+			}
+
+			let taxRate = data.taxRate;
+
+			let universeData = GameGlobal.universe.value;
+			universeData.taxRate = taxRate;
+			GameGlobal.universe.value = {...universeData};
+			saveGameGlobal();
+
+			onMinisterTaxSet();
+		})
+
+	}
 
     return (
         <GameContent isSub className={`w-1/3 aspect-square justify-center items-center`}>
             {
-				waiting.value
+				waiting
 
 				&&
 
@@ -226,10 +218,10 @@ export default function SalarySet() {
 				</div>
 				
 			}{
-				!waiting.value &&
+				!waiting &&
 				
 				<>{
-				showSalary.value  == true &&
+				(clickCount >= 4) &&
 
 				<div className={`flex flex-col w-full m-2 p-2 gap-4 justify-around items-center`}>
 					<div>
@@ -248,7 +240,7 @@ export default function SalarySet() {
 				}
 
 				{
-					showSalary.value == false &&
+					(clickCount < 4) &&
 
 					<div className={`grid grid-cols-2 grid-rows-2 gap-4 w-full`}>
 						{boxes}

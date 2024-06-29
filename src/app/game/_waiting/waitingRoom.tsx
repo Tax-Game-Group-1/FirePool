@@ -30,15 +30,9 @@ export let pageState = signal(Page.StartRoom);
 
 export const roomSignal = new SignalEventBus();
 
-export const GameCodeQRCode = forwardRef(function GameCodeQRCode({}, ref:Ref<any>){
+export const GameCodeQRCode = forwardRef(function GameCodeQRCode({url}:{url:string}, ref:Ref<any>){
 
-	let [url, setUrl] = useState("");
-
-	useEffect(() => {
-		if(!url){
-			setUrl(window.location.href);
-		}
-	},[])
+	
 
 	return (
 		<QRCode ref={ref} value={url}/>
