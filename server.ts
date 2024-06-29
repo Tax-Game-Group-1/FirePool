@@ -66,7 +66,7 @@ export function removeWaitingPlayerFromAllGameInstancesBySocket(socketId: string
 
 console.log(`Trying to listen on ${port} (kill port if failing)`);
 
-if(process.env.NODE_ENV === "production"){
+// if(process.env.NODE_ENV === "production"){
 	const expressServer: Express = express();
     
 	expressServer.use(bodyParser.json())
@@ -122,52 +122,52 @@ if(process.env.NODE_ENV === "production"){
 	});
   
     setUpSocket(io);
-}else{
+// }else{
 
-	const app = next({dev, hostname, port});
-	const handler = app.getRequestHandler();
-	port = 3000;
+// 	const app = next({dev, hostname, port});
+// 	const handler = app.getRequestHandler();
+// 	port = 3000;
 
-	app.prepare().then(() => {
+// 	app.prepare().then(() => {
 	
-		const expressServer: Express = express();
+// 		const expressServer: Express = express();
 		
-		expressServer.use(bodyParser.json())
-		expressServer.use(bodyParser.urlencoded({ extended: true }))
+// 		expressServer.use(bodyParser.json())
+// 		expressServer.use(bodyParser.urlencoded({ extended: true }))
 	
-		expressServer.use(express.static(path.join(__dirname, 'out')));
+// 		expressServer.use(express.static(path.join(__dirname, 'out')));
 	
-		let dir = path.join(__dirname, 'out');
+// 		let dir = path.join(__dirname, 'out');
 		
-		//next will route and serve the frontend pages here
+// 		//next will route and serve the frontend pages here
 		
-		expressServer.get('*', (req, res) => {
-		    return handler(req, res)
-		})
+// 		expressServer.get('*', (req, res) => {
+// 		    return handler(req, res)
+// 		})
 		
-		//----------------------------- server stuff ------------------------//
+// 		//----------------------------- server stuff ------------------------//
 		
-		///got accidentally removed on one of the changes
-		expressServer.on("error", (err) => {
-			console.error("Server error:", err);
-			process.exit(1);
-		});
+// 		///got accidentally removed on one of the changes
+// 		expressServer.on("error", (err) => {
+// 			console.error("Server error:", err);
+// 			process.exit(1);
+// 		});
 		
-		//set up all the API routes for the server, even though the server still lives here
-		setUpServer(expressServer);
+// 		//set up all the API routes for the server, even though the server still lives here
+// 		setUpServer(expressServer);
 		
-		const server = http.createServer(expressServer);
-		const io = new Server(server);
+// 		const server = http.createServer(expressServer);
+// 		const io = new Server(server);
 		
-		server.listen(port, () => {
-			console.log(`> Ready on http://${hostname}:${port}`);
-		});
+// 		server.listen(port, () => {
+// 			console.log(`> Ready on http://${hostname}:${port}`);
+// 		});
 	  
-		setUpSocket(io);
+// 		setUpSocket(io);
 	
-	}).catch((err) => {
-		console.error("Next.js app error:", err);
-		process.exit(1);
-	});
-}
+// 	}).catch((err) => {
+// 		console.error("Next.js app error:", err);
+// 		process.exit(1);
+// 	});
+// }
 
